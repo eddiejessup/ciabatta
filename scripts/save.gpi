@@ -1,0 +1,4 @@
+set term png size 800,600
+set output 'plot.png'
+replot
+set term wxt
