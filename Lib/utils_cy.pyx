@@ -1,3 +1,5 @@
+# cython: profile=False
+
 cimport cython
 
 cdef double square(double f):
