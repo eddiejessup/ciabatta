@@ -105,21 +105,3 @@ def interacts_direct(np.ndarray[np.float_t, ndim=2] r, double L, double R_cut):
                 interacts[i_1].append(i_2)
                 interacts[i_2].append(i_1)
     return interacts
-
-def r_sep(np.ndarray[np.float_t, ndim=2] r, double L):
-    cdef unsigned int i_1, i_2, i_dim
-    cdef double L_half = L / 2.0
-
-    cdef np.ndarray[np.float_t, ndim = 3] r_sep = \
-        np.zeros(2 * (r.shape[0],) + (r.shape[1],), dtype=np.float)
-    cdef np.ndarray[np.float_t, ndim = 2] R_sep_sq = \
-        np.zeros(2 * (r.shape[0],), dtype=np.float)
-
-    for i_1 in range(r.shape[0]):
-        for i_2 in range(i_1 + 1, r.shape[0]):
-            for i_dim in range(r.shape[1]):
-                r_sep[i_1, i_2, i_dim] = wrap_real(L, L_half, r[i_2, i_dim] - r[i_1, i_dim])
-                r_sep[i_2, i_1, i_dim] = -r_sep[i_1, i_2, i_dim]
-                R_sep_sq[i_1, i_2] += square(r_sep[i_1, i_2, i_dim])
-            R_sep_sq[i_2, i_1] = R_sep_sq[i_1, i_2]
-    return r_sep, R_sep_sq
