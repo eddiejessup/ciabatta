@@ -7,7 +7,7 @@ from utils_cy cimport square, wrap_inc, wrap_dec, wrap_real
 cdef double R_sep_sq(double r_1_x, double r_1_y, double r_2_x, double r_2_y, double L, double L_half):
     return square(wrap_real(L, L_half, r_1_x - r_2_x)) + square(wrap_real(L, L_half, r_1_y - r_2_y))
 
-def interacts_cl_nochecks(np.ndarray[np.float_t, ndim=2] r, double L, double R_cut):
+def interacts_cl(np.ndarray[np.float_t, ndim=2] r, double L, double R_cut):
     cdef unsigned int M = int(L / R_cut), i, i_2, x, y, x_inc, x_dec, y_inc, y_dec
     cdef double R_cut_sq = square(R_cut), L_half = L / 2.0
     cdef list cell_list = [[[] for i_2 in range(M)] for i in range(M)]

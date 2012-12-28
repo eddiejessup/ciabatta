@@ -1,7 +1,7 @@
 import timeit
 import numpy as np
 import matplotlib.pyplot as pp
-import numerics
+import cell_list
 
 n_runs = 20
 N_growth = 1.2
@@ -19,13 +19,13 @@ R = %f
 L = %f
 r = np.random.uniform(-%f, %f, (%i, 2))
 ''' % (R, L, L_half, L_half, N)
-        td = timeit.timeit('numerics.interacts_direct(r, L, R)', setup=setup, number=n_runs)
+        td = timeit.timeit('cell_list.interacts_direct(r, L, R)', setup=setup, number=n_runs)
         tds.append(td)
 
-        tc = timeit.timeit('numerics.interacts_cl_checks(r, L, R)', setup=setup, number=n_runs)
+        tc = timeit.timeit('cell_list.interacts_cl_checks(r, L, R)', setup=setup, number=n_runs)
         tcs.append(tc)
 
-        tn = timeit.timeit('numerics.interacts_cl_nochecks(r, L, R)', setup=setup, number=n_runs)
+        tn = timeit.timeit('cell_list.interacts_cl(r, L, R)', setup=setup, number=n_runs)
         tns.append(tn)
 
         print(N)
@@ -45,9 +45,9 @@ def test_consistency():
     N = 1000
     r = np.random.uniform(-L_half, L_half, (N, 2))
 
-    d = numerics.interacts_direct(r, L, R)
-    c = numerics.interacts_cl_checks(r, L, R)
-    n = numerics.interacts_cl_nochecks(r, L, R)
+    d = cell_list.interacts_direct(r, L, R)
+    c = cell_list.interacts_cl_checks(r, L, R)
+    n = cell_list.interacts_cl(r, L, R)
 
     d = [sorted(entry) for entry in d]
     c = [sorted(entry) for entry in c]
@@ -77,9 +77,9 @@ L_half = L / 2.0
     elif dist == 'point':
         setup += 'r = np.zeros((%i, 2))' % N
         
-    td = timeit.timeit('numerics.interacts_direct(r, L, R)', setup=setup, number=n_runs)
-    tc = timeit.timeit('numerics.interacts_cl_checks(r, L, R)', setup=setup, number=n_runs)
-    tn = timeit.timeit('numerics.interacts_cl_nochecks(r, L, R)', setup=setup, number=n_runs)
+    td = timeit.timeit('cell_list.interacts_direct(r, L, R)', setup=setup, number=n_runs)
+    tc = timeit.timeit('cell_list.interacts_cl_checks(r, L, R)', setup=setup, number=n_runs)
+    tn = timeit.timeit('cell_list.interacts_cl(r, L, R)', setup=setup, number=n_runs)
     print('Direct: %f' % td)
     print('Cell List, checks: %f' % tc)
     print('Cell List, no checks: %f' % tn)
