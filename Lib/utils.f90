@@ -3,21 +3,22 @@ module utils
     private
     public r_wrap, i_wrap, r_sep_sq, rot_2d, add_noise_2d, r_to_inds
 
-    real, parameter, public :: pi = 4.0 * atan(1.0)
+    integer, parameter, public :: dp = kind(0.d0)
+    real(dp), parameter, public :: pi = 4.0_dp * datan(1.0_dp)
 
 contains
 
 pure function r_to_inds(r, l, m) result(inds)
-    real, intent(in) :: r(:, :), l
+    real(kind(0.d0)), intent(in) :: r(:, :), l
     integer, intent(in) :: m
     integer :: inds(size(r, 1), size(r, 2))
 
-    inds = 1 + int((r + l / 2.0) / (l / m))
+    inds = 1 + int((r + l / 2.0_dp) / (l / m))
 end function
 
 pure function r_wrap(r, l, l_half)
-    real, intent(in) :: r, l, l_half
-    real :: r_wrap
+    real(kind(0.d0)), intent(in) :: r, l, l_half
+    real(kind(0.d0)) :: r_wrap
 
     if (r > l_half) then 
         r_wrap = r - l
@@ -41,9 +42,9 @@ pure function i_wrap(i, m)
     end if
 end function
 
-function r_sep_sq(r_1, r_2, l, l_half)
-    real, intent(in) :: r_1(:), r_2(size(r_1)), l, l_half
-    real :: r_sep_sq, r_diff(size(r_1))
+pure function r_sep_sq(r_1, r_2, l, l_half)
+    real(kind(0.d0)), intent(in) :: r_1(:), r_2(size(r_1)), l, l_half
+    real(kind(0.d0)) :: r_sep_sq, r_diff(size(r_1))
     integer :: i
 
     r_diff = r_1 - r_2
@@ -54,8 +55,8 @@ function r_sep_sq(r_1, r_2, l, l_half)
 end function
 
 pure function rot_2d(a, theta) result(a_rot)
-    real, intent(in) :: a(2), theta
-    real :: a_rot(2), s, c
+    real(kind(0.d0)), intent(in) :: a(2), theta
+    real(kind(0.d0)) :: a_rot(2), s, c
 
     s = sin(theta)
     c = cos(theta)
@@ -64,13 +65,13 @@ pure function rot_2d(a, theta) result(a_rot)
 end function
 
 subroutine add_noise_2d(v, eta)
-    real, intent(inout) :: v(:, :)
-    real, intent(in) :: eta
-    real :: theta(size(v, 2))
+    real(kind(0.d0)), intent(inout) :: v(:, :)
+    real(kind(0.d0)), intent(in) :: eta
+    real(kind(0.d0)) :: theta(size(v, 2))
     integer :: i
-
+    print *, dp
     call random_number(theta)
-    theta = (theta - 0.5) * eta
+    theta = (theta - 0.5_dp) * eta
     do i = 1, size(v, 2)
         v(:, i) = rot_2d(v(:, i), theta(i))
     end do

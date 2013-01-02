@@ -33,12 +33,12 @@ subroutine initialise_inters(n)
 end subroutine
 
 subroutine make_inters(r, l, r_cut)
-    real, intent(in) :: r(:, :), l, r_cut
+    real(dp), intent(in) :: r(:, :), l, r_cut
     integer :: inds(size(r, 1), size(r, 2)), m, x, y, x_inc, x_dec, y_inc, y_dec, i, i_cl
-    real :: l_half, r_cut_sq
+    real(dp) :: l_half, r_cut_sq
 
     m = int(floor(l / r_cut))
-    l_half = l / 2.0
+    l_half = l / 2.0_dp
     r_cut_sq = r_cut ** 2
     call initialise_cl(size(r, 2), m)
     call initialise_inters(size(r, 2))
@@ -90,12 +90,12 @@ end subroutine
 end subroutine
 
 subroutine make_inters_direct(r, l, r_cut)
-    real, intent(in) :: r(:, :), l, r_cut
+    real(dp), intent(in) :: r(:, :), l, r_cut
     integer :: i, i_target, m
-    real :: l_half, r_cut_sq
+    real(dp) :: l_half, r_cut_sq
 
     m = int(floor(l / r_cut))
-    l_half = l / 2.0
+    l_half = l / 2.0_dp
     r_cut_sq = r_cut ** 2
     call initialise_inters(size(r, 2))
 
