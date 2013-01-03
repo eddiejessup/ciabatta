@@ -252,12 +252,3 @@ def field_subset(f, inds, rank=0):
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!
     return f[tuple([inds[:, i_dim] for i_dim in range(inds.shape[1])])]
-
-def empty_lists(n, d):
-    if n < 1: raise Exception('Require list length > 0')
-    if d < 1: raise Exception('Require list dimension > 0')
-    return empty_lists_core(n, d)
-
-def empty_lists_core(n, d):
-    if d == 0: return []
-    else: return [empty_lists_core(n, d - 1) for i in range(n)]

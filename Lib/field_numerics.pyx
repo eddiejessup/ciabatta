@@ -2,8 +2,7 @@ import numpy as np
 cimport numpy as np
 from utils_cy cimport wrap_inc, wrap_dec
 
-def r_to_i(r, L, M):
-    dx = L / float(M)
+def r_to_i(r, L, dx):
     return np.asarray((r + L / 2.0) / dx, dtype=np.int)
 
 def div(field, dx):
@@ -231,46 +230,12 @@ def laplace_3d(np.ndarray[np.float_t, ndim=3] field,
 
                 laplace[i_x, i_y, i_z] = diff / dx_sq
 
-def drift_diffusion(u, V, D, z, dx):
-    assert u.shape == V.shape == D.shape == z.shape
-    assert dx > 0.0
-    result = np.empty_like(u)
-    if u.ndim == 1: drift_diffusion_1d(u, V, D, z, result, dx)
-    else: raise Exception('Drift diffusion not implemented in this dimension')
-    return result
-
-def drift_diffusion_1d(np.ndarray[np.float_t, ndim=1] u, 
-                       np.ndarray[np.float_t, ndim=1] V,  
-                       np.ndarray[np.float_t, ndim=1] D,
-                       np.ndarray[np.float_t, ndim=1] z_,  
-                       np.ndarray[np.float_t, ndim=1] result,  
-                       double dx):
-    ''' Iterate drift diffusion (aka Smoluchowski) equation in 1d by finite
-    differencing, interpolating values with central averaging. D and z_ can be 
-    variable, result is RHS of equation,  
-        du/dt = D laplace(u) + z_ div(u grad(V)) ,  or 
-              = div(D * grad(u) z_ * u * grad(V))    '''
-
-    cdef unsigned int i
-    cdef unsigned int inc, dec
-    cdef unsigned int I = u.shape[0]
-    cdef double dx_sq_double = 2.0 * dx * dx, diff
-
-    for i in range(I):
-        inc = wrap_inc(I, i)
-        dec = wrap_dec(I, i)
-        diff = (((D[i] + D[inc]) * (u[inc] - u[i]) +  
-                 0.5 * (z_[i] + z_[inc]) * (u[i] + u[inc]) * (V[inc] - V[i])) - 
-                ((D[i] + D[dec]) * (u[i] - u[dec]) +  
-                 0.5 * (z_[i] + z_[dec]) * (u[i] + u[dec]) * (V[i] - V[dec])))
-        result[i] = diff / dx_sq_double
-
 def density(r, L, dx):
     assert r.ndim == 2
     if (L / dx) % 1 != 0:
-        print('Warning: approximation')
-    M = int(round(L / dx))
-    inds = r_to_i(r, L, M)
+        raise Exception
+    M = int(L / dx)
+    inds = r_to_i(r, L, dx)
     f = np.zeros(r.shape[1] * (M,), dtype=np.int)
     if f.ndim == 1: density_1d(inds, f)
     elif f.ndim == 2: density_2d(inds, f)

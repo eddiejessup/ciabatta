@@ -2,3 +2,6 @@
 *.o
 *.so
 *.pyc
+build/
+*.mod
+a.out
