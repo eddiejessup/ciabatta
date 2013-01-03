@@ -5,3 +5,5 @@
 build/
 *.mod
 a.out
+*.png
+*.avi
