@@ -1,10 +1,12 @@
 module cell_list_2d
+
     use utils
     implicit none
 
     integer, allocatable, private :: cl(:, :, :), cli(:, :)
     integer, allocatable :: inters(:, :), intersi(:)
-    integer, parameter, private :: opt_factor = 1
+    integer, parameter, private :: m_max = 500
+
 contains
 
 subroutine initialise_cl(n, m)
@@ -15,7 +17,7 @@ subroutine initialise_cl(n, m)
         deallocate(cli)
     end if
     if (.not. allocated(cl)) then
-        allocate(cl(n / opt_factor, m, m))
+        allocate(cl(n, m, m))
         allocate(cli(size(cl, 2), size(cl, 3)))
     end if
 end subroutine
@@ -28,7 +30,7 @@ subroutine initialise_inters(n)
         deallocate(intersi)
     end if
     if (.not. allocated(inters)) then
-        allocate(inters(n / opt_factor, n))
+        allocate(inters(n, n))
         allocate(intersi(size(inters, 2)))
     end if
 end subroutine
@@ -38,7 +40,7 @@ subroutine make_inters(r, l, r_cut)
     integer :: inds(size(r, 1), size(r, 2)), m, x, y, x_inc, x_dec, y_inc, y_dec, i, i_cl
     real(dp) :: l_half, r_cut_sq
 
-    m = int(floor(l / r_cut))
+    m = min(int(floor(l / r_cut)), m_max)
     l_half = l / 2.0_dp
     r_cut_sq = r_cut ** 2
     call initialise_cl(size(r, 2), m)
@@ -73,20 +75,21 @@ subroutine make_inters(r, l, r_cut)
             end do
         end do
     end do
+
 contains
 
-subroutine core(i, x, y)
-    integer, intent(in) :: i, x, y
-    integer :: i_target_cl, i_target
-    do i_target_cl = 1, cli(x, y)
-        i_target = cl(i_target_cl, x, y)
-        if (i_target /= i .and. r_sep_sq(r(:, i), r(:, i_target), l, l_half) < r_cut_sq) then
-            intersi(i) = intersi(i) + 1
-            inters(intersi(i), i) = i_target
-        end if
-    end do
-    return
-end subroutine
+    subroutine core(i, x, y)
+        integer, intent(in) :: i, x, y
+        integer :: i_target_cl, i_target
+        do i_target_cl = 1, cli(x, y)
+            i_target = cl(i_target_cl, x, y)
+            if (i_target /= i .and. r_sep_sq(r(:, i), r(:, i_target), l, l_half) < r_cut_sq) then
+                intersi(i) = intersi(i) + 1
+                inters(intersi(i), i) = i_target
+            end if
+        end do
+        return
+    end subroutine
 
 end subroutine
 

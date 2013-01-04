@@ -1,6 +1,6 @@
 module fields
-    use utils
-    implicit none
+use utils
+implicit none
 
 contains
 

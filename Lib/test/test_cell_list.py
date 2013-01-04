@@ -8,8 +8,8 @@ n_runs = 20
 def get_command(alg):
     if alg == 'p': return 'cell_list.interacts(r, L, R)'
     elif alg == 'pd': return 'cell_list.interacts_direct(r, L, R)'
-    elif alg == 'f': return 'cell_list.interacts_fort(r, L, R)'
-    elif alg == 'fd': return 'cell_list.interacts_fort_direct(r, L, R)'
+    elif alg == 'f': return 'cell_list.interacts(r, L, R)'
+    elif alg == 'fd': return 'cell_list.interacts_direct(r, L, R)'
     else: raise Exception('Invalid algorithm string')
     return command
 
@@ -61,17 +61,17 @@ def test_consistency():
     N = 5000
     r = np.random.uniform(-L_half, L_half, (N, 2))
 
-    p = cell_list.interacts(r, L, R)
-    pd = cell_list.interacts_direct(r, L, R)
-    f_raw, f_lims = cell_list.interacts_fort(r, L, R)
-    fd_raw, fd_lims = cell_list.interacts_fort_direct(r, L, R)
+#    p = cell_list.interacts(r, L, R)
+#    pd = cell_list.interacts_direct(r, L, R)
+    f_raw, f_lims = cell_list.interacts(r, L, R)
+    fd_raw, fd_lims = cell_list.interacts_direct(r, L, R)
 
-    p = [sorted(entry) for entry in p]
-    pd = [sorted(entry) for entry in pd]
+#    p = [sorted(entry) for entry in p]
+#    pd = [sorted(entry) for entry in pd]
     f = [sorted(list(f_raw[i, :f_lims[i]] - 1)) for i in range(f_raw.shape[0])]
     fd = [sorted(list(fd_raw[i, :fd_lims[i]] - 1)) for i in range(f_raw.shape[0])]
 
-    if p == pd == f == fd:
+    if f == fd:
         print('All interacts functions equivalent!')
     else:
         for i in range(len(p)):
@@ -94,6 +94,5 @@ def find_quickest(R, L, N, dist='uniform'):
     print('Fortran, Direct: %f' % tfd)
 
 if __name__ == '__main__':
-#    time_check()
-    test_consistency()
-    find_quickest(3.0, 1200, 5000, 'uniform')
+#    test_consistency()
+    find_quickest(3, 1200, 5000, 'uniform')

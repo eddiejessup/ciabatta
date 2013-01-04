@@ -3,7 +3,10 @@ import numpy as np
 def circle_intersect(r_1, R_1, r_2, R_2):
     return vector_mag(r_1 - r_2) < R_1 + R_2
 
-# Index wrapping
+# Index- and real-space conversion and wrapping
+
+def r_to_i(r, L, dx):
+    return np.asarray((r + L / 2.0) / dx, dtype=np.int)
 
 def wrap_real(L, L_half, r):
     if r > L_half: r -= L
@@ -118,6 +121,9 @@ def vector_unit_nullrand(v):
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
+def vector_angle(a, b):
+    return np.arccos(np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b)))
+
 def vector_perp(v):
     ''' Vector perpendicular to 2D vector v '''
     if v.shape[-1] != 2: 
@@ -212,22 +218,67 @@ def rotate_2d(a, theta):
     a_rot[..., 1] = s * a[..., 0] + c * a[..., 1]
     return a_rot
 
-def rotate_3d(a, theta, ax_raw):
-    ax = vector_unit_nonull(ax_raw)
-    a_rot = a.copy()
-    ax_x, ax_y, ax_z = ax[..., 0], ax[..., 1], ax[..., 2]
+#~ def rotate_3d(a, theta, ax_raw):
+    #~ ax = vector_unit_nonull(ax_raw)
+    #~ a_rot = a.copy()
+    #~ ax_x, ax_y, ax_z = ax[..., 0], ax[..., 1], ax[..., 2]
+#~ 
+    #~ s, c = np.sin(theta), np.cos(theta)
+#~ 
+    #~ omc = 1.0 - c
+    #~ a_rot[..., 0] = (a[..., 0] * (c + np.square(ax_x) * omc) + 
+                     #~ a[..., 1] * (ax_x * ax_y * omc - ax_z * s) + 
+                     #~ a[..., 2] * (ax_x * ax_z * omc + ax_y * s))
+    #~ a_rot[..., 1] = (a[..., 0] * (ax_y * ax_x * omc + ax_z * s) + 
+                     #~ a[..., 1] * (c + np.square(ax_y) * omc) + 
+                     #~ a[..., 2] * (ax_y * ax_z * omc - ax_x * s))
+    #~ a_rot[..., 2] = (a[..., 0] * (ax_z * ax_x * omc - ax_y * s) + 
+                     #~ a[..., 1] * (ax_z * ax_y * omc + ax_x * s) + 
+                     #~ a[..., 2] * (c + np.square(ax_z) * omc))
+    #~ return a_rot
 
-    s, c = np.sin(theta), np.cos(theta)
-    omc = 1.0 - c
-    a_rot[..., 0] = (a[..., 0] * (c + np.square(ax_x) * omc) + 
-                     a[..., 1] * (ax_x * ax_y * omc - ax_z * s) + 
-                     a[..., 2] * (ax_x * ax_z * omc + ax_y * s))
-    a_rot[..., 1] = (a[..., 0] * (ax_y * ax_x * omc + ax_z * s) + 
-                     a[..., 1] * (c + np.square(ax_y) * omc) + 
-                     a[..., 2] * (ax_y * ax_z * omc - ax_x * s))
-    a_rot[..., 2] = (a[..., 0] * (ax_z * ax_x * omc - ax_y * s) + 
-                     a[..., 1] * (ax_z * ax_y * omc + ax_x * s) + 
-                     a[..., 2] * (c + np.square(ax_z) * omc))
+def get_R_x(thetas):
+    s, c = np.sin(thetas), np.cos(thetas)
+    R_x = np.zeros([len(thetas), 3, 3], dtype=np.float)
+    R_x[:, 0, 0], R_x[:, 0, 1], R_x[:, 0, 2] = 1.0, 0.0, 0.0
+    R_x[:, 1, 0], R_x[:, 1, 1], R_x[:, 1, 2] = 0.0, c, -s
+    R_x[:, 2, 0], R_x[:, 2, 1], R_x[:, 2, 2] = 0.0, s, c
+    return R_x
+
+def get_R_y(thetas):
+    s, c = np.sin(thetas), np.cos(thetas)
+    R_y = np.zeros([len(thetas), 3, 3], dtype=np.float)
+    R_y[:, 0, 0], R_y[:, 0, 1], R_y[:, 0, 2] = c, 0, s
+    R_y[:, 1, 0], R_y[:, 1, 1], R_y[:, 1, 2] = 0, 1, 0
+    R_y[:, 2, 0], R_y[:, 2, 1], R_y[:, 2, 2] = -s, 0, c
+    return R_y
+
+def get_R_z(thetas):
+    s, c = np.sin(thetas), np.cos(thetas)
+    R_z = np.zeros([len(thetas), 3, 3], dtype=np.float)
+    R_z[:, 0, 0], R_z[:, 0, 1], R_z[:, 0, 2] = c, -s, 0
+    R_z[:, 1, 0], R_z[:, 1, 1], R_z[:, 1, 2] = s, c, 0
+    R_z[:, 2, 0], R_z[:, 2, 1], R_z[:, 2, 2] = 0, 0, 1
+    return R_z
+
+#~ def big_dot(a, b):
+    #~ return np.sum(np.transpose(a, (0, 2, 1))[:, :, :, np.newaxis] * b[:, :, np.newaxis, :], 1)
+
+def big_dot_1(a, b):
+    return np.sum(np.transpose(a, (0, 2, 1)) * b[:, np.newaxis, :], -1)
+
+def big_dot(a, b):
+    c = np.zeros([a.shape[0], a.shape[-2], b.shape[-1]], dtype=np.float)
+    for i in range(a.shape[0]):
+        c[i] = np.dot(a[i], b[i])
+    return c
+
+def rotate_3d(a, alphas, betas, gammas):
+    R_x = get_R_x(alphas)
+    R_y = get_R_y(betas)
+    R_z = get_R_z(gammas)
+    #~ print(alphas.shape, betas.shape)
+    a_rot = big_dot(R_z, a)
     return a_rot
 
 # Numpy arrays

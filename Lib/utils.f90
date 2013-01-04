@@ -1,7 +1,5 @@
 module utils
     implicit none
-    private
-    public r_wrap, i_wrap, r_sep_sq, rot_2d, add_noise_2d, r_to_inds
 
     integer, parameter, public :: dp = kind(0.d0)
     real(dp), parameter, public :: pi = 4.0_dp * datan(1.0_dp)
@@ -70,12 +68,67 @@ subroutine add_noise_2d(v, eta)
     real(kind(0.d0)), intent(in) :: eta
     real(kind(0.d0)) :: theta(size(v, 2))
     integer :: i
-    print *, dp
+
     call random_number(theta)
     theta = (theta - 0.5_dp) * eta
     do i = 1, size(v, 2)
         v(:, i) = rot_2d(v(:, i), theta(i))
     end do
 end subroutine
+
+subroutine clusters(r_raw, r_cut_raw, l, list)
+    real(kind(0.d0)), intent(in) :: r_raw(:, :), r_cut_raw, l
+    integer, intent(out) :: list(size(r_raw, 2))
+    real(kind(0.d0)) :: r(size(r_raw, 1), size(r_raw, 2)), r_cut_sq, r_j(size(r_raw, 1)), r_j_k(size(r_raw, 1))
+    integer :: n, d, i, j, k, list_k
+
+    d = size(r, 1)
+    n = size(r, 2)
+
+    ! scale distances to internal units
+    r = r_raw / l
+    r_cut_sq = (r_cut_raw / l) ** 2
+
+    do i = 1, n
+        list(i) = i
+    end do
+
+    do i = 1, n - 1
+        if (i == list(i)) then
+            j = i
+            r_j = r(:, j)
+            do k = i + 1, n
+                list_k = list(k)
+                if (list_k == k) then
+                    r_j_k = r_j - r(:, k)
+                    r_j_k = r_j_k - anint(r_j_k)
+                    if (sum(r_j_k ** 2) < r_cut_sq) then
+                        list(k) = list(j)
+                        list(j) = list_k
+                    end if
+                end if
+            end do
+
+            j = list(j)
+            r_j = r(:, j)
+
+            do while (j /= i)
+                do k = i + 1, n
+                    list_k = list(k)
+                    if (list_k == k) then
+                        r_j_k = r_j - r(:, k)
+                        r_j_k = r_j_k - anint(r_j_k)
+                        if (sum(r_j_k ** 2) < r_cut_sq) then
+                            list(k) = list(j)
+                            list(j) = list_k
+                        end if
+                    end if
+                end do
+                j = list(j)
+                r_j = r(:, j)
+            end do
+        end if
+    end do
+end subroutine clusters
 
 end module
