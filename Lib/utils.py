@@ -122,6 +122,7 @@ def vector_unit_nullrand(v):
     return v_new
 
 def vector_angle(a, b):
+    if np.array_equal(a, b): return np.zeros_like(a)
     return np.arccos(np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b)))
 
 def vector_perp(v):
@@ -138,7 +139,8 @@ def vector_perp(v):
 def polar_to_cart(arr_p):
     ''' Array of vectors arr_c corresponding to cartesian 
     representation of array of polar vectors arr_p.
-    Assumes last index is that of the vector component (x, [y, z, ...]). '''
+    Assumes last index is that of the vector component. 
+    In 3d assumes (radius, inclination, azimuth) convention. '''
     if arr_p.ndim != 2:
         raise Exception('Require 2d array for conversion')
     dim = arr_p.shape[1]
@@ -147,14 +149,12 @@ def polar_to_cart(arr_p):
     elif dim == 2:
         arr_c = np.zeros_like(arr_p)
         arr_c[..., 0] = arr_p[..., 0] * np.cos(arr_p[..., 1])
-        arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1])        
+        arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1])
     elif dim == 3:
         arr_c = np.zeros_like(arr_p)
-        arr_c[..., 0] = (arr_p[..., 0] * np.cos(arr_p[..., 1]) * 
-                         np.sin(arr_p[..., 2]))
-        arr_c[..., 1] = (arr_p[..., 0] * np.sin(arr_p[..., 1]) * 
-                         np.sin(arr_p[..., 2]))
-        arr_c[..., 2] = arr_p[..., 0] * np.cos(arr_p[..., 2])
+        arr_c[..., 0] = arr_p[..., 0] * np.sin(arr_p[..., 1]) * np.cos(arr_p[..., 2])
+        arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1]) * np.sin(arr_p[..., 2])
+        arr_c[..., 2] = arr_p[..., 0] * np.cos(arr_p[..., 1])
     else:
         raise Exception('Invalid vector for polar representation')
     return arr_c
@@ -162,7 +162,8 @@ def polar_to_cart(arr_p):
 def cart_to_polar(arr_c):
     ''' Array of vectors arr_p corresponding to polar representation 
     of array of cartesian vectors arr_c.
-    Assumes last index is that of the vector component (x, [y, z, ...]). '''
+    Assumes last index is that of the vector component. 
+    In 3d uses (radius, inclination, azimuth) convention. '''
     if arr_c.ndim != 2:
         raise Exception('Require 2d array for conversion')
     dim = arr_c.shape[-1]
@@ -175,13 +176,14 @@ def cart_to_polar(arr_c):
     elif dim == 3: 
         arr_p = np.zeros_like(arr_c)
         arr_p[..., 0] = vector_mag(arr_c)
-        arr_p[..., 1] = np.arctan2(arr_c[..., 1], arr_c[..., 0])
-        arr_p[..., 2] = np.arccos(arr_c[..., 2] / arr_p[..., 0])
+        arr_p[..., 1] = np.arccos(arr_c[..., 2] / arr_p[..., 0])
+        arr_p[..., 2] = np.arctan2(arr_c[..., 1], arr_c[..., 0])
     else:
         raise Exception('Invalid vector for polar representation') 
     return arr_p
 
 def point_pick_polar(dim, n=1):
+    ''' In 3d uses (radius, inclination, azimuth) convention '''
     a = np.zeros([n, dim], dtype=np.float)
     if dim == 1:
         a[..., 0] = np.sign(np.random.uniform(-1.0, +1.0, (n, dim)))
@@ -189,10 +191,11 @@ def point_pick_polar(dim, n=1):
         a[..., 0] = 1.0
         a[..., 1] = np.random.uniform(-np.pi, +np.pi, n)
     elif dim == 3:
+        # Note, (r, theta, phi) notation
         u, v = np.random.uniform(0.0, 1.0, (2, n))
         a[..., 0] = 1.0
         a[..., 1] = np.arccos(2.0 * v - 1.0)
-        a[..., 2] = 2.0 * np.pi * u
+        a[..., 2] = 2.0 * np.pi * u        
     else:
         raise Exception('Invalid vector for polar representation')
     return a
@@ -218,68 +221,38 @@ def rotate_2d(a, theta):
     a_rot[..., 1] = s * a[..., 0] + c * a[..., 1]
     return a_rot
 
-#~ def rotate_3d(a, theta, ax_raw):
-    #~ ax = vector_unit_nonull(ax_raw)
-    #~ a_rot = a.copy()
-    #~ ax_x, ax_y, ax_z = ax[..., 0], ax[..., 1], ax[..., 2]
-#~ 
-    #~ s, c = np.sin(theta), np.cos(theta)
-#~ 
-    #~ omc = 1.0 - c
-    #~ a_rot[..., 0] = (a[..., 0] * (c + np.square(ax_x) * omc) + 
-                     #~ a[..., 1] * (ax_x * ax_y * omc - ax_z * s) + 
-                     #~ a[..., 2] * (ax_x * ax_z * omc + ax_y * s))
-    #~ a_rot[..., 1] = (a[..., 0] * (ax_y * ax_x * omc + ax_z * s) + 
-                     #~ a[..., 1] * (c + np.square(ax_y) * omc) + 
-                     #~ a[..., 2] * (ax_y * ax_z * omc - ax_x * s))
-    #~ a_rot[..., 2] = (a[..., 0] * (ax_z * ax_x * omc - ax_y * s) + 
-                     #~ a[..., 1] * (ax_z * ax_y * omc + ax_x * s) + 
-                     #~ a[..., 2] * (c + np.square(ax_z) * omc))
-    #~ return a_rot
-
-def get_R_x(thetas):
-    s, c = np.sin(thetas), np.cos(thetas)
-    R_x = np.zeros([len(thetas), 3, 3], dtype=np.float)
-    R_x[:, 0, 0], R_x[:, 0, 1], R_x[:, 0, 2] = 1.0, 0.0, 0.0
-    R_x[:, 1, 0], R_x[:, 1, 1], R_x[:, 1, 2] = 0.0, c, -s
-    R_x[:, 2, 0], R_x[:, 2, 1], R_x[:, 2, 2] = 0.0, s, c
+def get_R_x(theta):
+    s, c = np.sin(theta), np.cos(theta)
+    R_x = np.zeros([3, 3], dtype=np.float)
+    R_x[0, 0], R_x[0, 1], R_x[0, 2] =  1,  0,  0
+    R_x[1, 0], R_x[1, 1], R_x[1, 2] =  0,  c, -s
+    R_x[2, 0], R_x[2, 1], R_x[2, 2] =  0,  s,  c
     return R_x
 
-def get_R_y(thetas):
-    s, c = np.sin(thetas), np.cos(thetas)
-    R_y = np.zeros([len(thetas), 3, 3], dtype=np.float)
-    R_y[:, 0, 0], R_y[:, 0, 1], R_y[:, 0, 2] = c, 0, s
-    R_y[:, 1, 0], R_y[:, 1, 1], R_y[:, 1, 2] = 0, 1, 0
-    R_y[:, 2, 0], R_y[:, 2, 1], R_y[:, 2, 2] = -s, 0, c
+def get_R_y(theta):
+    s, c = np.sin(theta), np.cos(theta)
+    R_y = np.zeros([3, 3], dtype=np.float)
+    R_y[0, 0], R_y[0, 1], R_y[0, 2] =  c,  0,  s
+    R_y[1, 0], R_y[1, 1], R_y[1, 2] =  0,  1,  0
+    R_y[2, 0], R_y[2, 1], R_y[2, 2] = -s,  0,  c
     return R_y
 
-def get_R_z(thetas):
-    s, c = np.sin(thetas), np.cos(thetas)
-    R_z = np.zeros([len(thetas), 3, 3], dtype=np.float)
-    R_z[:, 0, 0], R_z[:, 0, 1], R_z[:, 0, 2] = c, -s, 0
-    R_z[:, 1, 0], R_z[:, 1, 1], R_z[:, 1, 2] = s, c, 0
-    R_z[:, 2, 0], R_z[:, 2, 1], R_z[:, 2, 2] = 0, 0, 1
+def get_R_z(theta):
+    s, c = np.sin(theta), np.cos(theta)
+    R_z = np.zeros([3, 3], dtype=np.float)
+    R_z[0, 0], R_z[0, 1], R_z[0, 2] =  c, -s,  0
+    R_z[1, 0], R_z[1, 1], R_z[1, 2] =  s,  c,  0
+    R_z[2, 0], R_z[2, 1], R_z[2, 2] =  0,  0,  1
     return R_z
 
-#~ def big_dot(a, b):
-    #~ return np.sum(np.transpose(a, (0, 2, 1))[:, :, :, np.newaxis] * b[:, :, np.newaxis, :], 1)
-
-def big_dot_1(a, b):
-    return np.sum(np.transpose(a, (0, 2, 1)) * b[:, np.newaxis, :], -1)
-
-def big_dot(a, b):
-    c = np.zeros([a.shape[0], a.shape[-2], b.shape[-1]], dtype=np.float)
-    for i in range(a.shape[0]):
-        c[i] = np.dot(a[i], b[i])
-    return c
-
-def rotate_3d(a, alphas, betas, gammas):
-    R_x = get_R_x(alphas)
-    R_y = get_R_y(betas)
-    R_z = get_R_z(gammas)
-    #~ print(alphas.shape, betas.shape)
-    a_rot = big_dot(R_z, a)
-    return a_rot
+def rotate_3d(a, alpha, beta, gamma):
+#    R_xy = np.dot(get_R_x(alpha), get_R_y(beta))
+#    R_xyz = np.dot(R_xy, get_R_z(gamma))
+#    a_rot = np.dot(R_xyz, a)
+#    print a_rot.shape
+#    return a_rot
+#    return np.dot(np.dot(np.dot(get_R_x(alpha), get_R_y(beta)), get_R_z(gamma)), a)
+    return get_R_x(alpha).dot(get_R_y(beta)).dot(get_R_z(gamma)).dot(a)
 
 # Numpy arrays
 
