@@ -1,5 +1,9 @@
 import numpy as np
 
+def suffix_remove(s, suffix):
+    if s.endswith(suffix): return s[:-len(suffix)]
+    else: return s
+
 def circle_intersect(r_1, R_1, r_2, R_2):
     return vector_mag(r_1 - r_2) < R_1 + R_2
 
