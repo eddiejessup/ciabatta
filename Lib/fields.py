@@ -1,4 +1,5 @@
 import numpy as np
+import utils
 import field_numerics
 
 density = field_numerics.density
@@ -26,6 +27,14 @@ class Field(object):
 
     def iterate(self, *args):
         pass
+    
+    def output(self, dirname, prefix=''):
+        pass
+    
+    def output_persistent(self, dirname, prefix=''):
+        file = open('%s/%sparams.dat' % (dirname, prefix), 'w')
+        file.write('dx,%f\n' % self.dx)
+        file.close()
 
 class Scalar(Field):
     def __init__(self, parent_env, dx, a_0=0.0):
@@ -41,6 +50,10 @@ class Scalar(Field):
     def get_laplacian(self):
         return field_numerics.laplace(self.a, self.dx)
 
+    def output_persistent(self, dirname, prefix=''):
+        super(Scalar, self).output_persistent(dirname, prefix)
+        np.save('%s/%sa' % (dirname, prefix), self.a)
+
 class Diffusing(Scalar):
     def __init__(self, parent_env, dx, D, a_0=0.0):
         Scalar.__init__(self, parent_env, dx, a_0=a_0)
@@ -53,3 +66,12 @@ class Diffusing(Scalar):
 
     def iterate(self):
         self.a += self.D * self.get_laplacian() * self.parent_env.dt
+        
+    def output(self, dirname, prefix=''):
+        np.save('%s/%sa' % (dirname, prefix), self.a)
+
+    def output_persistent(self, dirname, prefix=''):
+        super(Diffusing, self).output_persistent(dirname, prefix)
+        file = open('%s/%sparams.dat' % (dirname, prefix), 'a')
+        file.write('D,%f\n' % self.D)
+        file.close()
