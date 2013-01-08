@@ -1,11 +1,20 @@
+import os
 import numpy as np
+
+# File IO
+
+def make_dirs_safe(dirname):
+    if os.path.isdir(dirname):
+        s = raw_input('%s exists, overwrite? (y/n)' % dirname)
+        if s != 'y': raise Exception
+    else:
+        os.makedirs(dirname)
+
+# Strings
 
 def suffix_remove(s, suffix):
     if s.endswith(suffix): return s[:-len(suffix)]
     else: return s
-
-def circle_intersect(r_1, R_1, r_2, R_2):
-    return vector_mag(r_1 - r_2) < R_1 + R_2
 
 # Index- and real-space conversion and wrapping
 
@@ -292,3 +301,8 @@ def field_subset(f, inds, rank=0):
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!
     return f[tuple([inds[:, i_dim] for i_dim in range(inds.shape[1])])]
+
+# Misc
+
+def circle_intersect(r_1, R_1, r_2, R_2):
+    return vector_mag(r_1 - r_2) < R_1 + R_2
