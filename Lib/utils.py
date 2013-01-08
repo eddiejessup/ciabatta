@@ -3,12 +3,15 @@ import numpy as np
 
 # File IO
 
-def make_dirs_safe(dirname):
+def makedirs_safe(dirname):
     if os.path.isdir(dirname):
         s = raw_input('%s exists, overwrite? (y/n)' % dirname)
         if s != 'y': raise Exception
     else:
         os.makedirs(dirname)
+        
+def makedirs_soft(dirname):
+    if not os.path.isdir(dirname): os.makedirs(dirname)
 
 # Strings
 
