@@ -5,11 +5,11 @@ import numpy as np
 
 def makedirs_safe(dirname):
     if os.path.isdir(dirname):
-        s = raw_input('%s exists, overwrite? (y/n)' % dirname)
+        s = raw_input('%s exists, overwrite? (y/n) ' % dirname)
         if s != 'y': raise Exception
     else:
         os.makedirs(dirname)
-        
+
 def makedirs_soft(dirname):
     if not os.path.isdir(dirname): os.makedirs(dirname)
 
@@ -23,6 +23,9 @@ def suffix_remove(s, suffix):
 
 def r_to_i(r, L, dx):
     return np.asarray((r + L / 2.0) / dx, dtype=np.int)
+
+def i_to_r(i, L, dx):
+    return -L / 2.0 + (i + 0.5) * dx
 
 def wrap_real(L, L_half, r):
     if r > L_half: r -= L
@@ -126,13 +129,24 @@ def vector_unit_nullrand(v):
     if v.size == 0: return v
     mag = vector_mag(v)
     v_new = v.copy()
-    v_new[mag == 0.0] = point_pick_cart(v.shape[-1], (mag == 0.0).sum())
+    v_new[mag == 0.0] = point_pick_cart(v.shape[-1], (mag == 0.0).size)
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
 def vector_angle(a, b):
-    if np.array_equal(a, b): return np.zeros_like(a)
-    return np.arccos(np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b)))
+    cos_theta = np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b))
+    theta = np.empty_like(cos_theta)
+    theta[np.abs(cos_theta) <= 1.0] = np.arccos(cos_theta[np.abs(cos_theta) <= 1.0])
+    # Account for rounding-error cases where |cos(theta)| > 1,
+    # meaning vectors are either parallel or anti-parallel.
+    for i in np.where(cos_theta > 1.0)[0]:
+        if np.dot(a[i], b[i]) > 0.0:
+            theta[i] = 0.0
+            print('Found parallel vectors')
+        else:
+            theta[i] = np.pi
+            print('Found anti-parallel vectors')
+    return theta
 
 def vector_perp(v):
     ''' Vector perpendicular to 2D vector v '''
@@ -247,7 +261,7 @@ def get_R_z(theta):
 
 def rotate_1d(a, p):
     print('Warning: rotate_1d has not been tested or thought through much')
-    if p < 0.0 or p > 1.0:
+    if not 0.0 < p < 1.0:
         raise Exception('Invalid switching probability for rotation in 1d')
     a_rot = a.copy()
     a_rot[np.random.uniform(0.0, 1.0, a.shape[0]) < p] *= -1
@@ -276,11 +290,18 @@ def rot_diff_2d(a, D_rot, dt):
     return rotate_2d(a, thetas)
 
 def rot_diff_3d(a, D_rot, dt):
+    # I don't know why the diffusion length is different than the 2d case
     diff_length = np.sqrt(D_rot * dt)
     alphas = np.random.normal(scale=diff_length, size=a.shape[0])
     betas = np.random.normal(scale=diff_length, size=a.shape[0])
     gammas = np.random.normal(scale=diff_length, size=a.shape[0])
     return rotate_3d(a, alphas, betas, gammas)
+
+def calc_D_rot(v1, v2, dt):
+    dtheta = vector_angle(v1, v2)
+    dtheta_var = (dtheta ** 2).sum() / (len(dtheta) - 1)
+    D_rot_calc = dtheta_var / (2.0 * dt)
+    return D_rot_calc
 
 # Numpy arrays
 

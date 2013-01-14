@@ -20,21 +20,13 @@ class Field(object):
         return self.dx ** self.parent_env.dim
 
     def r_to_i(self, r):
-        return np.asarray((r + self.parent_env.L_half) / self.dx, dtype=np.int)
+        return utils.r_to_i(r, self.parent_env.L, self.dx)
 
     def i_to_r(self, i):
-        return -self.parent_env.L_half + (i + 0.5) * self.dx
+        return utils.i_to_r(i, self.parent_env.L, self.dx)
 
     def iterate(self, *args):
         pass
-    
-    def output(self, dirname, prefix=''):
-        pass
-    
-    def output_persistent(self, dirname, prefix=''):
-        file = open('%s/%sparams.dat' % (dirname, prefix), 'w')
-        file.write('dx,%f\n' % self.dx)
-        file.close()
 
 class Scalar(Field):
     def __init__(self, parent_env, dx, a_0=0.0):
@@ -50,10 +42,6 @@ class Scalar(Field):
     def get_laplacian(self):
         return field_numerics.laplace(self.a, self.dx)
 
-    def output_persistent(self, dirname, prefix=''):
-        super(Scalar, self).output_persistent(dirname, prefix)
-        np.save('%s/%sa' % (dirname, prefix), self.a)
-
 class Diffusing(Scalar):
     def __init__(self, parent_env, dx, D, a_0=0.0):
         Scalar.__init__(self, parent_env, dx, a_0=a_0)
@@ -66,12 +54,3 @@ class Diffusing(Scalar):
 
     def iterate(self):
         self.a += self.D * self.get_laplacian() * self.parent_env.dt
-        
-    def output(self, dirname, prefix=''):
-        np.save('%s/%sa' % (dirname, prefix), self.a)
-
-    def output_persistent(self, dirname, prefix=''):
-        super(Diffusing, self).output_persistent(dirname, prefix)
-        file = open('%s/%sparams.dat' % (dirname, prefix), 'a')
-        file.write('D,%f\n' % self.D)
-        file.close()
