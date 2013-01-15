@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import scipy.special
 
 # File IO
 
@@ -129,23 +130,23 @@ def vector_unit_nullrand(v):
     if v.size == 0: return v
     mag = vector_mag(v)
     v_new = v.copy()
-    v_new[mag == 0.0] = point_pick_cart(v.shape[-1], (mag == 0.0).size)
+    v_new[mag == 0.0] = point_pick_cart(v.shape[-1], (mag == 0.0).sum())
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
 def vector_angle(a, b):
     cos_theta = np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b))
     theta = np.empty_like(cos_theta)
-    theta[np.abs(cos_theta) <= 1.0] = np.arccos(cos_theta[np.abs(cos_theta) <= 1.0])
-    # Account for rounding-error cases where |cos(theta)| > 1,
-    # meaning vectors are either parallel or anti-parallel.
-    for i in np.where(cos_theta > 1.0)[0]:
-        if np.dot(a[i], b[i]) > 0.0:
-            theta[i] = 0.0
-            print('Found parallel vectors')
-        else:
-            theta[i] = np.pi
-            print('Found anti-parallel vectors')
+    try:
+        theta[np.abs(cos_theta) <= 1.0] = np.arccos(cos_theta[np.abs(cos_theta) <= 1.0])
+    except IndexError:
+        if np.abs(cos_theta) <= 1.0: theta = np.arccos(cos_theta)
+        elif np.dot(a, b) > 0.0: theta = 0.0
+        else: theta = np.pi
+    else:
+        for i in np.where(np.abs(cos_theta) > 1.0)[0]:
+            if np.dot(a[i], b[i]) > 0.0: theta[i] = 0.0
+            else: theta[i] = np.pi
     return theta
 
 def vector_perp(v):
@@ -297,6 +298,15 @@ def rot_diff_3d(a, D_rot, dt):
     gammas = np.random.normal(scale=diff_length, size=a.shape[0])
     return rotate_3d(a, alphas, betas, gammas)
 
+def rot_diff(a, D_rot, dt):
+    if D_rot == 0.0: return a.copy()
+    if a.shape[-1] == 2:
+        return rot_diff_2d(a, D_rot, dt)
+    elif a.shape[-1] == 3:
+        return rot_diff_3d(a, D_rot, dt)
+    else:
+        raise Exception('Rotational diffusion not implemented in this dimension')
+
 def calc_D_rot(v1, v2, dt):
     dtheta = vector_angle(v1, v2)
     dtheta_var = (dtheta ** 2).sum() / (len(dtheta) - 1)
@@ -326,7 +336,39 @@ def field_subset(f, inds, rank=0):
     # It's magic, don't touch it!
     return f[tuple([inds[:, i_dim] for i_dim in range(inds.shape[1])])]
 
-# Misc
+# Spheres
 
-def circle_intersect(r_1, R_1, r_2, R_2):
+def sphere_intersect(r_1, R_1, r_2, R_2):
     return vector_mag(r_1 - r_2) < R_1 + R_2
+
+def sphere_pack(R, n, pf):
+    if not 0.0 < pf < 1.0:
+        raise Exception('Require 0 < packing fraction < 1')
+    if n == 2:
+        if pf > np.pi / np.sqrt(12):
+            raise Exception('Cannot achieve packing fraction')
+    elif n == 3:
+        if pf > np.pi / np.sqrt(18):
+            raise Exception('Cannot achieve packing fraction')
+    else:
+        print('Warning: No guarantee the requested packing fraction is '
+              'achievable')
+    rs = []
+    lim = 0.5 - R
+    for i in range(int(round(pf / (np.pi * R ** 2)))):
+        while True:
+            r = np.random.uniform(-lim, lim, n)
+            valid = True
+            for r_target in rs:
+                if sphere_intersect(r, R, r_target, R):
+                    valid = False
+                    break
+            if valid: break
+        rs.append(r)
+    return rs
+
+def sphere_volume(R, n):
+    return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
+
+def sphere_surf_area(R, n):
+    return (n / R) * volume(R, n)
