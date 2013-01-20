@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import scipy.special
+import numexpr as ne
 
 # File IO
 
@@ -95,7 +96,7 @@ def rms(r, r_0, L):
 def vector_mag_sq(v):
     ''' Squared magnitude of array of cartesian vectors v.
     Assumes last index is that of the vector component. '''
-    return np.sum(np.square(v), v.ndim - 1)
+    return np.square(v).sum(axis=-1)
 
 def vector_mag(v):
     ''' Magnitude of array of cartesian vectors v.
@@ -109,7 +110,6 @@ def vector_unit_nonull(v):
     if v.size == 0: return v
     mag = vector_mag(v)
     v_new = v.copy()
-    if (mag == 0.0).any(): raise Exception('Can''t unitise the null vector')
     v_new /= mag[..., np.newaxis]
     return v_new
 
@@ -339,7 +339,7 @@ def field_subset(f, inds, rank=0):
 # Spheres
 
 def sphere_intersect(r_1, R_1, r_2, R_2):
-    return vector_mag(r_1 - r_2) < R_1 + R_2
+    return vector_mag_sq(r_1 - r_2) < (R_1 + R_2) ** 2
 
 def sphere_pack(R, n, pf):
     if not 0.0 < pf < 1.0:
