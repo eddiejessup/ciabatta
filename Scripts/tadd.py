@@ -39,7 +39,7 @@ def main():
     i_entry = 0
     exit_flag = False
     while i_entry < len(entries):
-        inputt = raw_input('Sum: £%6.2f | >> ' % (entries.sum() / 100))
+        inputt = raw_input('£%6.2f >> ' % (entries.sum() / 100))
 
         if inputt in ['u', 'undo']:
             if i_entry >= 1: 
