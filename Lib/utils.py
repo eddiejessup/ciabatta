@@ -342,7 +342,7 @@ def sphere_intersect(r_1, R_1, r_2, R_2):
     return vector_mag_sq(r_1 - r_2) < (R_1 + R_2) ** 2
 
 def sphere_pack(R, n, pf):
-    if not 0.0 < pf < 1.0:
+    if not 0.0 <= pf < 1.0:
         raise Exception('Require 0 < packing fraction < 1')
     if n == 2:
         if pf > np.pi / np.sqrt(12):
