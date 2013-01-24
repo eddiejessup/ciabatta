@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import scipy.special
-import numexpr as ne
 
 # File IO
 
@@ -285,6 +284,8 @@ def rotate_3d(a, alpha, beta, gamma):
         a_rot[i] = get_R_x(alpha[i]).dot(get_R_y(beta[i])).dot(get_R_z(gamma[i])).dot(a[i])
     return a_rot
 
+# Rotational diffusion
+
 def rot_diff_2d(a, D_rot, dt):
     diff_length = np.sqrt(2.0 * D_rot * dt)
     thetas = np.random.normal(scale=diff_length, size=a.shape[0])
@@ -308,10 +309,15 @@ def rot_diff(a, D_rot, dt):
         raise Exception('Rotational diffusion not implemented in this dimension')
 
 def calc_D_rot(v1, v2, dt):
-    dtheta = vector_angle(v1, v2)
-    dtheta_var = (dtheta ** 2).sum() / (len(dtheta) - 1)
-    D_rot_calc = dtheta_var / (2.0 * dt)
-    return D_rot_calc
+    return (vector_angle(v1, v2) ** 2).sum() / (len(v1) - 1) / (2.0 * dt)
+
+# Translational diffusion
+
+def diff(a, D, dt):
+    return np.random.normal(loc=a, scale=np.sqrt(2.0 * D * dt), size=a.shape)
+
+def calc_D(r1, r2, dt):
+    return np.var(r1 - r2) / (2.0 * dt)
 
 # Numpy arrays
 
@@ -342,8 +348,8 @@ def sphere_intersect(r_1, R_1, r_2, R_2):
     return vector_mag_sq(r_1 - r_2) < (R_1 + R_2) ** 2
 
 def sphere_pack(R, n, pf):
-    if not 0.0 <= pf < 1.0:
-        raise Exception('Require 0 < packing fraction < 1')
+    if not 0.0 < R < 1.0:
+        raise Exception('Require 0 < sphere radius < 1')
     if n == 2:
         if pf > np.pi / np.sqrt(12):
             raise Exception('Cannot achieve packing fraction')
@@ -353,9 +359,12 @@ def sphere_pack(R, n, pf):
     else:
         print('Warning: No guarantee the requested packing fraction is '
               'achievable')
+    if not 0.0 <= pf < 1.0:
+        raise Exception('Require 0 < packing fraction < 1')
+
     rs = []
     lim = 0.5 - R
-    for i in range(int(round(pf / (np.pi * R ** 2)))):
+    for i in range(int(round(pf / sphere_volume(R, n)))):
         while True:
             r = np.random.uniform(-lim, lim, n)
             valid = True
