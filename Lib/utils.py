@@ -362,18 +362,18 @@ def sphere_pack(R, n, pf):
     if not 0.0 <= pf < 1.0:
         raise Exception('Require 0 < packing fraction < 1')
 
-    rs = []
+    m = int(round(pf / sphere_volume(R, n)))
+    rs = np.zeros([m, n], dtype=np.float)
     lim = 0.5 - R
-    for i in range(int(round(pf / sphere_volume(R, n)))):
+    for i in range(m):
         while True:
-            r = np.random.uniform(-lim, lim, n)
+            rs[i] = np.random.uniform(-lim, lim, n)
             valid = True
-            for r_target in rs:
-                if sphere_intersect(r, R, r_target, R):
+            for r in rs[:i]:
+                if sphere_intersect(rs[i], R, r, R):
                     valid = False
                     break
             if valid: break
-        rs.append(r)
     return rs
 
 def sphere_volume(R, n):
