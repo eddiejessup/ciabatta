@@ -12,6 +12,7 @@ setup(
     ext_modules = [
         Extension("field_numerics", ["field_numerics.pyx",]),
         Extension("walled_field_numerics", ["walled_field_numerics.pyx",]),
+        Extension("cl", ["cl.pyx",]),
     ],
     include_dirs = [numpy.get_include()],
 )
