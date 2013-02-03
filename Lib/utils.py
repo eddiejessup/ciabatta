@@ -284,6 +284,12 @@ def rotate_3d(a, alpha, beta, gamma):
         a_rot[i] = get_R_x(alpha[i]).dot(get_R_y(beta[i])).dot(get_R_z(gamma[i])).dot(a[i])
     return a_rot
 
+def rotate(a, *args):
+    if a.shape[-1] == 1: return rotate_1d(a, *args)
+    elif a.shape[-1] == 2: return rotate_2d(a, *args)
+    elif a.shape[-1] == 3: return rotate_3d(a, *args)
+    else: raise Exception('Rotation not implemented in this dimension')
+
 # Rotational diffusion
 
 def rot_diff_2d(a, D_rot, dt):
@@ -317,6 +323,7 @@ def diff(a, D, dt):
     return np.random.normal(loc=a, scale=np.sqrt(2.0 * D * dt), size=a.shape)
 
 def calc_D(r1, r2, dt):
+    if dt == 0.0: return float('nan')
     return np.var(r1 - r2) / (2.0 * dt)
 
 # Numpy arrays
