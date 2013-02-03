@@ -2,8 +2,9 @@
 *.o
 *.so
 *.pyc
-build/
+*.c
 *.mod
-a.out
+build/
+*.out
 *.png
 *.avi
