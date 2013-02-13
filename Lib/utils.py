@@ -209,16 +209,16 @@ def point_pick_polar(dim, n=1):
     ''' In 3d uses (radius, inclination, azimuth) convention '''
     a = np.zeros([n, dim], dtype=np.float)
     if dim == 1:
-        a[..., 0] = np.sign(np.random.uniform(-1.0, +1.0, (n, dim)))
+        a[:, 0] = np.random.randint(2, size=n) * 2 - 1
     elif dim == 2:
-        a[..., 0] = 1.0
-        a[..., 1] = np.random.uniform(-np.pi, +np.pi, n)
+        a[:, 0] = 1.0
+        a[:, 1] = np.random.uniform(-np.pi, +np.pi, n)
     elif dim == 3:
         # Note, (r, theta, phi) notation
         u, v = np.random.uniform(0.0, 1.0, (2, n))
-        a[..., 0] = 1.0
-        a[..., 1] = np.arccos(2.0 * v - 1.0)
-        a[..., 2] = 2.0 * np.pi * u
+        a[:, 0] = 1.0
+        a[:, 1] = np.arccos(2.0 * v - 1.0)
+        a[:, 2] = 2.0 * np.pi * u
     else:
         raise Exception('Invalid vector for polar representation')
     return a
@@ -315,7 +315,7 @@ def rot_diff(a, D_rot, dt):
         raise Exception('Rotational diffusion not implemented in this dimension')
 
 def calc_D_rot(v1, v2, dt):
-    return (vector_angle(v1, v2) ** 2).sum() / (len(v1) - 1) / (2.0 * dt)
+    return ((vector_angle(v1, v2) ** 2).sum() / (len(v1) - 1)) / (2.0 * dt)
 
 # Translational diffusion
 
