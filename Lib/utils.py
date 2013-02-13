@@ -6,7 +6,7 @@ import scipy.special
 
 def makedirs_safe(dirname):
     if os.path.isdir(dirname):
-        s = raw_input('%s exists, overwrite? (y/n) ' % dirname)
+        s = input('%s exists, overwrite? (y/n) ' % dirname)
         if s != 'y': raise Exception
     else:
         os.makedirs(dirname)
