@@ -226,6 +226,14 @@ def point_pick_polar(dim, n=1):
 def point_pick_cart(dim, n=1):
     return polar_to_cart(point_pick_polar(dim, n))
 
+def disk_pick(n=1):
+    a = np.zeros([n, 2], dtype=np.float)
+    r = np.sqrt(np.random.uniform(size=n))
+    theta = np.random.uniform(0.0, 2.0 * np.pi, size=n)
+    a[:, 0] = r * np.cos(theta)
+    a[:, 1] = r * np.sin(theta)
+    return a
+
 # Rotations
 
 def get_R(theta):
