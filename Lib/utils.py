@@ -129,7 +129,7 @@ def vector_unit_nullrand(v):
     if v.size == 0: return v
     mag = vector_mag(v)
     v_new = v.copy()
-    v_new[mag == 0.0] = point_pick_cart(v.shape[-1], (mag == 0.0).sum())
+    v_new[mag == 0.0] = sphere_pick(v.shape[-1], (mag == 0.0).sum())
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
@@ -205,7 +205,9 @@ def cart_to_polar(arr_c):
         raise Exception('Invalid vector for polar representation')
     return arr_p
 
-def point_pick_polar(dim, n=1):
+# Point picking
+
+def sphere_pick_polar(dim, n=1):
     ''' In 3d uses (radius, inclination, azimuth) convention '''
     a = np.zeros([n, dim], dtype=np.float)
     if dim == 1:
@@ -223,16 +225,17 @@ def point_pick_polar(dim, n=1):
         raise Exception('Invalid vector for polar representation')
     return a
 
-def point_pick_cart(dim, n=1):
-    return polar_to_cart(point_pick_polar(dim, n))
+def sphere_pick(dim, n=1):
+    return polar_to_cart(sphere_pick_polar(dim, n))
+
+def disk_pick_polar(n=1):
+    a = np.zeros([n, 2], dtype=np.float)
+    a[:, 0] = np.sqrt(np.random.uniform(size=n))
+    a[:, 1] = np.random.uniform(0.0, 2.0 * np.pi, size=n)
+    return a
 
 def disk_pick(n=1):
-    a = np.zeros([n, 2], dtype=np.float)
-    r = np.sqrt(np.random.uniform(size=n))
-    theta = np.random.uniform(0.0, 2.0 * np.pi, size=n)
-    a[:, 0] = r * np.cos(theta)
-    a[:, 1] = r * np.sin(theta)
-    return a
+    return polar_to_cart(disk_pick_polar(n))
 
 # Rotations
 
@@ -242,6 +245,15 @@ def get_R(theta):
     R[0, 0], R[0, 1] =  c, -s
     R[1, 0], R[1, 1] =  s,  c
     return R
+
+def rotate_2d(a, theta):
+    if a.shape[-1] != 2:
+        raise Exception('Input array not 2d')
+    a_rot = np.zeros_like(a)
+    s, c = np.sin(theta), np.cos(theta)
+    a_rot[..., 0] = c * a[..., 0] - s * a[..., 1]
+    a_rot[..., 1] = s * a[..., 0] + c * a[..., 1]
+    return a_rot
 
 def get_R_x(theta):
     s, c = np.sin(theta), np.cos(theta)
@@ -267,23 +279,6 @@ def get_R_z(theta):
     R_z[2, 0], R_z[2, 1], R_z[2, 2] =  0,  0,  1
     return R_z
 
-def rotate_1d(a, p):
-    print('Warning: rotate_1d has not been tested or thought through much')
-    if not 0.0 < p < 1.0:
-        raise Exception('Invalid switching probability for rotation in 1d')
-    a_rot = a.copy()
-    a_rot[np.random.uniform(0.0, 1.0, a.shape[0]) < p] *= -1
-    return a_rot
-
-def rotate_2d(a, theta):
-    if a.shape[-1] != 2:
-        raise Exception('Input array not 2d')
-    a_rot = np.zeros_like(a)
-    s, c = np.sin(theta), np.cos(theta)
-    a_rot[..., 0] = c * a[..., 0] - s * a[..., 1]
-    a_rot[..., 1] = s * a[..., 0] + c * a[..., 1]
-    return a_rot
-
 def rotate_3d(a, alpha, beta, gamma):
     if a.shape[-1] != 3:
         raise Exception('Input array not 3d')
@@ -293,34 +288,24 @@ def rotate_3d(a, alpha, beta, gamma):
     return a_rot
 
 def rotate(a, *args):
-    if a.shape[-1] == 1: return rotate_1d(a, *args)
-    elif a.shape[-1] == 2: return rotate_2d(a, *args)
+    if a.shape[-1] == 2: return rotate_2d(a, *args)
     elif a.shape[-1] == 3: return rotate_3d(a, *args)
     else: raise Exception('Rotation not implemented in this dimension')
 
 # Rotational diffusion
 
 def rot_diff_2d(a, D_rot, dt):
-    diff_length = np.sqrt(2.0 * D_rot * dt)
-    thetas = np.random.normal(scale=diff_length, size=a.shape[0])
-    return rotate_2d(a, thetas)
+    return rotate_2d(a, np.sqrt(2.0 * D_rot * dt) * np.random.standard_normal(a.shape[0]))
 
 def rot_diff_3d(a, D_rot, dt):
-    # I don't know why the diffusion length is different than the 2d case
-    diff_length = np.sqrt(D_rot * dt)
-    alphas = np.random.normal(scale=diff_length, size=a.shape[0])
-    betas = np.random.normal(scale=diff_length, size=a.shape[0])
-    gammas = np.random.normal(scale=diff_length, size=a.shape[0])
-    return rotate_3d(a, alphas, betas, gammas)
+    alpha, beta, gamma = np.sqrt(D_rot * dt) * np.random.standard_normal(a.shape)
+    return rotate_3d(a, alpha, beta, gamma)
 
 def rot_diff(a, D_rot, dt):
     if D_rot == 0.0: return a.copy()
-    if a.shape[-1] == 2:
-        return rot_diff_2d(a, D_rot, dt)
-    elif a.shape[-1] == 3:
-        return rot_diff_3d(a, D_rot, dt)
-    else:
-        raise Exception('Rotational diffusion not implemented in this dimension')
+    if a.shape[-1] == 2: return rot_diff_2d(a, D_rot, dt)
+    elif a.shape[-1] == 3: return rot_diff_3d(a, D_rot, dt)
+    else: raise Exception('Rotational diffusion not implemented in this dimension')
 
 def calc_D_rot(v1, v2, dt):
     return ((vector_angle(v1, v2) ** 2).sum() / (len(v1) - 1)) / (2.0 * dt)
@@ -328,7 +313,7 @@ def calc_D_rot(v1, v2, dt):
 # Translational diffusion
 
 def diff(a, D, dt):
-    return np.random.normal(loc=a, scale=np.sqrt(2.0 * D * dt), size=a.shape)
+    return np.sqrt(2.0 * D * dt) * np.random.standard_normal(a.shape)
 
 def calc_D(r1, r2, dt):
     if dt == 0.0: return float('nan')

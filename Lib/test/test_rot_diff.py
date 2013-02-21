@@ -14,7 +14,7 @@ def D_dependence(d=3):
     elif d == 3: rot_diff = utils.rot_diff_3d
 
     for D_rot in Ds_in:
-        a = utils.point_pick_cart(d, n)
+        a = utils.sphere_pick(d, n)
         a_rot = rot_diff(a, D_rot, dt)
         dthetas = utils.vector_angle(a, a_rot)
         D_rot_calc = (dthetas ** 2).mean() / (2.0 * dt)
@@ -28,7 +28,7 @@ def diffusion_track(d):
     D_rot = 0.01
     n = 1000
     a_rots = np.zeros([n, d])
-    a_rots[0] = utils.point_pick_cart(d, 1)
+    a_rots[0] = utils.sphere_pick(d, 1)
 
     if d == 2: rot_diff = utils.rot_diff_2d
     elif d == 3: rot_diff = utils.rot_diff_3d
