@@ -317,7 +317,7 @@ def diff(a, D, dt):
 
 def calc_D(r1, r2, dt):
     if dt == 0.0: return float('nan')
-    return np.var(r1 - r2) / (2.0 * dt)
+    return (np.var(r1) - np.var(r2)) / (2.0 * r1.shape[-1] * dt)`
 
 # Numpy arrays
 
