@@ -239,85 +239,76 @@ def disk_pick(n=1):
 
 # Rotations
 
-def get_R(theta):
+def R(theta):
     s, c = np.sin(theta), np.cos(theta)
     R = np.zeros([2, 2], dtype=np.float)
-    R[0, 0], R[0, 1] =  c, -s
-    R[1, 0], R[1, 1] =  s,  c
+    R[0] = [c, -s]
+    R[1] = [s,  c]
     return R
 
-def rotate_2d(a, theta):
-    if a.shape[-1] != 2:
-        raise Exception('Input array not 2d')
+def rotate_2d(a, thetas):
     a_rot = np.zeros_like(a)
-    s, c = np.sin(theta), np.cos(theta)
+    s, c = np.sin(thetas[..., 0]), np.cos(thetas[..., 0])
     a_rot[..., 0] = c * a[..., 0] - s * a[..., 1]
     a_rot[..., 1] = s * a[..., 0] + c * a[..., 1]
     return a_rot
 
-def get_R_x(theta):
+def R_x(theta):
     s, c = np.sin(theta), np.cos(theta)
-    R_x = np.zeros([3, 3], dtype=np.float)
-    R_x[0, 0], R_x[0, 1], R_x[0, 2] =  1,  0,  0
-    R_x[1, 0], R_x[1, 1], R_x[1, 2] =  0,  c, -s
-    R_x[2, 0], R_x[2, 1], R_x[2, 2] =  0,  s,  c
-    return R_x
+    R = np.zeros([3, 3], dtype=np.float)
+    R[0] = [1,  0,  0]
+    R[1] = [0,  c, -s]
+    R[2] = [0,  s,  c]
+    return R
 
-def get_R_y(theta):
+def R_y(theta):
     s, c = np.sin(theta), np.cos(theta)
-    R_y = np.zeros([3, 3], dtype=np.float)
-    R_y[0, 0], R_y[0, 1], R_y[0, 2] =  c,  0,  s
-    R_y[1, 0], R_y[1, 1], R_y[1, 2] =  0,  1,  0
-    R_y[2, 0], R_y[2, 1], R_y[2, 2] = -s,  0,  c
-    return R_y
+    R = np.zeros([3, 3], dtype=np.float)
+    R[0] = [c,  0,  s]
+    R[1] = [0,  1,  0]
+    R[2] = [-s, 0,  c]
+    return R
 
-def get_R_z(theta):
+def R_z(theta):
     s, c = np.sin(theta), np.cos(theta)
-    R_z = np.zeros([3, 3], dtype=np.float)
-    R_z[0, 0], R_z[0, 1], R_z[0, 2] =  c, -s,  0
-    R_z[1, 0], R_z[1, 1], R_z[1, 2] =  s,  c,  0
-    R_z[2, 0], R_z[2, 1], R_z[2, 2] =  0,  0,  1
-    return R_z
+    R = np.zeros([3, 3], dtype=np.float)
+    R[0] = [c, -s,  0]
+    R[1] = [s,  c,  0]
+    R[2] = [0,  0,  1]
+    return R
 
-def rotate_3d(a, alpha, beta, gamma):
-    if a.shape[-1] != 3:
-        raise Exception('Input array not 3d')
+def rotate_3d(a, thetas):
     a_rot = np.zeros_like(a)
-    for i in range(a.shape[0]):
-        a_rot[i] = get_R_x(alpha[i]).dot(get_R_y(beta[i])).dot(get_R_z(gamma[i])).dot(a[i])
+    for i in range(len(a)):
+        a_rot[i] = R_x(thetas[i, 0]).dot(R_y(thetas[i, 1])).dot(R_z(thetas[i, 2])).dot(a[i])
     return a_rot
 
-def rotate(a, *args):
-    if a.shape[-1] == 2: return rotate_2d(a, *args)
-    elif a.shape[-1] == 3: return rotate_3d(a, *args)
+def rotate(a, thetas):
+    if a.shape[-1] == 2: return rotate_2d(a, thetas)
+    elif a.shape[-1] == 3: return rotate_3d(a, thetas)
     else: raise Exception('Rotation not implemented in this dimension')
 
-# Rotational diffusion
+# Diffusion
 
-def rot_diff_2d(a, D_rot, dt):
-    return rotate_2d(a, np.sqrt(2.0 * D_rot * dt) * np.random.standard_normal(a.shape[0]))
-
-def rot_diff_3d(a, D_rot, dt):
-    alpha, beta, gamma = np.sqrt(D_rot * dt) * np.random.standard_normal(a.shape)
-    return rotate_3d(a, alpha, beta, gamma)
-
-def rot_diff(a, D_rot, dt):
-    if D_rot == 0.0: return a.copy()
-    if a.shape[-1] == 2: return rot_diff_2d(a, D_rot, dt)
-    elif a.shape[-1] == 3: return rot_diff_3d(a, D_rot, dt)
-    else: raise Exception('Rotational diffusion not implemented in this dimension')
+def rot_diff(v, D, dt):
+    if D * dt == 0.0: return v.copy()
+    angles = int(round(v.shape[-1] * (v.shape[-1] - 1) / 2.0))
+    return rotate(v, np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), angles)))
 
 def calc_D_rot(v1, v2, dt):
-    return ((vector_angle(v1, v2) ** 2).sum() / (len(v1) - 1)) / (2.0 * dt)
+    if dt == 0.0: return float('nan')
+    return np.mean(np.square(vector_angle(v1, v2))) / (2.0 * (v1.shape[-1] - 1) * dt)
 
-# Translational diffusion
+def diff(r, D, dt):
+    if D * dt == 0.0: return r.copy()
+    return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
 
-def diff(a, D, dt):
-    return np.sqrt(2.0 * D * dt) * np.random.standard_normal(a.shape)
+def calc_D_vector(r1, r2, dt):
+    if dt == 0.0: return float('nan')
+    return np.mean(np.square(r1 - r2), axis=0) / (2.0 * dt)
 
 def calc_D(r1, r2, dt):
-    if dt == 0.0: return float('nan')
-    return (np.var(r1) - np.var(r2)) / (2.0 * r1.shape[-1] * dt)`
+    return np.mean(calc_D_vector(r1, r2, dt))
 
 # Numpy arrays
 
