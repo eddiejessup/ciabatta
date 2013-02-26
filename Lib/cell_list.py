@@ -1,3 +1,10 @@
+'''
+Note, this is for an introspective cell list, i.e. for a set of points, seeing
+which are within a cut-off distance of one another. See "cl" for the case where
+there are two distinct sets of points for comparison (e.g. particles and
+obstacles).
+'''
+
 import _cell_list
 
 def interacts(r, L, R_cut):
