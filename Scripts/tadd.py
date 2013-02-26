@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 '''
@@ -6,8 +6,6 @@ Created on 31 Oct 2011
 
 @author: elliot
 '''
-
-from __future__ import print_function, division
 
 import numpy as np
 
@@ -39,7 +37,7 @@ def main():
     i_entry = 0
     exit_flag = False
     while i_entry < len(entries):
-        inputt = raw_input('£%6.2f >> ' % (entries.sum() / 100))
+        inputt = input('£%6.2f >> ' % (entries.sum() / 100))
 
         if inputt in ['u', 'undo']:
             if i_entry >= 1: 
@@ -52,7 +50,7 @@ def main():
 
         elif inputt in ['x', 'exit']:
             while True:
-                confirm = raw_input('\t\t\tIncluded promotions? Included delivery? (y/n) >> ')
+                confirm = input('\t\t\tIncluded promotions? Included delivery? (y/n) >> ')
                 if confirm in ['y', 'yes']:
                     exit_flag = True
                     break
@@ -66,7 +64,7 @@ def main():
 
         else:
             if inputt in ['e', 'expression']:
-                inputt = input('\t\t\tEnter expression >> ')
+                inputt = eval(input('\t\t\tEnter expression >> '))
                 print('\t\t\tExpression evaluates to %f' % inputt)
 
             try:
@@ -78,7 +76,7 @@ def main():
             valid_entry_flag = True
             if entry % 1.0 != 0.0:
                 while True:
-                    confirm = raw_input('\t\t\tInput seems to have fractional part. Sure about this? (y/n) >> ')
+                    confirm = input('\t\t\tInput seems to have fractional part. Sure about this? (y/n) >> ')
                     if confirm in ['y', 'yes']:
                         break
                     elif confirm in ['n', 'no']:
