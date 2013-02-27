@@ -312,7 +312,7 @@ def calc_D_rot(v1, v2, dt):
 
 # Translational diffusion
 
-def diff(a, D, dt):
+def diff(r, D, dt):
     return np.sqrt(2.0 * D * dt) * np.random.standard_normal(a.shape)
 
 def calc_D(r1, r2, dt):
