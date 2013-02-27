@@ -1,11 +1,12 @@
 #! /bin/bash
 
-apt-get update
+sudo apt-get update
 echo "~~~ Update done!"
-apt-get dist-upgrade
+sudo apt-get dist-upgrade
 echo "~~~ Upgrade done!"
-apt-get autoremove
+sudo apt-get autoremove
 echo "~~~ Autoremove done!"
-apt-get autoclean
+sudo apt-get autoclean
 echo "~~~ Autoclean done!"
 echo "~~~ System update finished!"
+exit

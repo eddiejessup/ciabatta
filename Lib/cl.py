@@ -1,3 +1,8 @@
+'''
+This was designed for a static cell list, specifically for seeing when
+dynamic points are within a cut-off distance of other, static points.
+'''
+
 import itertools
 import numpy as np
 import utils
