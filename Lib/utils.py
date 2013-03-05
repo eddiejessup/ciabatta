@@ -304,11 +304,18 @@ def diff(r, D, dt):
     return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
 
 def calc_D_vector(r1, r2, dt):
-    if dt == 0.0: return float('nan')
-    return np.mean(np.square(r1 - r2), axis=0) / (2.0 * dt)
+    if dt == 0.0: return float('nan'), float('nan')
+    D = np.square(r1 - r2) / 2.0 * dt
+    return np.mean(D, axis=0), np.std(D, axis=0) / np.sqrt(len(r1))
 
 def calc_D(r1, r2, dt):
-    return np.mean(calc_D_vector(r1, r2, dt))
+    D_vect, D_vect_err = calc_D_vector(r1, r2, dt)
+    return np.mean(D_vect), np.sqrt(np.sum(np.square(D_vect_err)))
+
+def calc_v_drift(r1, r2, dt):
+    if dt == 0.0: return 2 * (np.array(r1.shape[1] * (np.nan,)),)
+    v = (r1 - r2) / dt
+    return np.mean(v, axis=0), np.std(v, axis=0) / np.sqrt(len(r1))
 
 # Numpy arrays
 
