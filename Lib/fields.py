@@ -30,7 +30,7 @@ class Field(object):
 
 class Scalar(Field):
     def __init__(self, env, dx, a_0=0.0):
-        Field.__init__(self, env, dx)
+        super().__init__(env, dx)
         self.a = np.ones(self.env.dim * (self.M,), dtype=np.float) * a_0
 
     def get_grad(self):
@@ -44,7 +44,7 @@ class Scalar(Field):
 
 class Diffusing(Scalar):
     def __init__(self, env, dx, D, a_0=0.0):
-        Scalar.__init__(self, env, dx, a_0=a_0)
+        super().__init__(env, dx, a_0=a_0)
         self.D = D
 
         if self.D < 0.0:
