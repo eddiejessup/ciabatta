@@ -8,15 +8,17 @@ from cell_list import _intro
 def get_inters(r, L, R_cut):
     if r.shape[1] == 2:
         _intro.cell_list_2d.make_inters(r.T, L, R_cut)
-        inters, intersi = _intro.cell_list_2d.inters.T, _intro.cell_list_2d.intersi.T
+    elif r.shape[1] == 3:
+        _intro.cell_list_3d.make_inters(r.T, L, R_cut)
     else:
-        raise Exception('Inters cell list not implemented in this dimension')
-    return inters, intersi
+        print('Warning: cell list not implemented in this dimension, falling'
+              'back to direct computation')
+        return get_inters_direct(r, L, R_cut)
+    return parse_inters()
 
 def get_inters_direct(r, L, R_cut):
-    if r.shape[1] == 2:
-        _intro.cell_list_2d.make_inters_direct(r.T, L, R_cut)
-        inters, intersi =  _intro.cell_list_2d.inters.T, _intro.cell_list_2d.intersi.T
-    else:
-        raise Exception('Inters direct not implemented in this dimension')
-    return inters, intersi
+    _intro.cell_list_direct.make_inters(r.T, L, R_cut)
+    return parse_inters()
+
+def parse_inters():
+    return _intro.cell_list_shared.inters.T, _intro.cell_list_shared.intersi.T

@@ -1,13 +1,13 @@
 module cell_list_3d
 
     use utils
+    use cell_list_shared
     implicit none
 
 ! dim
     integer, allocatable, private :: cl(:, :, :, :), cli(:, :, :)
     integer, parameter, private :: m_max = 500
 ! /dim
-    integer, allocatable :: inters(:, :), intersi(:)
 
 contains
 
@@ -23,19 +23,6 @@ subroutine initialise_cl(n, m)
         allocate(cl(n, m, m, m))
         allocate(cli(size(cl, 2), size(cl, 3), size(cl, 4)))
 ! /dim
-    end if
-end subroutine
-
-subroutine initialise_inters(n)
-    integer, intent(in) :: n
-
-    if (allocated(inters) .and. size(inters, 1) /= n) then
-        deallocate(inters)
-        deallocate(intersi)
-    end if
-    if (.not. allocated(inters)) then
-        allocate(inters(n, n))
-        allocate(intersi(size(inters, 2)))
     end if
 end subroutine
 

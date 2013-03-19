@@ -1,24 +1,10 @@
 module cell_list_direct
 
     use utils
+    use cell_list_shared
     implicit none
 
-    integer, allocatable :: inters(:, :), intersi(:)
-
 contains
-
-subroutine initialise_inters(n)
-    integer, intent(in) :: n
-
-    if (allocated(inters) .and. size(inters, 1) /= n) then
-        deallocate(inters)
-        deallocate(intersi)
-    end if
-    if (.not. allocated(inters)) then
-        allocate(inters(n, n))
-        allocate(intersi(size(inters, 2)))
-    end if
-end subroutine
 
 subroutine make_inters(r, l, r_cut)
     real(dp), intent(in) :: r(:, :), l, r_cut
