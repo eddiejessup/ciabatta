@@ -239,54 +239,34 @@ def disk_pick(n=1):
 
 # Rotations
 
-def R(theta):
-    s, c = np.sin(theta), np.cos(theta)
-    R = np.zeros([2, 2], dtype=np.float)
-    R[0] = [c, -s]
-    R[1] = [s,  c]
+def R_rot_2d(thetas):
+    s, = np.sin(thetas).T
+    c, = np.cos(thetas).T
+    R = np.zeros((len(thetas), 2, 2), dtype=np.float)
+    R[:, 0, :] = np.array((c, -s)).T
+    R[:, 1, :] = np.array((s, c)).T
     return R
 
-def rotate_2d(a, thetas):
-    a_rot = np.zeros_like(a)
-    s, c = np.sin(thetas[..., 0]), np.cos(thetas[..., 0])
-    a_rot[..., 0] = c * a[..., 0] - s * a[..., 1]
-    a_rot[..., 1] = s * a[..., 0] + c * a[..., 1]
-    return a_rot
-
-def R_x(theta):
-    s, c = np.sin(theta), np.cos(theta)
-    R = np.zeros([3, 3], dtype=np.float)
-    R[0] = [1,  0,  0]
-    R[1] = [0,  c, -s]
-    R[2] = [0,  s,  c]
+def R_rot_3d(thetas):
+    sx, sy, sz = np.sin(thetas).T
+    cx, cy, cz = np.cos(thetas).T
+    R = np.zeros((len(thetas), 3, 3), dtype=np.float)
+    R[:, 0, :] = np.array((cy*cz, -cy*sz, sy)).T
+    R[:, 1, :] = np.array((sx*sy*cz + cx*sz, -sx*sy*sz + cx*cz, -sx*cy)).T
+    R[:, 2, :] = np.array((-cx*sy*cz + sx*sz, cx*sy*sz + sx*cz, cx*cy)).T
     return R
 
-def R_y(theta):
-    s, c = np.sin(theta), np.cos(theta)
-    R = np.zeros([3, 3], dtype=np.float)
-    R[0] = [c,  0,  s]
-    R[1] = [0,  1,  0]
-    R[2] = [-s, 0,  c]
-    return R
-
-def R_z(theta):
-    s, c = np.sin(theta), np.cos(theta)
-    R = np.zeros([3, 3], dtype=np.float)
-    R[0] = [c, -s,  0]
-    R[1] = [s,  c,  0]
-    R[2] = [0,  0,  1]
-    return R
-
-def rotate_3d(a, thetas):
-    a_rot = np.zeros_like(a)
-    for i in range(len(a)):
-        a_rot[i] = R_x(thetas[i, 0]).dot(R_y(thetas[i, 1])).dot(R_z(thetas[i, 2])).dot(a[i])
-    return a_rot
+def R_rot(thetas):
+    if thetas.shape[-1] == 2: return R_rot_2d(thetas)
+    elif thetas.shape[-1] == 3: return R_rot_3d(thetas)
+    else: raise Exception('Rotation matrix not implemented in this dimension')
 
 def rotate(a, thetas):
-    if a.shape[-1] == 2: return rotate_2d(a, thetas)
-    elif a.shape[-1] == 3: return rotate_3d(a, thetas)
-    else: raise Exception('Rotation not implemented in this dimension')
+    a_rot = np.zeros_like(a)
+    R = R_rot(thetas)
+    for i in range(len(a)):
+        a_rot[i] = R[i].dot(a[i])
+    return a_rot
 
 # Diffusion
 
@@ -377,5 +357,10 @@ def sphere_pack(R, n, pf):
 def sphere_volume(R, n):
     return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
 
-def sphere_surf_area(R, n):
+def sphere_area(R, n):
+    '''
+    Bounding area of a sphere of radius R in n-dimensional space.
+    NOTE: In 2d this will return a circle's circumference, not what is commonly
+    referred to as its area.
+    '''
     return (n / R) * volume(R, n)
