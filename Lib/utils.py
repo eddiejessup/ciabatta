@@ -164,16 +164,13 @@ def polar_to_cart(arr_p):
     representation of array of polar vectors arr_p.
     Assumes last index is that of the vector component.
     In 3d assumes (radius, inclination, azimuth) convention. '''
-    if arr_p.ndim != 2:
-        raise Exception('Require 2d array for conversion')
-    dim = arr_p.shape[1]
-    if dim == 1:
+    if arr_p.shape[-1] == 1:
         arr_c = arr_p.copy()
-    elif dim == 2:
+    elif arr_p.shape[-1] == 2:
         arr_c = np.zeros_like(arr_p)
         arr_c[..., 0] = arr_p[..., 0] * np.cos(arr_p[..., 1])
         arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1])
-    elif dim == 3:
+    elif arr_p.shape[-1] == 3:
         arr_c = np.zeros_like(arr_p)
         arr_c[..., 0] = arr_p[..., 0] * np.sin(arr_p[..., 1]) * np.cos(arr_p[..., 2])
         arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1]) * np.sin(arr_p[..., 2])
@@ -187,16 +184,13 @@ def cart_to_polar(arr_c):
     of array of cartesian vectors arr_c.
     Assumes last index is that of the vector component.
     In 3d uses (radius, inclination, azimuth) convention. '''
-    if arr_c.ndim != 2:
-        raise Exception('Require 2d array for conversion')
-    dim = arr_c.shape[-1]
-    if dim == 1:
+    if arr_c.shape[-1] == 1:
         arr_p = arr_c.copy()
-    elif dim == 2:
+    elif arr_c.shape[-1] == 2:
         arr_p = np.zeros_like(arr_c)
         arr_p[..., 0] = vector_mag(arr_c)
         arr_p[..., 1] = np.arctan2(arr_c[..., 1], arr_c[..., 0])
-    elif dim == 3:
+    elif arr_c.shape[-1] == 3:
         arr_p = np.zeros_like(arr_c)
         arr_p[..., 0] = vector_mag(arr_c)
         arr_p[..., 1] = np.arccos(arr_c[..., 2] / arr_p[..., 0])
@@ -207,15 +201,15 @@ def cart_to_polar(arr_c):
 
 # Point picking
 
-def sphere_pick_polar(dim, n=1):
+def sphere_pick_polar(d, n=1):
     ''' In 3d uses (radius, inclination, azimuth) convention '''
-    a = np.zeros([n, dim], dtype=np.float)
-    if dim == 1:
+    a = np.zeros([n, d], dtype=np.float)
+    if d == 1:
         a[:, 0] = np.random.randint(2, size=n) * 2 - 1
-    elif dim == 2:
+    elif d == 2:
         a[:, 0] = 1.0
         a[:, 1] = np.random.uniform(-np.pi, +np.pi, n)
-    elif dim == 3:
+    elif d == 3:
         # Note, (r, theta, phi) notation
         u, v = np.random.uniform(0.0, 1.0, (2, n))
         a[:, 0] = 1.0
@@ -225,8 +219,8 @@ def sphere_pick_polar(dim, n=1):
         raise Exception('Invalid vector for polar representation')
     return a
 
-def sphere_pick(dim, n=1):
-    return polar_to_cart(sphere_pick_polar(dim, n))
+def sphere_pick(d, n=1):
+    return polar_to_cart(sphere_pick_polar(d, n))
 
 def disk_pick_polar(n=1):
     a = np.zeros([n, 2], dtype=np.float)
@@ -239,31 +233,31 @@ def disk_pick(n=1):
 
 # Rotations
 
-def R_rot_2d(thetas):
-    s, = np.sin(thetas).T
-    c, = np.cos(thetas).T
-    R = np.zeros((len(thetas), 2, 2), dtype=np.float)
+def R_rot_2d(th):
+    s, = np.sin(th).T
+    c, = np.cos(th).T
+    R = np.zeros((len(th), 2, 2), dtype=np.float)
     R[:, 0, :] = np.array((c, -s)).T
     R[:, 1, :] = np.array((s, c)).T
     return R
 
-def R_rot_3d(thetas):
-    sx, sy, sz = np.sin(thetas).T
-    cx, cy, cz = np.cos(thetas).T
-    R = np.zeros((len(thetas), 3, 3), dtype=np.float)
+def R_rot_3d(th):
+    sx, sy, sz = np.sin(th).T
+    cx, cy, cz = np.cos(th).T
+    R = np.zeros((len(th), 3, 3), dtype=np.float)
     R[:, 0, :] = np.array((cy*cz, -cy*sz, sy)).T
     R[:, 1, :] = np.array((sx*sy*cz + cx*sz, -sx*sy*sz + cx*cz, -sx*cy)).T
     R[:, 2, :] = np.array((-cx*sy*cz + sx*sz, cx*sy*sz + sx*cz, cx*cy)).T
     return R
 
-def R_rot(thetas):
-    if thetas.shape[-1] == 2: return R_rot_2d(thetas)
-    elif thetas.shape[-1] == 3: return R_rot_3d(thetas)
+def R_rot(th):
+    if th.shape[-1] == 2: return R_rot_2d(th)
+    elif th.shape[-1] == 3: return R_rot_3d(th)
     else: raise Exception('Rotation matrix not implemented in this dimension')
 
-def rotate(a, thetas):
+def rotate(a, th):
     a_rot = np.zeros_like(a)
-    R = R_rot(thetas)
+    R = R_rot(th)
     for i in range(len(a)):
         a_rot[i] = R[i].dot(a[i])
     return a_rot
@@ -271,12 +265,12 @@ def rotate(a, thetas):
 # Diffusion
 
 def rot_diff(v, D, dt):
-#    if D * dt == 0.0: return v.copy()
+    if D * dt == 0.0: return v.copy()
     angles = int(round(v.shape[-1] * (v.shape[-1] - 1) / 2.0))
     return rotate(v, np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), angles)))
 
 def calc_D_rot(v1, v2, dt):
-    if dt == 0.0: return float('nan')
+    if dt == 0.0: return np.nan
     return np.mean(np.square(vector_angle(v1, v2))) / (2.0 * (v1.shape[-1] - 1) * dt)
 
 def diff(r, D, dt):
@@ -318,7 +312,7 @@ def field_subset(f, inds, rank=0):
     if inds.shape[1] != f_dim_space:
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!
-    return f[tuple([inds[:, i_dim] for i_dim in range(inds.shape[1])])]
+    return f[tuple([inds[:, i] for i in range(inds.shape[1])])]
 
 # Spheres
 
@@ -328,12 +322,10 @@ def sphere_intersect(r_1, R_1, r_2, R_2):
 def sphere_pack(R, n, pf):
     if not 0.0 < R < 1.0:
         raise Exception('Require 0 < sphere radius < 1')
-    if n == 2:
-        if pf > np.pi / np.sqrt(12):
-            raise Exception('Cannot achieve packing fraction')
-    elif n == 3:
-        if pf > np.pi / np.sqrt(18):
-            raise Exception('Cannot achieve packing fraction')
+    if n == 2 and pf > np.pi / np.sqrt(12):
+        raise Exception('Cannot achieve packing fraction')
+    elif n == 3 and pf > np.pi / np.sqrt(18):
+        raise Exception('Cannot achieve packing fraction')
     else:
         print('Warning: No guarantee the requested packing fraction is '
               'achievable')
