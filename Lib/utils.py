@@ -251,7 +251,7 @@ def R_rot_3d(th):
     return R
 
 def R_rot(th):
-    if th.shape[-1] == 2: return R_rot_2d(th)
+    if th.shape[-1] == 1: return R_rot_2d(th)
     elif th.shape[-1] == 3: return R_rot_3d(th)
     else: raise Exception('Rotation matrix not implemented in this dimension')
 
