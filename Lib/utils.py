@@ -265,7 +265,9 @@ def rotate(a, th):
 # Diffusion
 
 def rot_diff(v, D, dt):
-    if D * dt == 0.0: return v.copy()
+    # Account for possibility of D being an array
+    try: D = D[:, np.newaxis]
+    except TypeError: pass
     angles = int(round(v.shape[-1] * (v.shape[-1] - 1) / 2.0))
     return rotate(v, np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), angles)))
 
@@ -274,7 +276,7 @@ def calc_D_rot(v1, v2, dt):
     return np.mean(np.square(vector_angle(v1, v2))) / (2.0 * (v1.shape[-1] - 1) * dt)
 
 def diff(r, D, dt):
-    if D * dt == 0.0: return r.copy()
+    if dt == 0.0: return r.copy()
     return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
 
 def calc_D_vector(r1, r2, dt):
@@ -326,9 +328,6 @@ def sphere_pack(R, n, pf):
         raise Exception('Cannot achieve packing fraction')
     elif n == 3 and pf > np.pi / np.sqrt(18):
         raise Exception('Cannot achieve packing fraction')
-    else:
-        print('Warning: No guarantee the requested packing fraction is '
-              'achievable')
     if not 0.0 <= pf < 1.0:
         raise Exception('Require 0 < packing fraction < 1')
 
