@@ -1,8 +1,9 @@
 '''
 Algorithms related to generating and processing mazes, represented as boolean
-numpy arrays. 
+numpy arrays.
 '''
 
+from __future__ import print_function
 import numpy as np
 import utils
 
@@ -23,7 +24,7 @@ def make_offsets(dim):
 
 def make_maze_dfs(M=27, dim=2, seed=None):
     ''' Generate a maze using the depth first search algorithm '''
-    if M <= 1: 
+    if M <= 1:
         raise Exception('Require Maze size > 1.')
     if M % 2 != 0:
         raise Exception('Require Maze size to be even.')
@@ -36,13 +37,13 @@ def make_maze_dfs(M=27, dim=2, seed=None):
     while len(path) > 0:
         neighbs = []
         for offset in offsets:
-            if not maze[step(pos, offset, M, 2)]: 
+            if not maze[step(pos, offset, M, 2)]:
                 neighbs.append(offset)
         if len(neighbs) > 0:
             offset = neighbs[rng.randint(len(neighbs))]
             pos = step(pos, offset, M)
             maze[pos] = True
-            pos = step(pos, offset, M) 
+            pos = step(pos, offset, M)
             maze[pos] = True
             path.append(pos)
         else:

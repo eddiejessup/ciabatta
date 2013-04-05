@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import numpy as np
 import utils
 import _cluster_list_py
@@ -14,7 +16,7 @@ def get_inds(r, R_cut, L):
             i_cur = i_0
             while not used[i_cur]:
                 used[i_cur] = True
-                inds[-1].append(i_cur)            
+                inds[-1].append(i_cur)
                 i_cur = link_list[i_cur]
     return inds
 

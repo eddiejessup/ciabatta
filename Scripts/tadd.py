@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 
 '''
@@ -7,6 +7,7 @@ Created on 31 Oct 2011
 @author: elliot
 '''
 
+from __future__ import print_function
 import numpy as np
 
 ENTRIES_LEN = 5000
@@ -40,7 +41,7 @@ def main():
         inputt = input('£%6.2f >> ' % (entries.sum() / 100))
 
         if inputt in ['u', 'undo']:
-            if i_entry >= 1: 
+            if i_entry >= 1:
                 i_entry -= 1
             entries[i_entry] = 0.0
 
