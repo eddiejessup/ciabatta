@@ -347,7 +347,12 @@ def sphere_pack(R, n, pf):
     return rs
 
 def sphere_volume(R, n):
+    ''' Volume of an n-dimensional sphere of radius R. '''
     return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
+
+def sphere_radius(V, n):
+    ''' Inverse of sphere_volume. '''
+    return ((scipy.special.gamma(n / 2.0 + 1.0) * V) ** (1.0 / n)) / np.sqrt(np.pi)
 
 def sphere_area(R, n):
     '''
