@@ -280,14 +280,14 @@ def diff(r, D, dt):
     if dt == 0.0: return r.copy()
     return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
 
-def calc_D_vector(r1, r2, dt):
+def calc_D(r1, r2, dt):
     if dt == 0.0: return 2 * (np.array(r1.shape[1] * (np.nan,)),)
     D = np.square(r1 - r2) / (2.0 * dt)
-    return np.mean(D, axis=0), np.std(D, axis=0) / np.sqrt(len(r1))
+    return np.mean(D, axis=0), np.std(D, axis=0) / np.sqrt(len(D))
 
-def calc_D(r1, r2, dt):
-    D_vect, D_vect_err = calc_D_vector(r1, r2, dt)
-    return np.mean(D_vect), np.sqrt(np.sum(np.square(D_vect_err)))
+def calc_D_scalar(r1, r2, dt):
+    D, D_err = calc_D(r1, r2, dt)
+    return np.mean(D), np.sqrt(np.sum(np.square(D_err)))
 
 def calc_v_drift(r1, r2, dt):
     if dt == 0.0: return 2 * (np.array(r1.shape[1] * (np.nan,)),)
