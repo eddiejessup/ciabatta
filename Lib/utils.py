@@ -257,11 +257,7 @@ def R_rot(th):
     else: raise Exception('Rotation matrix not implemented in this dimension')
 
 def rotate(a, th):
-    a_rot = np.zeros_like(a)
-    R = R_rot(th)
-    for i in range(len(a)):
-        a_rot[i] = R[i].dot(a[i])
-    return a_rot
+    return np.sum(a[..., np.newaxis] * R_rot(th), axis=-2)
 
 # Diffusion
 
