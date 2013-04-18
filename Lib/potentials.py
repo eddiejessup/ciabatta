@@ -56,10 +56,22 @@ def logistic_F(r_0, U_0, k):
         return -U_0 * utils.vector_unit_nonull(r) * (1.0 - np.square(np.tanh(k * (np.sqrt(r_sq) - r_0))))[:, np.newaxis]
     return func
 
-def anis_wrap(func_iso):
-    '''
-    Wrap an isotropic potential in an anisotropic envelope
-    '''
+def polar_rose(n):
+    def func(t):
+        return np.cos(n * t)
+    return func
+
+def polar_rose_sq(n):
+    def func(t):
+        return 1.5-np.cos(0.5 * n * t) ** 2
+    return func
+
+def polar_null():
+    def func(t):
+        return np.ones_like(t)
+    return func
+
+def anis_wrap(func_iso, func_polar):
     def func_anis(r_sq, theta):
-        return func_iso(r_sq) * (0.5 + np.cos(0.5*theta) ** 2)
+        return func_iso(r_sq) * func_polar(theta)
     return func_anis
