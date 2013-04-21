@@ -5,7 +5,8 @@ module cell_list_shared
 
     integer, allocatable :: inters(:, :), intersi(:)
     integer, parameter :: m_max = 100
-    integer, parameter :: inters_max = 10
+    ! maximum number of possible interaction particles
+    integer, parameter :: inters_max = 200
 
 contains
 
