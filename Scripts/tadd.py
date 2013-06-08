@@ -38,7 +38,7 @@ def main():
     i_entry = 0
     exit_flag = False
     while i_entry < len(entries):
-        inputt = input('£%6.2f >> ' % (entries.sum() / 100))
+        inputt = raw_input('£%6.2f >> ' % (entries.sum() / 100))
 
         if inputt in ['u', 'undo']:
             if i_entry >= 1:
@@ -65,7 +65,7 @@ def main():
 
         else:
             if inputt in ['e', 'expression']:
-                inputt = eval(input('\t\t\tEnter expression >> '))
+                inputt = input('\t\t\tEnter expression >> ')
                 print('\t\t\tExpression evaluates to %f' % inputt)
 
             try:
