@@ -356,4 +356,4 @@ def sphere_area(R, n):
     NOTE: In 2d this will return a circle's circumference, not what is commonly
     referred to as its area.
     '''
-    return (n / R) * volume(R, n)
+    return (n / R) * sphere_volume(R, n)
