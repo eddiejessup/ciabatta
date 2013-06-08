@@ -22,4 +22,4 @@ def get_inters_direct(r, L, R_cut):
 
 def parse_inters():
 #    print(_intro.cell_list_shared.intersi.max())
-    return _intro.cell_list_shared.inters.T, _intro.cell_list_shared.intersi.T
+    return _intro.cell_list_shared.inters.T - 1, _intro.cell_list_shared.intersi.T
