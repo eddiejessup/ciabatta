@@ -108,10 +108,7 @@ def vector_unit_nonull(v):
     If null vector encountered, raise exception.
     Assumes last index is that of the vector component. '''
     if v.size == 0: return v
-    mag = vector_mag(v)
-    v_new = v.copy()
-    v_new /= mag[..., np.newaxis]
-    return v_new
+    return v / vector_mag(v)[..., np.newaxis]
 
 def vector_unit_nullnull(v):
     ''' Array of cartesian vectors into unit vectors.
