@@ -1,7 +1,12 @@
 from __future__ import print_function
 import os
+import subprocess
 import numpy as np
 import scipy.special
+
+def get_git_hash():
+    # os.chdir(os.path.dirname(__file__))
+    return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip()
 
 # File IO
 
@@ -314,30 +319,6 @@ def field_subset(f, inds, rank=0):
 
 def sphere_intersect(r_1, R_1, r_2, R_2):
     return vector_mag_sq(r_1 - r_2) < (R_1 + R_2) ** 2
-
-def sphere_pack(R, n, pf):
-    if not 0.0 < R < 1.0:
-        raise Exception('Require 0 < sphere radius < 1')
-    if n == 2 and pf > np.pi / np.sqrt(12):
-        raise Exception('Cannot achieve packing fraction')
-    elif n == 3 and pf > np.pi / np.sqrt(18):
-        raise Exception('Cannot achieve packing fraction')
-    if not 0.0 <= pf < 1.0:
-        raise Exception('Require 0 < packing fraction < 1')
-
-    m = int(round(pf / sphere_volume(R, n)))
-    rs = np.zeros([m, n], dtype=np.float)
-    lim = 0.5 - R
-    for i in range(m):
-        while True:
-            rs[i] = np.random.uniform(-lim, lim, n)
-            valid = True
-            for r in rs[:i]:
-                if sphere_intersect(rs[i], R, r, R):
-                    valid = False
-                    break
-            if valid: break
-    return rs
 
 def sphere_volume(R, n):
     ''' Volume of an n-dimensional sphere of radius R. '''
