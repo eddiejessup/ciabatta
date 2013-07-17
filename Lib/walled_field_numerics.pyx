@@ -270,9 +270,9 @@ def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
 
             grad_i[i, 2] = (field[i_x, i_y, i_inc] - field[i_x, i_y, i_dec]) / interval
         else:
-            grad[i, 0] = 0.0
-            grad[i, 1] = 0.0
-            grad[i, 2] = 0.0
+            grad_i[i, 0] = 0.0
+            grad_i[i, 1] = 0.0
+            grad_i[i, 2] = 0.0
 
 def laplace(field, dx, walls):
     assert field.shape == walls.shape
