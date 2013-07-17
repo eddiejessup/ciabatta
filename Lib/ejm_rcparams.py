@@ -3,10 +3,10 @@ import matplotlib
 from matplotlib import rcParams
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
 matplotlib.backend_bases.register_backend('pdf', FigureCanvasPgf)
-rcParams['axes.labelsize'] = 10
+rcParams['axes.labelsize'] = 9
 rcParams['xtick.labelsize'] = 9
 rcParams['ytick.labelsize'] = 9
-rcParams['legend.fontsize'] = 10
+rcParams['legend.fontsize'] = 9
 rcParams['font.family'] = 'serif'
 rcParams['font.serif'] = ['Computer Modern Roman']
 rcParams['text.usetex'] = True
@@ -14,6 +14,7 @@ preamble = [r'\usepackage{siunitx}']
 rcParams['text.latex.preamble'] = preamble
 rcParams['pgf.preamble'] = preamble
 
+# get width using \showthe\textwidth, see tex compile log
 def get_figsize(width=512, factor=0.6):
 	fig_width_pt = width * factor
 	inches_per_pt = 1.0 / 72.27
