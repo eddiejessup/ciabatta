@@ -5,53 +5,61 @@ import field_numerics
 
 density = field_numerics.density
 
-class Field(object):
-    def __init__(self, env, dx):
-        self.env = env
-        self.M = int(self.env.L / dx)
-        self.dx = self.env.L / self.M
+class Space(object):
+    def __init__(self, L, dim):
+        self.L = L
+        self.L_half = L / 2.0
+        self.dim = dim
 
-        if self.dx <= 0.0:
-            raise Exception('Require space-step > 0')
-
-    def get_A_i(self):
-        return self.M ** self.env.dim
-
-    def get_dA(self):
-        return self.dx ** self.env.dim
-
-    def r_to_i(self, r):
-        return utils.r_to_i(r, self.env.L, self.dx)
-
-    def i_to_r(self, i):
-        return utils.i_to_r(i, self.env.L, self.dx)
+    def A(self):
+        return self.L ** self.dim
 
     def iterate(self, *args, **kwargs):
         pass
 
+class Field(Space):
+    def __init__(self, L, dim, dx):
+        super(Field, self).__init__(L, dim)
+        self.M = int(self.L / dx)
+
+    def dx(self):
+        return self.L / self.M
+
+    def A_i(self):
+        return self.M ** self.dim
+
+    def dA(self):
+        return self.dx() ** self.dim
+
+    def r_to_i(self, r):
+        return utils.r_to_i(r, self.L, self.dx())
+
+    def i_to_r(self, i):
+        return utils.i_to_r(i, self.L, self.dx())
+
 class Scalar(Field):
-    def __init__(self, env, dx, a_0=0.0):
-        super(Scalar, self).__init__(env, dx)
-        self.a = np.ones(self.env.dim * (self.M,), dtype=np.float) * a_0
+    def __init__(self, L, dim, dx, a_0=0.0, grad=0.0):
+        super(Scalar, self).__init__(L, dim, dx)
+        self.a = np.ones(self.dim * (self.M,), dtype=np.float) * a_0
+        self.a += np.linspace(0.0, self.L, self.M) * grad
 
-    def get_grad(self):
-        return field_numerics.grad(self.a, self.dx)
+    def grad(self):
+        return field_numerics.grad(self.a, self.dx())
 
-    def get_grad_i(self, r):
-        return field_numerics.grad_i(self.a, self.r_to_i(r), self.dx)
+    def grad_i(self, r):
+        return field_numerics.grad_i(self.a, self.r_to_i(r), self.dx())
 
-    def get_laplacian(self):
-        return field_numerics.laplace(self.a, self.dx)
+    def laplacian(self):
+        return field_numerics.laplace(self.a, self.dx())
 
 class Diffusing(Scalar):
-    def __init__(self, env, dx, D, a_0=0.0):
-        super(Diffusing, self).__init__(env, dx, a_0=a_0)
+    def __init__(self, L, dim, dx, D, dt, a_0=0.0):
+        super(Diffusing, self).__init__(L, dim, dx, a_0=a_0)
         self.D = D
+        self.dt = dt
 
-        if self.D < 0.0:
-            raise Exception('Require diffusion constant >= 0')
-        if self.D > self.dx ** 2 / (2.0 * self.env.dim * self.env.dt):
+        if self.D > self.dx() ** 2 / (2.0 * self.dim * self.dt):
             raise Exception('Unstable diffusion constant')
 
     def iterate(self):
-        self.a += self.D * self.get_laplacian() * self.env.dt
+        self.a += self.D * self.laplacian() * self.dt
