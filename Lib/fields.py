@@ -19,7 +19,7 @@ class Space(object):
 
 class Field(Space):
     def __init__(self, L, dim, dx):
-        super(Field, self).__init__(L, dim)
+        Space.__init__(self, L, dim)
         self.M = int(self.L / dx)
 
     def dx(self):
@@ -39,7 +39,7 @@ class Field(Space):
 
 class Scalar(Field):
     def __init__(self, L, dim, dx, a_0=0.0, grad=0.0):
-        super(Scalar, self).__init__(L, dim, dx)
+        Field.__init__(self, L, dim, dx)
         self.a = np.ones(self.dim * (self.M,), dtype=np.float) * a_0
         self.a += np.linspace(0.0, self.L, self.M) * grad
 
@@ -54,7 +54,7 @@ class Scalar(Field):
 
 class Diffusing(Scalar):
     def __init__(self, L, dim, dx, D, dt, a_0=0.0):
-        super(Diffusing, self).__init__(L, dim, dx, a_0=a_0)
+        Scalar.__init__(self, L, dim, dx, a_0=a_0)
         self.D = D
         self.dt = dt
 
