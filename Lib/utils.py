@@ -295,12 +295,9 @@ def calc_v_drift(r1, r2, dt):
 # Numpy arrays
 
 def extend_array(a, n):
-    if n < 1: raise Exception('Extend factor >= 1')
-    M_new = a.shape[0] * n
-    a_new = np.zeros(a.ndim * [M_new], dtype=a.dtype)
-    for x_new in range(M_new):
-        for y_new in range(M_new):
-            a_new[x_new, y_new] = a[x_new // n, y_new // n]
+    a_new = a.copy()
+    for d in range(a.ndim):
+        a_new = np.repeat(a_new, n, axis=d)
     return a_new
 
 def field_subset(f, inds, rank=0):
