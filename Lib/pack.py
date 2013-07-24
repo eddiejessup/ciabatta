@@ -95,19 +95,31 @@ def random_simple(pf, dim, R):
 
 every = 5000
 
-def random(pf, dim, R, beta_rate=5e-3, V_0=2.0, dV_max=0.03, dr_max=0.03):
+def random(pf, dim, R, beta_max=1e4, V_0=2.0, dV_max=0.02, dr_max=0.02, vis=False):
     n = int(round(pf / utils.sphere_volume(R, dim)))
     r_0 = random_base(n, V_0, dim, R)
     mg = MetroRCP(r_0, V_0, R, dr_max, dV_max)
 
+    if vis:
+        box = vp.box(pos=mg.dim*(0.0,), length=mg.L, height=mg.L, width=mg.L, opacity=0.5)
+        spheres = []
+        for r in mg.r:
+            spheres.append(vp.sphere(pos=r, radius=mg.R, color=vp.color.blue))
+
     t = 0
     while mg.pf() < pf:
         t += 1
-        beta = t * beta_rate
+        beta = beta_max * mg.pf()
         mg.iterate(beta)
 
         if not t % every:
             print('Packing: %.1f%%' % (100.0*mg.pf()))
+
+        if vis:
+            box.size = mg.dim * (mg.L,)
+            for sphere, r in zip(spheres, mg.r):
+                sphere.pos = r
+            vp.rate(every)
 
     return mg.r/mg.L, mg.R/mg.L
 
@@ -144,36 +156,4 @@ def sphere_plot(r, R):
 
 if __name__ == '__main__':
     import visual as vp
-
-    dr_max = 0.03
-    dV_max = 0.03
-    beta_max = 10000.0
-    V_0 = 2.0
-    every = 10000
-
-
-    R = 0.1
-    dim = 3
-
-    n = int(round(pf / utils.sphere_volume(R, dim)))
-    r_0 = random_base(n, V_0, dim, R)
-    mg = MetroRCP(r_0, V_0, R, dr_max, dV_max)
-
-    box = vp.box(pos=mg.dim*(0.0,), length=mg.L, height=mg.L, width=mg.L, opacity=0.5)
-    spheres = []
-    for r in mg.r:
-        spheres.append(vp.sphere(pos=r, radius=mg.R, color=vp.color.blue))
-
-    t = 0
-    while True:
-        t += 1
-        beta = float(t) * beta_max
-        mg.iterate(beta)
-
-        if not t % every:
-            print('Packing: %.1f%%' % (100.0*mg.pf()))
-
-        box.size = mg.dim * (mg.L,)
-        for sphere, r in zip(spheres, mg.r):
-            sphere.pos = r
-        vp.rate(every)
+    random(0.4, 3, 0.1, vis=True)
