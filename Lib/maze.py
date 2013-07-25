@@ -40,7 +40,7 @@ def make_offsets(dim):
     offsets = []
     for d in range(dim):
         for sign in (-1, +1):
-            offset = [0, 0]
+            offset = dim * [0]
             offset[d] = sign
             offsets.append(offset)
     return tuple(offsets)
