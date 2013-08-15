@@ -38,10 +38,9 @@ class Field(Space):
         return utils.i_to_r(i, self.L, self.dx())
 
 class Scalar(Field):
-    def __init__(self, L, dim, dx, a_0=0.0, grad=0.0):
+    def __init__(self, L, dim, dx, a_0=0.0):
         Field.__init__(self, L, dim, dx)
         self.a = np.ones(self.dim * (self.M,), dtype=np.float) * a_0
-        self.a += np.linspace(0.0, self.L, self.M) * grad
 
     def grad(self):
         return field_numerics.grad(self.a, self.dx())
