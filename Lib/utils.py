@@ -311,24 +311,3 @@ def field_subset(f, inds, rank=0):
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!
     return f[tuple([inds[:, i] for i in range(inds.shape[1])])]
-
-# Spheres
-
-def sphere_intersect(r_1, R_1, r_2, R_2):
-    return vector_mag_sq(r_1 - r_2) < (R_1 + R_2) ** 2
-
-def sphere_volume(R, n):
-    ''' Volume of an n-dimensional sphere of radius R. '''
-    return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
-
-def sphere_radius(V, n):
-    ''' Inverse of sphere_volume. '''
-    return ((scipy.special.gamma(n / 2.0 + 1.0) * V) ** (1.0 / n)) / np.sqrt(np.pi)
-
-def sphere_area(R, n):
-    '''
-    Bounding area of a sphere of radius R in n-dimensional space.
-    NOTE: In 2d this will return a circle's circumference, not what is commonly
-    referred to as its area.
-    '''
-    return (n / R) * sphere_volume(R, n)
