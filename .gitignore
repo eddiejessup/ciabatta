@@ -8,3 +8,4 @@ build/
 *.out
 *.png
 *.avi
+*.pyo
