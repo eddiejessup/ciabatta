@@ -4,6 +4,7 @@ from matplotlib.patches import Circle, PathPatch
 from mpl_toolkits.mplot3d import Axes3D 
 import mpl_toolkits.mplot3d.art3d as art3d
 import utils
+import geom
 
 class MetroRCP(object):
     def __init__(self, r_0, V_0, R, dr_max, dV_max):
@@ -15,7 +16,7 @@ class MetroRCP(object):
         self.dr_max = dr_max
         self.dV_max = dV_max
 
-        self.V_full = self.n * utils.sphere_volume(self.R, self.dim)
+        self.V_full = self.n * geom.sphere_volume(self.R, self.dim)
 
         self.r_diff_sq = utils.vector_mag_sq(self.r[np.newaxis, :] - self.r[:, np.newaxis])
         self.r_diff_sq[np.identity(self.n, dtype=np.bool)] = np.inf
@@ -90,13 +91,13 @@ def random_base(n, V, dim, R):
     return r
 
 def random_simple(pf, dim, R):
-    n = int(round(pf / utils.sphere_volume(R, dim)))
+    n = int(round(pf / geom.sphere_volume(R, dim)))
     return random_base(n, dim, 1.0, R)
 
 every = 5000
 
 def random(pf, dim, R, beta_max=1e4, V_0=2.0, dV_max=0.02, dr_max=0.02, vis=False):
-    n = int(round(pf / utils.sphere_volume(R, dim)))
+    n = int(round(pf / geom.sphere_volume(R, dim)))
     r_0 = random_base(n, V_0, dim, R)
     mg = MetroRCP(r_0, V_0, R, dr_max, dV_max)
 
