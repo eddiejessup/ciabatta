@@ -43,7 +43,7 @@ def capsule_volume(R, l):
     '''
     return sphere_volume(R, 3) + cylinder_volume(R, l)
 
-def capsule_volume(R, l):
+def capsule_area(R, l):
     '''
     Surface area of a capsule with radius R and line segment length l.
     '''
