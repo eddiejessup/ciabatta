@@ -2,7 +2,6 @@ from __future__ import print_function
 import os
 import subprocess
 import numpy as np
-import scipy.special
 
 def get_git_hash():
     # os.chdir(os.path.dirname(__file__))
