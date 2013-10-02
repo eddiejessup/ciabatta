@@ -51,7 +51,7 @@ def main():
 
         elif inputt in ['x', 'exit']:
             while True:
-                confirm = input('\t\t\tIncluded promotions? Included delivery? (y/n) >> ')
+                confirm = raw_input('\t\t\tIncluded promotions? Included delivery? (y/n) >> ')
                 if confirm in ['y', 'yes']:
                     exit_flag = True
                     break
@@ -77,7 +77,7 @@ def main():
             valid_entry_flag = True
             if entry % 1.0 != 0.0:
                 while True:
-                    confirm = input('\t\t\tInput seems to have fractional part. Sure about this? (y/n) >> ')
+                    confirm = raw_input('\t\t\tInput seems to have fractional part. Sure about this? (y/n) >> ')
                     if confirm in ['y', 'yes']:
                         break
                     elif confirm in ['n', 'no']:
