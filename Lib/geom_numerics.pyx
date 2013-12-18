@@ -186,7 +186,7 @@ cdef np.ndarray[np.float_t, ndim=1] segs_sep(
 def caps_intersect_intro(
         np.ndarray[np.float_t, ndim=2] r, 
         np.ndarray[np.float_t, ndim=2] u, 
-        double lu, double ld, double R, double L):
+        double l, double R, double L):
     cdef:
         unsigned int i, i_i2, i2, idim, n = r.shape[0], dim = r.shape[1]
         np.ndarray[np.uint8_t, ndim=1, cast=True] collisions = np.zeros((n,), dtype=np.bool)
@@ -194,20 +194,20 @@ def caps_intersect_intro(
         np.ndarray[int, ndim=1] intersi
         tuple dims = (dim,)
         np.ndarray[np.float_t, ndim=1] s1 = np.zeros(dims), s2 = np.zeros(dims), wd = np.zeros(dims), r1d = np.zeros(dims)
-        double sep_sq_max = (2.0 * R) ** 2
+        double sep_sq_max = (2.0 * R) ** 2, l_half = l / 2.0
 
-    inters, intersi = cl_intro.get_inters(r, L, 2.0 * (R + max(lu, ld)))
+    inters, intersi = cl_intro.get_inters(r, L, 2.0 * R + l)
 
     for i in range(n):
         if intersi[i] > 0:
             for idim in range(dim):
-                s1[idim] = u[i, idim] * (lu + ld)
-                r1d[idim] = r[i, idim] - u[i, idim] * ld
+                s1[idim] = u[i, idim] * l
+                r1d[idim] = r[i, idim] - u[i, idim] * l_half
         for i_i2 in range(intersi[i]):
             i2 = inters[i, i_i2]
             for idim in range(dim):
-                s2[idim] = u[i2, idim] * (lu + ld)
-                wd[idim] = r1d[idim] - (r[i2, idim] - u[i2, idim] * ld)
+                s2[idim] = u[i2, idim] * l
+                wd[idim] = r1d[idim] - (r[i2, idim] - u[i2, idim] * l_half)
             if segs_sep_sq(s1, s2, wd) < sep_sq_max:
                 collisions[i] = True
                 break
@@ -219,29 +219,29 @@ def caps_intersect_intro(
 def caps_sep_intro(
         np.ndarray[np.float_t, ndim=2] r, 
         np.ndarray[np.float_t, ndim=2] u, 
-        double lu, double ld, double R, double L):
+        double l, double R, double L):
     cdef:
         unsigned int i, i_i2, i2, idim, n = r.shape[0], dim = r.shape[1]
-        double sep_sq_min, sep_sq
+        double sep_sq_min, sep_sq, l_half = l / 2.0
         np.ndarray[np.float_t, ndim=2] seps_min = np.ones((n, dim)) * np.inf
         np.ndarray[int, ndim=2] inters
         np.ndarray[int, ndim=1] intersi
         tuple dims = (dim,)
         np.ndarray[np.float_t, ndim=1] s1 = np.empty(dims), s2 = np.empty(dims), wd = np.empty(dims), r1d = np.empty(dims), sep = np.empty(dims)
 
-    inters, intersi = cl_intro.get_inters(r, L, 2.0 * (R + max(lu, ld)))
+    inters, intersi = cl_intro.get_inters(r, L, 2.0 * R + l)
 
     for i in range(n):
         if intersi[i] > 0:
             for idim in range(dim):
-                s1[idim] = u[i, idim] * (lu + ld)
-                r1d[idim] = r[i, idim] - u[i, idim] * ld
+                s1[idim] = u[i, idim] * l
+                r1d[idim] = r[i, idim] - u[i, idim] * l_half
         sep_sq_min = np.inf
         for i_i2 in range(intersi[i]):
             i2 = inters[i, i_i2]
             for idim in range(dim):
-                s2[idim] = u[i2, idim] * (lu + ld)
-                wd[idim] = r1d[idim] - (r[i2, idim] - u[i2, idim] * ld)
+                s2[idim] = u[i2, idim] * l
+                wd[idim] = r1d[idim] - (r[i2, idim] - u[i2, idim] * l_half)
 
             sep = segs_sep(s1, s2, wd)
 

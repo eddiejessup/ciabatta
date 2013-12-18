@@ -104,16 +104,16 @@ def caps_intersect(ar1, ar2, aR, br1, br2, bR):
     '''
     return segs_sep_sq(ar1, ar2, br1, br2) < (aR + bR) ** 2
 
-def caps_intersect_intro(r, u, lu, ld, R, L):
+def caps_intersect_intro(r, u, l, R, L):
     '''
     For capsules with centres r, orientation u, forward length lu,
     backward length ld, radius R in a periodic system of period L,
     a boolean array representing if each capsule intersects
     at least one other capsule.
     '''
-    return geom_numerics.caps_intersect_intro(r, u, lu, ld, R, L)
+    return geom_numerics.caps_intersect_intro(r, u, l, R, L)
 
-def caps_sep_intro(r, u, lu, ld, R, L):
+def caps_sep_intro(r, u, l, R, L):
     '''
     For capsules with centres r, orientation u, forward length lu,
     backward length ld, radius R in a periodic system of period L,
@@ -121,7 +121,27 @@ def caps_sep_intro(r, u, lu, ld, R, L):
     closest neighbour.
     NOTE: the vector is ONLY well-defined if that neighbour intersects the capsule.
     '''
-    return geom_numerics.caps_sep_intro(r, u, lu, ld, R, L)
+    return geom_numerics.caps_sep_intro(r, u, l, R, L)
+
+def point_seg_sep(ar, br1, br2):
+    '''
+    For a point at ar, and a line segment between br1 and br2,
+    the minimum distance vector between them.
+    '''
+    v = br2 - br1
+    w = ar - br1
+
+    c1 = np.dot(w, v)
+    if c1 <= 0.0:
+        return ar - br1
+
+    c2 = np.sum(np.square(v));
+    if c2 <= c1:
+        return ar - br2
+
+    b = c1 / c2
+    bc = br1 + b * v
+    return ar - bc
 
 def point_seg_sep_sq(ar, br1, br2):
     '''
@@ -204,3 +224,10 @@ def segs_sep_sq(ar1, ar2, br1, br2):
 
     sep = w + (sc * u) - (tc * v)
     return np.sum(np.square(sep))
+
+def gc_dist(n1, n2):
+    r1 = utils.vector_mag(n1)
+    r2 = utils.vector_mag(n2)
+    r_mean = np.mean([r1, r2])
+    d_sigma = np.arctan2(utils.vector_mag(np.cross(n1, n2)), np.dot(n1, n2))
+    return r_mean * d_sigma
