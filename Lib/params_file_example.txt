@@ -1,3 +1,0 @@
-pi 3.1415
-invalid 5.7
-vector 0 1 1 2 3
