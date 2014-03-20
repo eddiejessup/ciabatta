@@ -2,15 +2,18 @@ from __future__ import print_function
 import numpy as np
 import utils
 
+
 def LJ(r_0, U_0):
     '''
     Lennard-Jones with minimum at (r_0, -U_0).
     '''
     r_0_6 = r_0 ** 6
+
     def func(r_sq):
         six_term = r_0_6 / r_sq ** 3
         return U_0 * (six_term ** 2 - 2.0 * six_term)
     return func
+
 
 def step(r_0, U_0):
     '''
@@ -20,6 +23,7 @@ def step(r_0, U_0):
         return np.where(r_sq < r_0 ** 2, U_0, 0.0)
     return func
 
+
 def inv_sq(k):
     '''
     Inverse-square law, U(r) = -k / r.
@@ -27,6 +31,7 @@ def inv_sq(k):
     def func(r_sq):
         return -k / np.sqrt(r_sq)
     return func
+
 
 def harm_osc(k):
     '''
@@ -36,6 +41,7 @@ def harm_osc(k):
         return 0.5 * k * r_sq ** 2
     return func
 
+
 def harm_osc_F(k):
     '''
     Harmonic oscillator, F(r) = -k * r.
@@ -44,11 +50,13 @@ def harm_osc_F(k):
         return -k * r
     return func
 
+
 def logistic(r_0, U_0, k):
     ''' Logistic approximation to step function. '''
     def func(r_sq):
         return 0.5 * U_0 * (1.0 + np.tanh(k * (np.sqrt(r_sq) - r_0)))
     return func
+
 
 def logistic_F(r_0, U_0, k):
     def func(r):
@@ -56,20 +64,24 @@ def logistic_F(r_0, U_0, k):
         return -U_0 * utils.vector_unit_nonull(r) * (1.0 - np.square(np.tanh(k * (np.sqrt(r_sq) - r_0))))[:, np.newaxis]
     return func
 
+
 def polar_rose(n):
     def func(t):
         return np.cos(n * t)
     return func
 
+
 def polar_rose_sq(n):
     def func(t):
-        return 1.5-np.cos(0.5 * n * t) ** 2
+        return 1.5 - np.cos(0.5 * n * t) ** 2
     return func
+
 
 def polar_null():
     def func(t):
         return np.ones_like(t)
     return func
+
 
 def anis_wrap(func_iso, func_polar):
     def func_anis(r_sq, theta):

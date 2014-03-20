@@ -6,18 +6,20 @@ from mpl_toolkits.mplot3d import Axes3D
 dt = 0.01
 n = 10
 
+
 def D_dependence(d=3):
     samples = 400
 
     Ds_calc = []
     Ds_in = np.linspace(0.00001, 1.0, num=samples)
-    for D_rot in Ds_in  :
+    for D_rot in Ds_in:
         a = utils.sphere_pick(d, n)
         a_rot = utils.rot_diff(a, D_rot, dt)
         Ds_calc.append(utils.calc_D_rot(a, a_rot, dt))
 
     pp.scatter(Ds_in, np.array(Ds_calc) / Ds_in)
     pp.show()
+
 
 def diffusion_track(d):
     D_rot = 0.01
@@ -45,8 +47,10 @@ def diffusion_track(d):
         y = np.outer(np.sin(u), np.sin(v))
         z = np.outer(np.ones(np.size(u)), np.cos(v))
         r = 0.96
-        ax.plot_surface(r*x, r*y, r*z,  rstride=4, cstride=4, color='b', shade=False)
-        ax.scatter(a_rots[:, 0], a_rots[:, 1], a_rots[:, 2], c='red', s=5, facecolor='red', lw=0.0)
+        ax.plot_surface(
+            r * x, r * y, r * z,  rstride=4, cstride=4, color='b', shade=False)
+        ax.scatter(a_rots[:, 0], a_rots[:, 1], a_rots[
+                   :, 2], c='red', s=5, facecolor='red', lw=0.0)
     ax.set_aspect('equal')
     pp.show()
 

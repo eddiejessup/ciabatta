@@ -21,15 +21,16 @@ u = np.zeros_like(r)
 i = 0
 for i in range(n):
     while True:
-        r[i] = np.random.uniform(-L/2.0, L/2.0, size=d)
+        r[i] = np.random.uniform(-L / 2.0, L / 2.0, size=d)
         u[i] = utils.sphere_pick(d)
         valid = True
-        if geom.cap_insphere_intersect(r[i] - l_half*u[i], r[i] + l_half*u[i], R, r0, Rd):
+        if geom.cap_insphere_intersect(r[i] - l_half * u[i], r[i] + l_half * u[i], R, r0, Rd):
             valid = False
         for i2 in range(i):
-            if geom.caps_intersect(r[i] - l_half*u[i], r[i] + l_half*u[i], R, r[i2] - l_half*u[i2], r[i2] + l_half*u[i2], R):
+            if geom.caps_intersect(r[i] - l_half * u[i], r[i] + l_half * u[i], R, r[i2] - l_half * u[i2], r[i2] + l_half * u[i2], R):
                 valid = False
-        if valid: break
+        if valid:
+            break
 
 # create a rendering window and renderer
 ren = vtk.vtkRenderer()
