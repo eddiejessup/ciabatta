@@ -5,17 +5,20 @@ import geom_numerics
 
 SMALL = 1e-10
 
+
 def sphere_volume(R, n):
     '''
     Volume of an n-dimensional sphere of radius R.
     '''
     return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
 
+
 def sphere_radius(V, n):
     '''
     Radius of an n-dimensional sphere with volume V.
     '''
     return ((scipy.special.gamma(n / 2.0 + 1.0) * V) ** (1.0 / n)) / np.sqrt(np.pi)
+
 
 def sphere_area(R, n):
     '''
@@ -25,12 +28,15 @@ def sphere_area(R, n):
     '''
     return (n / R) * sphere_volume(R, n)
 
+
 def cylinder_volume(R, l):
     '''
     Volume of a cylinder with radius R and length l.
     '''
-    # Remember the volume of a sphere in 2d is what's usually referred to as its area
+    # Remember the volume of a sphere in 2d is what's usually referred to as
+    # its area
     return sphere_volume(R, 2) * l
+
 
 def cylinder_area(R, l):
     '''
@@ -38,17 +44,20 @@ def cylinder_area(R, l):
     '''
     return sphere_area(R, 2) * l
 
+
 def capsule_volume(R, l):
     '''
     Volume of a capsule with radius R and line segment length l.
     '''
     return sphere_volume(R, 3) + cylinder_volume(R, l)
 
+
 def capsule_area(R, l):
     '''
     Surface area of a capsule with radius R and line segment length l.
     '''
     return sphere_area(R, 3) + cylinder_area(R, l)
+
 
 def spheres_sep(ar, aR, br, bR):
     '''
@@ -57,12 +66,14 @@ def spheres_sep(ar, aR, br, bR):
     '''
     return utils.vector_mag(ar - br) - (aR + bR)
 
+
 def spheres_intersect(ar, aR, br, bR):
     '''
     For two spheres centred at ar; br, with radii aR; bR,
     True if they intersect.
     '''
     return utils.vector_mag_sq(ar - br) < (aR + bR) ** 2
+
 
 def sphere_insphere_sep(ar, aR, br, bR):
     '''
@@ -71,12 +82,14 @@ def sphere_insphere_sep(ar, aR, br, bR):
     '''
     return spheres_sep(ar, -aR, br, bR)
 
+
 def sphere_insphere_intersect(ar, aR, br, bR):
     '''
     For two spheres centred at ar; br, with radii aR; bR,
     True if sphere a is fully contained by sphere b.
     '''
     return np.logical_not(spheres_intersect(ar, -aR, br, bR))
+
 
 def cap_insphere_intersect(ar1, ar2, aR, br, bR):
     '''
@@ -86,15 +99,18 @@ def cap_insphere_intersect(ar1, ar2, aR, br, bR):
     '''
     return np.logical_or(sphere_insphere_intersect(ar1, aR, br, bR), sphere_insphere_intersect(ar2, aR, br, bR))
 
+
 def cap_insphere_sep(ar1, ar2, aR, br, bR):
     '''
     For a capsule with ends ar1, ar2, radius aR;
     inside a sphere at br, radius bR;
     the maximum distance of the capsule from br.
     '''
-    ds = np.array([sphere_insphere_sep(ar1, aR, br, bR), sphere_insphere_sep(ar2, aR, br, bR)])
+    ds = np.array(
+        [sphere_insphere_sep(ar1, aR, br, bR), sphere_insphere_sep(ar2, aR, br, bR)])
     r = np.where((np.argmax(ds, axis=0))[:, np.newaxis], ar2, ar1)
     return r - br
+
 
 def caps_intersect(ar1, ar2, aR, br1, br2, bR):
     '''
@@ -103,6 +119,7 @@ def caps_intersect(ar1, ar2, aR, br1, br2, bR):
     True if they intersect.
     '''
     return segs_sep_sq(ar1, ar2, br1, br2) < (aR + bR) ** 2
+
 
 def caps_intersect_intro(r, u, l, R, L):
     '''
@@ -113,6 +130,7 @@ def caps_intersect_intro(r, u, l, R, L):
     '''
     return geom_numerics.caps_intersect_intro(r, u, l, R, L)
 
+
 def caps_sep_intro(r, u, l, R, L):
     '''
     For capsules with centres r, orientation u, forward length lu,
@@ -122,6 +140,7 @@ def caps_sep_intro(r, u, l, R, L):
     NOTE: the vector is ONLY well-defined if that neighbour intersects the capsule.
     '''
     return geom_numerics.caps_sep_intro(r, u, l, R, L)
+
 
 def point_seg_sep(ar, br1, br2):
     '''
@@ -135,13 +154,14 @@ def point_seg_sep(ar, br1, br2):
     if c1 <= 0.0:
         return ar - br1
 
-    c2 = np.sum(np.square(v));
+    c2 = np.sum(np.square(v))
     if c2 <= c1:
         return ar - br2
 
     b = c1 / c2
     bc = br1 + b * v
     return ar - bc
+
 
 def point_seg_sep_sq(ar, br1, br2):
     '''
@@ -155,13 +175,14 @@ def point_seg_sep_sq(ar, br1, br2):
     if c1 <= 0.0:
         return np.sum(np.square(ar - br1))
 
-    c2 = np.sum(np.square(v));
+    c2 = np.sum(np.square(v))
     if c2 <= c1:
         return np.sum(np.square(ar - br2))
 
     b = c1 / c2
     bc = br1 + b * v
     return np.sum(np.square(ar - bc))
+
 
 def segs_sep_sq(ar1, ar2, br1, br2):
     '''
@@ -213,7 +234,7 @@ def segs_sep_sq(ar1, ar2, br1, br2):
 
         if (-d + b) < 0.0:
             sN = 0.0
-        elif (-d + b ) > a:
+        elif (-d + b) > a:
             sN = sD
         else:
             sN = -d + b
@@ -224,6 +245,7 @@ def segs_sep_sq(ar1, ar2, br1, br2):
 
     sep = w + (sc * u) - (tc * v)
     return np.sum(np.square(sep))
+
 
 def gc_dist(n1, n2):
     r1 = utils.vector_mag(n1)

@@ -5,7 +5,9 @@ import field_numerics
 
 density = field_numerics.density
 
+
 class Space(object):
+
     def __init__(self, L, dim):
         self.L = L
         self.L_half = L / 2.0
@@ -17,7 +19,9 @@ class Space(object):
     def iterate(self, *args, **kwargs):
         pass
 
+
 class Field(Space):
+
     def __init__(self, L, dim, dx):
         Space.__init__(self, L, dim)
         self.M = int(self.L / dx)
@@ -37,7 +41,9 @@ class Field(Space):
     def i_to_r(self, i):
         return utils.i_to_r(i, self.L, self.dx())
 
+
 class Scalar(Field):
+
     def __init__(self, L, dim, dx, a_0=0.0):
         Field.__init__(self, L, dim, dx)
         self.a = np.ones(self.dim * (self.M,), dtype=np.float) * a_0
@@ -51,7 +57,9 @@ class Scalar(Field):
     def laplacian(self):
         return field_numerics.laplace(self.a, self.dx())
 
+
 class Diffusing(Scalar):
+
     def __init__(self, L, dim, dx, D, dt, a_0=0.0):
         Scalar.__init__(self, L, dim, dx, a_0=a_0)
         self.D = D

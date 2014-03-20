@@ -3,51 +3,36 @@ import os
 import subprocess
 import numpy as np
 
+
 def get_git_hash():
-    # os.chdir(os.path.dirname(__file__))
     return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip()
+
 
 # File IO
 
 def makedirs_safe(dirname):
     if os.path.isdir(dirname):
         s = raw_input('%s exists, overwrite? (y/n) ' % dirname)
-        if s != 'y': raise Exception
+        if s != 'y':
+            raise Exception
     else:
         os.makedirs(dirname)
 
+
 def makedirs_soft(dirname):
-    if not os.path.isdir(dirname): os.makedirs(dirname)
+    if not os.path.isdir(dirname):
+        os.makedirs(dirname)
 
-# Strings
-
-def suffix_remove(s, suffix):
-    if s.endswith(suffix): return s[:-len(suffix)]
-    else: return s
 
 # Index- and real-space conversion and wrapping
 
 def r_to_i(r, L, dx):
     return np.asarray((r + L / 2.0) / dx, dtype=np.int)
 
+
 def i_to_r(i, L, dx):
     return -L / 2.0 + (i + 0.5) * dx
 
-def wrap_real(L, L_half, r):
-    if r > L_half: r -= L
-    elif r < -L_half: r += L
-    return r
-
-def wrap(M, i):
-    if i >= M: i -= M
-    elif i < 0: i += M
-    return i
-
-def wrap_inc(M, i):
-    return i + 1 if i < M - 1 else 0
-
-def wrap_dec(M, i):
-    return i - 1 if i > 0 else M - 1
 
 # Centre of mass
 
@@ -56,6 +41,7 @@ def rms_com(r, L):
     centre-of-mass vector.
     Assumes last index is that of the vector component. '''
     return rms(r, com(r, L), L)
+
 
 def com(r, L):
     ''' Centre-of-mass vector of array of cartesian vectors r in
@@ -81,7 +67,7 @@ def com(r, L):
                     rms_min = rms_new
 
             if (rms(x_0, 0.99 * x_av, L) < rms_min or
-                rms(x_0, 1.01 * x_av, L) < rms_min):
+                    rms(x_0, 1.01 * x_av, L) < rms_min):
                 steps *= 2
                 print('Recalculating c.o.m. with steps=%i' % steps)
             else:
@@ -89,11 +75,13 @@ def com(r, L):
                 break
     return r_com
 
+
 def rms(r, r_0, L):
     ''' RMS distance of array of cartesian vectors r from point r_0.
     Assumes last index is that of the vector component (x, [y, z, ...]). '''
     r_sep_sq = np.minimum((r - r_0) ** 2, (L - np.abs(r - r_0)) ** 2)
     return np.sqrt(np.mean(np.sum(r_sep_sq, r_sep_sq.ndim - 1)))
+
 
 # Vectors
 
@@ -102,53 +90,68 @@ def vector_mag_sq(v):
     Assumes last index is that of the vector component. '''
     return np.square(v).sum(axis=-1)
 
+
 def vector_mag(v):
     ''' Magnitude of array of cartesian vectors v.
     Assumes last index is that of the vector component. '''
     return np.sqrt(vector_mag_sq(v))
 
+
 def vector_unit_nonull(v):
     ''' Array of cartesian vectors v into unit vectors.
     If null vector encountered, raise exception.
     Assumes last index is that of the vector component. '''
-    if v.size == 0: return v
+    if v.size == 0:
+        return v
     return v / vector_mag(v)[..., np.newaxis]
+
 
 def vector_unit_nullnull(v):
     ''' Array of cartesian vectors into unit vectors.
     If null vector encountered, leave as null.
     Assumes last index is that of the vector component. '''
-    if v.size == 0: return v
+    if v.size == 0:
+        return v
     mag = vector_mag(v)
     v_new = v.copy()
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
+
 def vector_unit_nullrand(v):
     ''' Array of cartesian vectors into unit vectors.
     If null vector encountered, pick new random unit vector.
     Assumes last index is that of the vector component. '''
-    if v.size == 0: return v
+    if v.size == 0:
+        return v
     mag = vector_mag(v)
     v_new = v.copy()
     v_new[mag == 0.0] = sphere_pick(v.shape[-1], (mag == 0.0).sum())
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
+
 def vector_angle(a, b):
     cos_theta = np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b))
     theta = np.empty_like(cos_theta)
     try:
-        theta[np.abs(cos_theta) <= 1.0] = np.arccos(cos_theta[np.abs(cos_theta) <= 1.0])
+        theta[np.abs(cos_theta) <= 1.0] = np.arccos(
+            cos_theta[np.abs(cos_theta) <= 1.0])
     except IndexError:
-        if np.abs(cos_theta) <= 1.0: theta = np.arccos(cos_theta)
-        elif np.dot(a, b) > 0.0: theta = 0.0
-        else: theta = np.pi
+        if np.abs(cos_theta) <= 1.0:
+            theta = np.arccos(cos_theta)
+        elif np.dot(a, b) > 0.0:
+            theta = 0.0
+        else:
+            theta = np.pi
     else:
         for i in np.where(np.abs(cos_theta) > 1.0)[0]:
-            if np.dot(a[i], b[i]) > 0.0: theta[i] = 0.0
-            else: theta[i] = np.pi
+            if np.dot(a[i], b[i]) > 0.0:
+                theta[i] = 0.0
+            else:
+                theta[i] = np.pi
     return theta
+
 
 def vector_perp(v):
     ''' Vector perpendicular to 2D vector v '''
@@ -158,6 +161,7 @@ def vector_perp(v):
     v_perp[..., 0] = v[:, 1]
     v_perp[..., 1] = -v[:, 0]
     return v_perp
+
 
 # Coordinate system transformations
 
@@ -174,12 +178,15 @@ def polar_to_cart(arr_p):
         arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1])
     elif arr_p.shape[-1] == 3:
         arr_c = np.zeros_like(arr_p)
-        arr_c[..., 0] = arr_p[..., 0] * np.sin(arr_p[..., 1]) * np.cos(arr_p[..., 2])
-        arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1]) * np.sin(arr_p[..., 2])
+        arr_c[..., 0] = arr_p[..., 0] * np.sin(
+            arr_p[..., 1]) * np.cos(arr_p[..., 2])
+        arr_c[..., 1] = arr_p[..., 0] * np.sin(
+            arr_p[..., 1]) * np.sin(arr_p[..., 2])
         arr_c[..., 2] = arr_p[..., 0] * np.cos(arr_p[..., 1])
     else:
         raise Exception('Invalid vector for polar representation')
     return arr_c
+
 
 def cart_to_polar(arr_c):
     ''' Array of vectors arr_p corresponding to polar representation
@@ -201,6 +208,7 @@ def cart_to_polar(arr_c):
         raise Exception('Invalid vector for polar representation')
     return arr_p
 
+
 # Point picking
 
 def sphere_pick_polar(d, n=1):
@@ -221,8 +229,10 @@ def sphere_pick_polar(d, n=1):
         raise Exception('Invalid vector for polar representation')
     return a
 
+
 def sphere_pick(d, n=1):
     return polar_to_cart(sphere_pick_polar(d, n))
+
 
 def disk_pick_polar(n=1):
     a = np.zeros([n, 2], dtype=np.float)
@@ -230,8 +240,10 @@ def disk_pick_polar(n=1):
     a[:, 1] = np.random.uniform(0.0, 2.0 * np.pi, size=n)
     return a
 
+
 def disk_pick(n=1):
     return polar_to_cart(disk_pick_polar(n))
+
 
 # Rotations
 
@@ -243,55 +255,65 @@ def R_rot_2d(th):
     R[:, 1, :] = np.array((s, c)).T
     return R
 
+
 def R_rot_3d(th):
     sx, sy, sz = np.sin(th).T
     cx, cy, cz = np.cos(th).T
     R = np.zeros((len(th), 3, 3), dtype=np.float)
-    R[:, 0, :] = np.array((cy*cz, -cy*sz, sy)).T
-    R[:, 1, :] = np.array((sx*sy*cz + cx*sz, -sx*sy*sz + cx*cz, -sx*cy)).T
-    R[:, 2, :] = np.array((-cx*sy*cz + sx*sz, cx*sy*sz + sx*cz, cx*cy)).T
+    R[:, 0, :] = np.array((cy * cz, -cy * sz, sy)).T
+    R[:, 1, :] = np.array(
+        (sx * sy * cz + cx * sz, -sx * sy * sz + cx * cz, -sx * cy)).T
+    R[:, 2, :] = np.array(
+        (-cx * sy * cz + sx * sz, cx * sy * sz + sx * cz, cx * cy)).T
     return R
 
+
 def R_rot(th):
-    if th.shape[-1] == 1: return R_rot_2d(th)
-    elif th.shape[-1] == 3: return R_rot_3d(th)
-    else: raise Exception('Rotation matrix not implemented in this dimension')
+    try:
+        dof = th.shape[-1]
+    # If th is a python float
+    except AttributeError:
+        dof = 1
+        th = np.array([th])
+    except IndexError:
+        dof = 1
+        th = np.array([th])
+    # If th is a numpy float, i.e. 0d array
+    if dof == 1:
+        return R_rot_2d(th)
+    elif dof == 3:
+        return R_rot_3d(th)
+    else:
+        raise Exception('Rotation matrix not implemented in this dimension')
+
 
 def rotate(a, th):
     return np.sum(a[..., np.newaxis] * R_rot(th), axis=-2)
+
 
 # Diffusion
 
 def rot_diff(v, D, dt):
     # Account for possibility of D being an array
-    try: D = D[:, np.newaxis]
-    except TypeError: pass
+    try:
+        D = D[:, np.newaxis]
+    # If D is a python float
+    except TypeError:
+        pass
+    # If D is a numpy float, i.e. 0-d array
+    except IndexError:
+        pass
     angles = int(round(v.shape[-1] * (v.shape[-1] - 1) / 2.0))
     return rotate(v, np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), angles)))
 
-def calc_D_rot(v1, v2, dt):
-    if dt == 0.0: return np.nan
-    return np.mean(np.square(vector_angle(v1, v2))) / (2.0 * (v1.shape[-1] - 1) * dt)
 
 def diff(r, D, dt):
-    if dt == 0.0: return r.copy()
+    if dt == 0.0:
+        return r.copy()
     return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
 
-def calc_D(r1, r2, dt):
-    if dt == 0.0: return 2 * (np.array(r1.shape[1] * (np.nan,)),)
-    D = np.square(r1 - r2) / (2.0 * dt)
-    return np.mean(D, axis=0), np.std(D, axis=0) / np.sqrt(len(D))
 
-def calc_D_scalar(r1, r2, dt):
-    D, D_err = calc_D(r1, r2, dt)
-    return np.mean(D), np.sqrt(np.sum(np.square(D_err)))
-
-def calc_v_drift(r1, r2, dt):
-    if dt == 0.0: return 2 * (np.array(r1.shape[1] * (np.nan,)),)
-    v = (r1 - r2) / dt
-    return np.mean(v, axis=0), np.std(v, axis=0) / np.sqrt(len(v))
-
-# Numpy arrays
+# Arrays
 
 def extend_array(a, n):
     a_new = a.copy()
@@ -299,13 +321,16 @@ def extend_array(a, n):
         a_new = np.repeat(a_new, n, axis=d)
     return a_new
 
+
 def field_subset(f, inds, rank=0):
     f_dim_space = f.ndim - rank
     if inds.ndim > 2:
         raise Exception('Too many dimensions in indices array')
     if inds.ndim == 1:
-        if f_dim_space == 1: return f[inds]
-        else: raise Exception('Indices array is 1d but field is not')
+        if f_dim_space == 1:
+            return f[inds]
+        else:
+            raise Exception('Indices array is 1d but field is not')
     if inds.shape[1] != f_dim_space:
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!

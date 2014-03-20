@@ -4,6 +4,7 @@ import numpy as np
 import utils
 import _cluster_list_py
 
+
 def get_inds(r, R_cut, L):
     link_list = _cluster_list_py.cluster_list(r, R_cut, L)
     assert r.shape[0] == link_list.shape[0]
@@ -20,8 +21,10 @@ def get_inds(r, R_cut, L):
                 i_cur = link_list[i_cur]
     return inds
 
+
 def get_pops(inds):
     return np.array([len(inds[i]) for i in range(len(inds))])
+
 
 def get_rms(inds, r, L):
     rms_list = [utils.rms_com(r[inds[i]], True, L) for i in range(len(inds))]
