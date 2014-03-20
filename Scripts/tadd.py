@@ -32,6 +32,7 @@ Special input:
 ********************************************************************************
 """
 
+
 def main():
     print(foreplay % ENTRIES_LEN)
     entries = np.zeros([ENTRIES_LEN], dtype=np.float)
@@ -51,14 +52,16 @@ def main():
 
         elif inputt in ['x', 'exit']:
             while True:
-                confirm = raw_input('\t\t\tIncluded promotions? Included delivery? (y/n) >> ')
+                confirm = raw_input(
+                    '\t\t\tIncluded promotions? Included delivery? (y/n) >> ')
                 if confirm in ['y', 'yes']:
                     exit_flag = True
                     break
                 elif confirm in ['n', 'no']:
                     break
                 else:
-                    print("\t\t\tCome now, play by the rules. Let's try again...")
+                    print(
+                        "\t\t\tCome now, play by the rules. Let's try again...")
 
         elif inputt in ['h', 'help']:
             print(foreplay % ENTRIES_LEN)
@@ -71,20 +74,23 @@ def main():
             try:
                 entry = float(inputt)
             except:
-                print("\t\t\tI think you entered something silly. Let's pretend that didn't happen...")
+                print(
+                    "\t\t\tI think you entered something silly. Let's pretend that didn't happen...")
                 continue
 
             valid_entry_flag = True
             if entry % 1.0 != 0.0:
                 while True:
-                    confirm = raw_input('\t\t\tInput seems to have fractional part. Sure about this? (y/n) >> ')
+                    confirm = raw_input(
+                        '\t\t\tInput seems to have fractional part. Sure about this? (y/n) >> ')
                     if confirm in ['y', 'yes']:
                         break
                     elif confirm in ['n', 'no']:
                         valid_entry_flag = False
                         break
                     else:
-                        print("\t\t\tCome now, play by the rules. Let's try again...")
+                        print(
+                            "\t\t\tCome now, play by the rules. Let's try again...")
             if valid_entry_flag:
                 entries[i_entry] = entry
                 i_entry += 1
