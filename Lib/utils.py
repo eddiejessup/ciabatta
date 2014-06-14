@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 import os
 import subprocess
 import numpy as np
@@ -12,7 +12,7 @@ def get_git_hash():
 
 def makedirs_safe(dirname):
     if os.path.isdir(dirname):
-        s = raw_input('%s exists, overwrite? (y/n) ' % dirname)
+        s = input('%s exists, overwrite? (y/n) ' % dirname)
         if s != 'y':
             raise Exception
     else:

@@ -3,7 +3,7 @@ Algorithms related to generating and processing mazes, represented as boolean
 numpy arrays.
 '''
 
-from __future__ import print_function
+
 import numpy as np
 import utils
 

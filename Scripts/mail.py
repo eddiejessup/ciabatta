@@ -1,13 +1,13 @@
 #! /usr/bin/python
 
-from __future__ import print_function
+
 import smtplib
 
 username = 'elliot.marsden'
-password = raw_input('Password: ')
-recipient = raw_input('To: ')
-subject = raw_input('Subject: ')
-body = raw_input('Body: ')
+password = input('Password: ')
+recipient = input('To: ')
+subject = input('Subject: ')
+body = input('Body: ')
 
 headers = '\r\n'.join([
     'from: %s' % username,

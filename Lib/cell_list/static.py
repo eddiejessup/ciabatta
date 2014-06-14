@@ -2,7 +2,7 @@
 This is for a half-static cell list, i.e. for a set of dynamic points, seeing which
 are within a cut-off distance of a distinct set of static points.
 '''
-from __future__ import print_function
+
 import itertools
 import numpy as np
 import utils
