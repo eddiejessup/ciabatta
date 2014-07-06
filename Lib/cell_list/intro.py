@@ -2,7 +2,7 @@
 This is for an introspective point set, i.e. for a set of dynamic points, seeing
 which are within a cut-off distance of one another.
 '''
-from __future__ import print_function
+
 from cell_list import _intro
 
 def get_inters(r, L, R_cut):
