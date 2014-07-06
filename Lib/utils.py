@@ -5,7 +5,8 @@ import numpy as np
 
 
 def get_git_hash():
-    return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).strip()
+    cmd = ["git", "rev-parse", "--short", "HEAD"]
+    return subprocess.check_output(cmd).strip()
 
 
 # File IO
