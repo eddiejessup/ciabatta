@@ -251,21 +251,33 @@ def disk_pick(n=1):
 def R_rot_2d(th):
     s, = np.sin(th).T
     c, = np.cos(th).T
-    R = np.zeros((len(th), 2, 2), dtype=np.float)
-    R[:, 0, :] = np.array((c, -s)).T
-    R[:, 1, :] = np.array((s, c)).T
+    R = np.empty((len(th), 2, 2), dtype=np.float)
+
+    R[:, 0, 0] = c
+    R[:, 0, 1] = -s
+
+    R[:, 1, 0] = s
+    R[:, 1, 1] = c
+
     return R
 
 
 def R_rot_3d(th):
     sx, sy, sz = np.sin(th).T
     cx, cy, cz = np.cos(th).T
-    R = np.zeros((len(th), 3, 3), dtype=np.float)
-    R[:, 0, :] = np.array((cy * cz, -cy * sz, sy)).T
-    R[:, 1, :] = np.array(
-        (sx * sy * cz + cx * sz, -sx * sy * sz + cx * cz, -sx * cy)).T
-    R[:, 2, :] = np.array(
-        (-cx * sy * cz + sx * sz, cx * sy * sz + sx * cz, cx * cy)).T
+    R = np.empty((len(th), 3, 3), dtype=np.float)
+
+    R[:, 0, 0] = cy * cz
+    R[:, 0, 1] = -cy * sz
+    R[:, 0, 1] = sy
+
+    R[:, 1, 0] = sx * sy * cz + cx * sz
+    R[:, 1, 1] = -sx * sy * sz + cx * cz
+    R[:, 1, 1] = -sx * cy
+
+    R[:, 2, 0] = -cx * sy * cz + sx * sz
+    R[:, 2, 1] = cx * sy * sz + sx * cz
+    R[:, 2, 1] = cx * cy
     return R
 
 
@@ -304,8 +316,10 @@ def rot_diff(v, D, dt):
     # If D is a numpy float, i.e. 0-d array
     except IndexError:
         pass
-    angles = int(round(v.shape[-1] * (v.shape[-1] - 1) / 2.0))
-    return rotate(v, np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), angles)))
+    dim = v.shape[-1]
+    dof = dim * (dim - 1) // 2
+    th = np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), dof))
+    return rotate(v, th)
 
 
 def diff(r, D, dt):
