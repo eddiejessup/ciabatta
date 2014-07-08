@@ -269,15 +269,15 @@ def R_rot_3d(th):
 
     R[:, 0, 0] = cy * cz
     R[:, 0, 1] = -cy * sz
-    R[:, 0, 1] = sy
+    R[:, 0, 2] = sy
 
     R[:, 1, 0] = sx * sy * cz + cx * sz
     R[:, 1, 1] = -sx * sy * sz + cx * cz
-    R[:, 1, 1] = -sx * cy
+    R[:, 1, 2] = -sx * cy
 
     R[:, 2, 0] = -cx * sy * cz + sx * sz
     R[:, 2, 1] = cx * sy * sz + sx * cz
-    R[:, 2, 1] = cx * cy
+    R[:, 2, 2] = cx * cy
     return R
 
 
@@ -350,3 +350,9 @@ def field_subset(f, inds, rank=0):
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!
     return f[tuple([inds[:, i] for i in range(inds.shape[1])])]
+
+
+def pad_to_3d(a):
+    a_pad = np.zeros([len(a), 3], dtype=a.dtype)
+    a_pad[:, :a.shape[-1]] = a
+    return a_pad
