@@ -135,7 +135,7 @@ def pack_simple(L, d,
         if not np.any(pdist_periodic(r, L) < (2.0 * R) ** 2):
             return r
 
-every = 500
+every = 5000
 
 
 def draw_medium(r, R, L, ax=None):
@@ -166,21 +166,26 @@ def pack(dim, R, beta_max=1e4, dL_max=0.02, dr_max=0.02,
     '''
 
     if pf is not None:
+        if pf == 0.0:
+            return np.array([]), R
         # If packing fraction is specified, find required number of spheres
         # and the actual packing fraction this will produce
         n, pf_actual = pf_to_n(1.0, dim, pf, R)
-    else:
+    elif n is not None:
+        if n == 0:
+            return np.array([]), R
         # If n is specified, find packing fraction
         pf_actual = n_to_pf(1.0, dim, n, R)
 
     # Calculate an initial packing fraction and system size
-    # Start at at most 5%; lower if the desired packing fraction is very low
-    pf_initial = min(0.05, pf_actual / 2.0)
+    # Start at at most 0.5%; lower if the desired packing fraction is very low
+    pf_initial = min(0.005, pf_actual / 2.0)
     # Find system size that will create this packing fraction
     L_0 = calc_L_0(n, dim, pf_initial, R)
 
     # Pack naïvely into this system
     r_0 = pack_simple(L_0, dim, n, R, seed)
+    print('Initial packing done')
 
     mg = MetroRCP(r_0, L_0, R, dr_max, dL_max)
 
@@ -190,8 +195,8 @@ def pack(dim, R, beta_max=1e4, dL_max=0.02, dr_max=0.02,
         beta = beta_max * mg.pf()
         mg.iterate(beta)
 
-        # if not t % every:
-        #     print('Packing: {:.1f}%'.format(100.0 * mg.pf()))
+        if not t % every:
+            print('Packing: {:.1f}%'.format(100.0 * mg.pf()))
 
     # print('Final packing: {:.1f}%'.format(100.0 * mg.pf()))
 
