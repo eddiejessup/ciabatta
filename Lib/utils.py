@@ -350,3 +350,9 @@ def field_subset(f, inds, rank=0):
         raise Exception('Indices and field dimensions do not match')
     # It's magic, don't touch it!
     return f[tuple([inds[:, i] for i in range(inds.shape[1])])]
+
+
+def pad_to_3d(a):
+    a_pad = np.zeros([len(a), 3], dtype=a.dtype)
+    a_pad[:, :a.shape[-1]] = a
+    return a_pad
