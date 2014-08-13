@@ -138,17 +138,33 @@ def pack_simple(L, d,
 every = 5000
 
 
-def draw_medium(r, R, L, ax=None):
+def unwrap_one_layer(r, L, n):
+    if n == 0:
+        return list(r)
+    rcu = []
+    for x, y in r:
+        for ix in range(-n, n + 1):
+            for iy in range(-n, n + 1):
+                if abs(ix) == n or abs(iy) == n:
+                    rcu.append(np.array([x + ix * L, y + iy * L]))
+    return rcu
+
+
+def unwrap_to_layer(r, L, n=1):
+    rcu = []
+    for i_n in range(n + 1):
+        rcu.extend(unwrap_one_layer(r, L, i_n))
+    return rcu
+
+
+def draw_medium(r, R, L, n=1, ax=None):
     if ax is None:
         ax = plt.gca()
-    for x, y in r:
-        for ix in [-1, 0, 1]:
-            for iy in [-1, 0, 1]:
-                c = plt.Circle((x + ix*L, y + iy*L), radius=R, alpha=0.2)
-                ax.add_artist(c)
-    ax.set_aspect('equal')
-    ax.set_xlim(-L / 2.0, L / 2.0)
-    ax.set_ylim(-L / 2.0, L / 2.0)
+    for ru in unwrap_to_layer(r, L, n):
+        c = plt.Circle(ru, radius=R, alpha=0.2)
+        print(ru, R)
+        ax.add_artist(c)
+    # ax.set_aspect('equal')
 
 
 def pack(dim, R, beta_max=1e4, dL_max=0.02, dr_max=0.02,
