@@ -139,6 +139,10 @@ every = 5000
 
 
 def unwrap_one_layer(r, L, n):
+    try:
+        L[0]
+    except (TypeError, IndexError):
+        L = np.ones([r.shape[1]]) * L
     if n == 0:
         return list(r)
     rcu = []
@@ -146,7 +150,7 @@ def unwrap_one_layer(r, L, n):
         for ix in range(-n, n + 1):
             for iy in range(-n, n + 1):
                 if abs(ix) == n or abs(iy) == n:
-                    rcu.append(np.array([x + ix * L, y + iy * L]))
+                    rcu.append(np.array([x + ix * L[0], y + iy * L[1]]))
     return rcu
 
 
@@ -162,7 +166,6 @@ def draw_medium(r, R, L, n=1, ax=None):
         ax = plt.gca()
     for ru in unwrap_to_layer(r, L, n):
         c = plt.Circle(ru, radius=R, alpha=0.2)
-        print(ru, R)
         ax.add_artist(c)
     # ax.set_aspect('equal')
 

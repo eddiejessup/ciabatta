@@ -24,9 +24,15 @@ def csep_periodic(ra, rb, L):
     Find all separation vectors between ra and rb,
     in a periodic system of length L.
     '''
+    try:
+        L[0]
+    except (TypeError, IndexError):
+        L = np.ones([ra.shape[1]]) * L
     seps = ra[:, np.newaxis, :] - rb[np.newaxis, :, :]
-    seps[seps > L / 2.0] -= L
-    seps[seps < -L / 2.0] += L
+    for i_dim in range(ra.shape[1]):
+        seps_dim = seps[:, :, i_dim]
+        seps_dim[seps_dim > L[i_dim] / 2.0] -= L[i_dim]
+        seps_dim[seps_dim < -L[i_dim] / 2.0] += L[i_dim]
     return seps
 
 
