@@ -174,11 +174,11 @@ def polar_to_cart(arr_p):
     if arr_p.shape[-1] == 1:
         arr_c = arr_p.copy()
     elif arr_p.shape[-1] == 2:
-        arr_c = np.zeros_like(arr_p)
+        arr_c = np.empty_like(arr_p)
         arr_c[..., 0] = arr_p[..., 0] * np.cos(arr_p[..., 1])
         arr_c[..., 1] = arr_p[..., 0] * np.sin(arr_p[..., 1])
     elif arr_p.shape[-1] == 3:
-        arr_c = np.zeros_like(arr_p)
+        arr_c = np.empty_like(arr_p)
         arr_c[..., 0] = arr_p[..., 0] * np.sin(
             arr_p[..., 1]) * np.cos(arr_p[..., 2])
         arr_c[..., 1] = arr_p[..., 0] * np.sin(
@@ -197,11 +197,11 @@ def cart_to_polar(arr_c):
     if arr_c.shape[-1] == 1:
         arr_p = arr_c.copy()
     elif arr_c.shape[-1] == 2:
-        arr_p = np.zeros_like(arr_c)
+        arr_p = np.empty_like(arr_c)
         arr_p[..., 0] = vector_mag(arr_c)
         arr_p[..., 1] = np.arctan2(arr_c[..., 1], arr_c[..., 0])
     elif arr_c.shape[-1] == 3:
-        arr_p = np.zeros_like(arr_c)
+        arr_p = np.empty_like(arr_c)
         arr_p[..., 0] = vector_mag(arr_c)
         arr_p[..., 1] = np.arccos(arr_c[..., 2] / arr_p[..., 0])
         arr_p[..., 2] = np.arctan2(arr_c[..., 1], arr_c[..., 0])
@@ -214,7 +214,7 @@ def cart_to_polar(arr_c):
 
 def sphere_pick_polar(d, n=1):
     ''' In 3d uses (radius, inclination, azimuth) convention '''
-    a = np.zeros([n, d], dtype=np.float)
+    a = np.empty([n, d])
     if d == 1:
         a[:, 0] = np.random.randint(2, size=n) * 2 - 1
     elif d == 2:
