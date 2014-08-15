@@ -1,10 +1,12 @@
-
 import os
 import subprocess
 import numpy as np
 
 
 def get_git_hash():
+    '''
+    Return the shortened git SHA of the current commit.
+    '''
     cmd = ["git", "rev-parse", "--short", "HEAD"]
     return subprocess.check_output(cmd).strip()
 
@@ -12,6 +14,9 @@ def get_git_hash():
 # File IO
 
 def makedirs_safe(dirname):
+    '''
+    Make a directory, prompting the user if it already exists.
+    '''
     if os.path.isdir(dirname):
         s = input('%s exists, overwrite? (y/n) ' % dirname)
         if s != 'y':
@@ -21,6 +26,10 @@ def makedirs_safe(dirname):
 
 
 def makedirs_soft(dirname):
+    '''
+    Make a directory, if it doesn't already exist.
+    Otherwise do nothing.
+    '''
     if not os.path.isdir(dirname):
         os.makedirs(dirname)
 
@@ -28,40 +37,121 @@ def makedirs_soft(dirname):
 # Index- and real-space conversion and wrapping
 
 def r_to_i(r, L, dx):
+    '''
+    Return closest indices on a square lattice of vectors in continuous space.
+
+    Parameters
+    ----------
+    r: float array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+        It's assumed that all components of the vector lie within (± L / 2).
+    L: float
+        Length of the lattice, assumed to be centred on the origin.
+    dx: float
+        Spatial lattice spacing.
+        This means the number of lattice points is (L / dx).
+
+    Returns
+    -------
+    inds: integer array, shape of r
+    '''
     return np.asarray((r + L / 2.0) / dx, dtype=np.int)
 
 
 def i_to_r(i, L, dx):
+    '''
+    Return coordinates of lattice indices in continuous space.
+
+    Parameters
+    ----------
+    i: integer array, shape (a1, a2, ..., d)
+        Integer indices, with last axis indexing the dimension.
+        It's assumed that all components of the vector
+        lie within (± (L / dx) / 2).
+    L: float
+        Length of the lattice, assumed to be centred on the origin.
+    dx: float
+        Spatial lattice spacing.
+        This means the number of lattice points is (L / dx).
+
+    Returns
+    -------
+    r: float array, shape of i
+        Coordinate vectors of the lattice points specified by the indices.
+
+    '''
     return -L / 2.0 + (i + 0.5) * dx
 
 
 # Vectors
 
 def vector_mag_sq(v):
-    ''' Squared magnitude of array of cartesian vectors v.
-    Assumes last index is that of the vector component. '''
+    '''
+    Return the squared magnitude of vectors v.
+
+    Parameters
+    ----------
+    v: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    mag: array, shape (a1, a2, ...)
+        Vector squared magnitudes
+    '''
     return np.square(v).sum(axis=-1)
 
 
 def vector_mag(v):
-    ''' Magnitude of array of cartesian vectors v.
-    Assumes last index is that of the vector component. '''
+    '''
+    Return the magnitude of vectors v.
+
+    Parameters
+    ----------
+    v: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    mag: array, shape (a1, a2, ...)
+        Vector magnitudes
+    '''
     return np.sqrt(vector_mag_sq(v))
 
 
 def vector_unit_nonull(v):
-    ''' Array of cartesian vectors v into unit vectors.
-    If null vector encountered, raise exception.
-    Assumes last index is that of the vector component. '''
+    '''
+    Return unit vectors of input vectors.
+    Any null vectors in v raise an Exception
+
+    Parameters
+    ----------
+    v: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    v_new: array, shape of v
+    '''
     if v.size == 0:
         return v
     return v / vector_mag(v)[..., np.newaxis]
 
 
 def vector_unit_nullnull(v):
-    ''' Array of cartesian vectors into unit vectors.
-    If null vector encountered, leave as null.
-    Assumes last index is that of the vector component. '''
+    '''
+    Return unit vectors of input vectors.
+    Any null vectors in v are mapped again to null vectors.
+
+    Parameters
+    ----------
+    v: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    v_new: array, shape of v
+    '''
     if v.size == 0:
         return v
     mag = vector_mag(v)
@@ -71,9 +161,19 @@ def vector_unit_nullnull(v):
 
 
 def vector_unit_nullrand(v):
-    ''' Array of cartesian vectors into unit vectors.
-    If null vector encountered, pick new random unit vector.
-    Assumes last index is that of the vector component. '''
+    '''
+    Return unit vectors of input vectors.
+    Any null vectors in v are mapped to randomly picked unit vectors.
+
+    Parameters
+    ----------
+    v: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    v_new: array, shape of v
+    '''
     if v.size == 0:
         return v
     mag = vector_mag(v)
@@ -84,6 +184,19 @@ def vector_unit_nullrand(v):
 
 
 def vector_angle(a, b):
+    '''
+    Return angles between two sets of vectors.
+
+    Parameters
+    ----------
+    a, b: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    theta: array, shape (a1, a2, ...)
+        Angles between a and b.
+    '''
     cos_theta = np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b))
     theta = np.empty_like(cos_theta)
     try:
@@ -106,7 +219,19 @@ def vector_angle(a, b):
 
 
 def vector_perp(v):
-    ''' Vector perpendicular to 2D vector v '''
+    '''
+    Return vectors perpendicular to 2-dimensional vectors.
+    If an input vector has components (x, y), the output vector has
+    components (x, -y).
+
+    Parameters
+    ----------
+    v: array, shape (a1, a2, ..., 2)
+
+    Returns
+    -------
+    v_perp: array, shape of v
+    '''
     if v.shape[-1] != 2:
         raise Exception('Can only define a unique perpendicular vector in 2d')
     v_perp = np.empty_like(v)
@@ -118,10 +243,20 @@ def vector_perp(v):
 # Coordinate system transformations
 
 def polar_to_cart(arr_p):
-    ''' Array of vectors arr_c corresponding to cartesian
-    representation of array of polar vectors arr_p.
-    Assumes last index is that of the vector component.
-    In 3d assumes (radius, inclination, azimuth) convention. '''
+    '''
+    Convert and return polar vectors in their cartesian representation.
+
+    Parameters
+    ----------
+    arr_p: array, shape (a1, a2, ..., d)
+        Polar vectors, with last axis indexing the dimension,
+        using (radius, inclination, azimuth) convention.
+
+    Returns
+    -------
+    arr_c: array, shape of arr_p
+        Cartesian vectors.
+    '''
     if arr_p.shape[-1] == 1:
         arr_c = arr_p.copy()
     elif arr_p.shape[-1] == 2:
@@ -141,10 +276,19 @@ def polar_to_cart(arr_p):
 
 
 def cart_to_polar(arr_c):
-    ''' Array of vectors arr_p corresponding to polar representation
-    of array of cartesian vectors arr_c.
-    Assumes last index is that of the vector component.
-    In 3d uses (radius, inclination, azimuth) convention. '''
+    '''
+    Convert and return cartesian vectors in their polar representation.
+
+    Parameters
+    ----------
+    arr_c: array, shape (a1, a2, ..., d)
+        Cartesian vectors, with last axis indexing the dimension.
+
+    Returns
+    -------
+    arr_p: array, shape of arr_c
+        Polar vectors, using (radius, inclination, azimuth) convention.
+    '''
     if arr_c.shape[-1] == 1:
         arr_p = arr_c.copy()
     elif arr_c.shape[-1] == 2:
@@ -164,7 +308,21 @@ def cart_to_polar(arr_c):
 # Point picking
 
 def sphere_pick_polar(d, n=1):
-    ''' In 3d uses (radius, inclination, azimuth) convention '''
+    '''
+    Return polar vectors randomly picked on the unit n-sphere.
+
+    Parameters
+    ----------
+    d: float
+        Dimensionality of the sphere.
+    n: integer
+        Number of samples to pick.
+
+    Returns
+    -------
+    r: array, shape (n, d)
+        Sample vectors.
+    '''
     a = np.empty([n, d])
     if d == 1:
         a[:, 0] = np.random.randint(2, size=n) * 2 - 1
@@ -172,7 +330,6 @@ def sphere_pick_polar(d, n=1):
         a[:, 0] = 1.0
         a[:, 1] = np.random.uniform(-np.pi, +np.pi, n)
     elif d == 3:
-        # Note, (r, theta, phi) notation
         u, v = np.random.uniform(0.0, 1.0, (2, n))
         a[:, 0] = 1.0
         a[:, 1] = np.arccos(2.0 * v - 1.0)
@@ -183,10 +340,38 @@ def sphere_pick_polar(d, n=1):
 
 
 def sphere_pick(d, n=1):
+    '''
+    Return cartesian vectors randomly picked on the unit n-sphere.
+
+    Parameters
+    ----------
+    d: float
+        Dimensionality of the sphere.
+    n: integer
+        Number of samples to pick.
+
+    Returns
+    -------
+    r: array, shape (n, d)
+        Sample cartesian vectors.
+    '''
     return polar_to_cart(sphere_pick_polar(d, n))
 
 
 def disk_pick_polar(n=1):
+    '''
+    Return polar vectors randomly picked on the 2-dimensional unit disk.
+
+    Parameters
+    ----------
+    n: integer
+        Number of samples to pick.
+
+    Returns
+    -------
+    r: array, shape (n, 2)
+        Sample vectors.
+    '''
     a = np.zeros([n, 2], dtype=np.float)
     a[:, 0] = np.sqrt(np.random.uniform(size=n))
     a[:, 1] = np.random.uniform(0.0, 2.0 * np.pi, size=n)
@@ -194,12 +379,37 @@ def disk_pick_polar(n=1):
 
 
 def disk_pick(n=1):
+    '''
+    Return cartesian vectors randomly picked on the 2-dimensional unit disk.
+
+    Parameters
+    ----------
+    n: integer
+        Number of samples to pick.
+
+    Returns
+    -------
+    r: array, shape (n, 2)
+        Sample vectors.
+    '''
     return polar_to_cart(disk_pick_polar(n))
 
 
 # Rotations
 
 def R_rot_2d(th):
+    '''
+    Return a 2-dimensional rotation matrix.
+
+    Parameters
+    ----------
+    th: array, shape (n, 1)
+        Angles about which to rotate.
+
+    Returns
+    -------
+    R: array, shape (n, 2, 2)
+    '''
     s, = np.sin(th).T
     c, = np.cos(th).T
     R = np.empty((len(th), 2, 2), dtype=np.float)
@@ -214,6 +424,18 @@ def R_rot_2d(th):
 
 
 def R_rot_3d(th):
+    '''
+    Return a 3-dimensional rotation matrix.
+
+    Parameters
+    ----------
+    th: array, shape (n, 3)
+        Angles about which to rotate along each axis.
+
+    Returns
+    -------
+    R: array, shape (n, 3, 3)
+    '''
     sx, sy, sz = np.sin(th).T
     cx, cy, cz = np.cos(th).T
     R = np.empty((len(th), 3, 3), dtype=np.float)
@@ -233,6 +455,19 @@ def R_rot_3d(th):
 
 
 def R_rot(th):
+    '''
+    Return a rotation matrix.
+
+    Parameters
+    ----------
+    th: array, shape (n, m)
+        Angles by which to rotate about each m rotational degree of freedom
+        (m=1 in 2 dimensions, m=3 in 3 dimensions).
+
+    Returns
+    -------
+    R: array, shape (n, m, m)
+    '''
     try:
         dof = th.shape[-1]
     # If th is a python float
@@ -252,12 +487,46 @@ def R_rot(th):
 
 
 def rotate(a, th):
+    '''
+    Return cartesian vectors, after rotation by specified angles about
+    each degree of freedom.
+
+    Parameters
+    ----------
+    a: array, shape (n, d)
+        Input d-dimensional cartesian vectors, left unchanged.
+    th: array, shape (n, m)
+        Angles by which to rotate about each m rotational degree of freedom
+        (m=1 in 2 dimensions, m=3 in 3 dimensions).
+
+    Returns
+    -------
+    ar: array, shape of a
+        Rotated cartesian vectors.
+    '''
     return np.sum(a[..., np.newaxis] * R_rot(th), axis=-2)
 
 
 # Diffusion
 
 def rot_diff(v, D, dt):
+    '''
+    Return cartesian velocity vectors, after applying rotational diffusion.
+
+    Parameters
+    ----------
+    v: array, shape (n, d)
+        Cartesian velocity vectors in d dimensions, left unchanged.
+    D: array, shape (n)
+        Rotational diffusion constant for each vector.
+    dt: float
+        Time interval over which rotational diffusion acts.
+
+    Returns
+    -------
+    vr: array, shape of v
+        Velocity vectors after rotational diffusion is applied.
+    '''
     # Account for possibility of D being an array
     try:
         D = D[:, np.newaxis]
@@ -274,6 +543,23 @@ def rot_diff(v, D, dt):
 
 
 def diff(r, D, dt):
+    '''
+    Return cartesian position vectors, after applying translational diffusion.
+
+    Parameters
+    ----------
+    r: array, shape (n, d)
+        Cartesian position vectors in d dimensions, left unchanged.
+    D: array, shape (n)
+        Translational diffusion constant for each vector.
+    dt: float
+        Time interval over which translational diffusion acts.
+
+    Returns
+    -------
+    rr: array, shape of r
+        Velocity vectors after translational diffusion is applied.
+    '''
     if dt == 0.0:
         return r.copy()
     return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
@@ -282,6 +568,20 @@ def diff(r, D, dt):
 # Arrays
 
 def extend_array(a, n):
+    '''
+    Increase the resolution of an array by duplicating its values to fill
+     a larger array.
+
+     Parameters
+     ----------
+     a: array, shape (a1, a2, a3, ...)
+     n: integer
+        Factor by which to expand the array.
+
+    Returns
+    -------
+    ae: array, shape (n * a1, n * a2, n * a3, ...)
+    '''
     a_new = a.copy()
     for d in range(a.ndim):
         a_new = np.repeat(a_new, n, axis=d)
@@ -289,6 +589,23 @@ def extend_array(a, n):
 
 
 def field_subset(f, inds, rank=0):
+    '''
+    Return the value of a field at a subset of points.
+
+    Parameters
+    ----------
+    f: array, shape (a1, a2, ..., ad, r1, r2, ..., rrank)
+        Rank-r field in d dimensions
+    inds: integer array, shape (n, d)
+        Index vectors
+    rank: integer
+        The rank of the field (0: scalar field, 1: vector field and so on).
+
+    Returns
+    -------
+    f_sub: array, shape (n, rank)
+        The subset of field values.
+    '''
     f_dim_space = f.ndim - rank
     if inds.ndim > 2:
         raise Exception('Too many dimensions in indices array')
@@ -304,6 +621,19 @@ def field_subset(f, inds, rank=0):
 
 
 def pad_to_3d(a):
+    '''
+    Convert and return 1- or 2-dimensional cartesian vectors into a
+    3-dimensional representation, with additional dimensional coordinates
+    assumed to be zero.
+
+    Parameters
+    ----------
+    a: array, shape (n, d), d < 3
+
+    Returns
+    -------
+    ap: array, shape (n, 3)
+    '''
     a_pad = np.zeros([len(a), 3], dtype=a.dtype)
     a_pad[:, :a.shape[-1]] = a
     return a_pad

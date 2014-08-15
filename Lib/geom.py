@@ -8,7 +8,14 @@ SMALL = 1e-10
 
 def sphere_volume(R, n):
     '''
-    Volume of an n-dimensional sphere of radius R.
+    Return the volume of an n-dimensional sphere.
+
+    Parameters
+    ----------
+    R: array-like
+        Radius of the sphere
+    n: array-like
+        Dimensionality of the sphere
     '''
     return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
 
