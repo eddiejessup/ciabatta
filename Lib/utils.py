@@ -35,55 +35,6 @@ def i_to_r(i, L, dx):
     return -L / 2.0 + (i + 0.5) * dx
 
 
-# Centre of mass
-
-def rms_com(r, L):
-    ''' RMS distance of array of cartesian vectors r from their
-    centre-of-mass vector.
-    Assumes last index is that of the vector component. '''
-    return rms(r, com(r, L), L)
-
-
-def com(r, L):
-    ''' Centre-of-mass vector of array of cartesian vectors r in
-    a periodic system with period L.
-    Assumes last index is that of the vector component. '''
-    r_com = np.zeros([r.shape[-1]], dtype=np.float)
-    for i_dim in range(len(r_com)):
-        x_0 = r[:, i_dim]
-        x_av = np.mean(x_0)
-        rms_min = rms(x_0, x_av, L)
-        steps_0 = 4
-        steps = float(steps_0)
-        while True:
-            for x_base in np.arange(-L / 2.0 + L / steps, L / 2.0, L / steps):
-                x_new = x_0.copy()
-                x_new[np.where(x_new < x_base)] += L
-                x_av_new = np.mean(x_new)
-                if x_av_new > L / 2.0:
-                    x_av_new -= L
-                rms_new = rms(x_new, x_av_new, L)
-                if rms_new < rms_min:
-                    x_av = x_av_new
-                    rms_min = rms_new
-
-            if (rms(x_0, 0.99 * x_av, L) < rms_min or
-                    rms(x_0, 1.01 * x_av, L) < rms_min):
-                steps *= 2
-                print('Recalculating c.o.m. with steps=%i' % steps)
-            else:
-                r_com[i_dim] = x_av
-                break
-    return r_com
-
-
-def rms(r, r_0, L):
-    ''' RMS distance of array of cartesian vectors r from point r_0.
-    Assumes last index is that of the vector component (x, [y, z, ...]). '''
-    r_sep_sq = np.minimum((r - r_0) ** 2, (L - np.abs(r - r_0)) ** 2)
-    return np.sqrt(np.mean(np.sum(r_sep_sq, r_sep_sq.ndim - 1)))
-
-
 # Vectors
 
 def vector_mag_sq(v):
