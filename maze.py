@@ -3,9 +3,9 @@ Algorithms related to generating and processing mazes, represented as boolean
 numpy arrays.
 '''
 
-
+import matplotlib.pyplot as plt
 import numpy as np
-import utils
+from ciabatta import utils
 
 
 def shrink(w_old, n):
@@ -50,7 +50,27 @@ def step(p, o, m, n=1):
 
 
 def make_maze_dfs(M=27, dim=2, seed=None):
-    ''' Generate a maze using the depth first search algorithm '''
+    '''
+    Generate a maze using the Depth-first search algorithm.
+
+    http://en.wikipedia.org/wiki/Depth-first_search
+
+    Parameters
+    ----------
+    M: integer.
+        Size of the maze.
+        The algorithm requires that the maze size is even.
+    dim: integer.
+        The spatial dimension.
+    seed: integer or None.
+        Seed for the random number generator.
+        None will use a different seed for each call.
+
+    Returns
+    -------
+    maze: boolean array, shape (M, M)
+        Array defining the maze. Walls are represented by `True`.
+    '''
     if M % 2 != 0:
         raise Exception('Require Maze size to be even.')
     rng = np.random.RandomState(seed)
@@ -78,11 +98,8 @@ def make_maze_dfs(M=27, dim=2, seed=None):
 
 def main():
     maze = make_maze_dfs(28)
-    print(maze[0, 0])
-    import matplotlib.pyplot as pp
-    pp.imshow(maze, interpolation='nearest')
-    pp.show()
-    pp.savefig('maze.png')
+    plt.imshow(maze, interpolation='nearest')
+    plt.show()
 
 if __name__ == '__main__':
     main()

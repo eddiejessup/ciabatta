@@ -1,5 +1,5 @@
 import numpy as np
-import utils
+from ciabatta import utils
 cimport numpy as np
 
 cdef unsigned int wrap_inc(unsigned int M, unsigned int i):

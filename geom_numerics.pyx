@@ -1,5 +1,5 @@
 import numpy as np
-from cell_list import intro as cl_intro
+from ciabatta.cell_list import intro as cl_intro
 from libcpp cimport bool
 cimport numpy as np
 cimport cython

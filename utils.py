@@ -1,6 +1,61 @@
 import os
 import subprocess
 import numpy as np
+import smtplib
+import socket
+
+
+def email_with_gmail(username, password,
+                     to, subject, body):
+    '''
+    Sends an email from an gmail account.
+
+    Parameters
+    ----------
+    username, password: string
+        Gmail username and password: the prefix before @gmail.com
+    to: string
+        Email address of the recipient.
+    subject, body: string
+        Email subject and content.
+
+    Returns
+    -------
+    None
+    '''
+    headers = '\r\n'.join([
+        'from: {}'.format(username),
+        'subject: {}'.format(subject),
+        'to: {}'.format(to),
+        'mime-version: 1.0',
+        'content-type: text/html'])
+
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session.ehlo()
+    session.starttls()
+    session.login(username, password)
+    session.sendmail(username, to, headers + '\r\n\r\n' + body)
+
+
+def get_local_ip():
+    '''
+    Returns the local IP address.
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    IP: string
+        IP address
+    '''
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("gmail.com", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
 
 
 def get_git_hash():
@@ -18,7 +73,7 @@ def makedirs_safe(dirname):
     Make a directory, prompting the user if it already exists.
     '''
     if os.path.isdir(dirname):
-        s = input('%s exists, overwrite? (y/n) ' % dirname)
+        s = raw_input('%s exists, overwrite? (y/n) ' % dirname)
         if s != 'y':
             raise Exception
     else:
@@ -44,7 +99,8 @@ def r_to_i(r, L, dx):
     ----------
     r: float array, shape (a1, a2, ..., d)
         Cartesian vectors, with last axis indexing the dimension.
-        It's assumed that all components of the vector lie within (± L / 2).
+        It's assumed that all components of the vector lie within
+        plus or minus L / 2.
     L: float
         Length of the lattice, assumed to be centred on the origin.
     dx: float
@@ -67,7 +123,7 @@ def i_to_r(i, L, dx):
     i: integer array, shape (a1, a2, ..., d)
         Integer indices, with last axis indexing the dimension.
         It's assumed that all components of the vector
-        lie within (± (L / dx) / 2).
+        lie within plus or minus (L / dx) / 2.
     L: float
         Length of the lattice, assumed to be centred on the origin.
     dx: float
@@ -637,3 +693,30 @@ def pad_to_3d(a):
     a_pad = np.zeros([len(a), 3], dtype=a.dtype)
     a_pad[:, :a.shape[-1]] = a
     return a_pad
+
+
+def pad_length(x, d):
+    '''
+    Convert a scalar value to a vector form appropriate to a dimensional space,
+    if needed. If the input is a vector, leave it untouched.
+    Useful when a function expects an array specifying lengths along each axis,
+    but wants to also accept a scalar value in case the length is the same in
+    all directions.
+
+    Parameters
+    ----------
+    x: float or array-like
+        The input parameter that may need padding.
+    d: int
+        The dimensional space to make `x` appropriate for.
+
+    Returns
+    -------
+    x_pad: array-like, shape (d,)
+        The padded parameter.
+    '''
+    try:
+        x[0]
+    except TypeError:
+        x = d * [x]
+    return np.array(x)

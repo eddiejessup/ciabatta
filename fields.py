@@ -1,7 +1,6 @@
 
 import numpy as np
-import utils
-import field_numerics
+from ciabatta import utils, field_numerics, walled_field_numerics
 
 density = field_numerics.density
 
@@ -70,3 +69,21 @@ class Diffusing(Scalar):
 
     def iterate(self):
         self.a += self.D * self.laplacian() * self.dt
+
+
+class WalledScalar(Scalar):
+    def __init__(self, L, dim, dx, obstructs, a_0=0.0):
+        Scalar.__init__(self, L, dim, dx, a_0=a_0)
+        # Make field zero-valued where obstructed
+        self.of = obstructs.to_field(self.dx())
+        self.a *= np.logical_not(self.of)
+
+    def grad(self):
+        return walled_field_numerics.grad(self.a, self.dx(), self.of)
+
+    def grad_i(self, r):
+        return walled_field_numerics.grad_i(self.a, self.r_to_i(r), self.dx(),
+                                            self.of)
+
+    def laplacian(self):
+        return walled_field_numerics.laplace(self.a, self.dx(), self.of)
