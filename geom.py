@@ -69,6 +69,23 @@ def sphere_area(R, n):
     return (n / R) * sphere_volume(R, n)
 
 
+def ellipsoid_volume(a, b, c):
+    '''
+    Returns the volume of an ellipsoid.
+
+    Parameters
+    ----------
+    a, b, c: array-like
+        Semi-axes
+
+    Returns
+    -------
+    V: array-like
+        Volume
+    '''
+    return (4.0 / 3.0) * np.pi * a * b * c
+
+
 def cylinder_volume(R, l):
     '''
     Returns the volume of a cylinder.
