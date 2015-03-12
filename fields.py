@@ -70,18 +70,18 @@ class Diffusing(Scalar):
 
 
 class WalledScalar(Scalar):
-    def __init__(self, L, dim, dx, obstructs, a_0=0.0):
+    def __init__(self, L, dim, dx, walls, a_0=0.0):
         Scalar.__init__(self, L, dim, dx, a_0=a_0)
         # Make field zero-valued where obstructed
-        self.of = obstructs.to_field(self.dx())
-        self.a *= np.logical_not(self.of)
+        self.walls = walls
+        self.a *= np.logical_not(self.walls)
 
     def grad(self):
-        return walled_field_numerics.grad(self.a, self.dx(), self.of)
+        return walled_field_numerics.grad(self.a, self.dx(), self.walls)
 
     def grad_i(self, r):
         return walled_field_numerics.grad_i(self.a, self.r_to_i(r), self.dx(),
-                                            self.of)
+                                            self.walls)
 
     def laplacian(self):
-        return walled_field_numerics.laplace(self.a, self.dx(), self.of)
+        return walled_field_numerics.laplace(self.a, self.dx(), self.walls)
