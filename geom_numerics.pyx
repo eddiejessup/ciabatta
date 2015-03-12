@@ -26,11 +26,6 @@ cdef double segs_sep_sq(
         double D, s1N, s1D, s1c, s2N, s2D, s2c, sep_sq = 0.0
         unsigned int dim = s1.shape[0], i
 
-    a = 0.0
-    b = 0.0
-    c = 0.0
-    d = 0.0
-    e = 0.0
     for i in range(dim):
         a += s1[i] ** 2
         b += s1[i] * s2[i]
@@ -81,7 +76,7 @@ cdef double segs_sep_sq(
             s1N = -d + b
             s1D = a
 
-    if abs(s1N) < SMALL: 
+    if abs(s1N) < SMALL:
         s1c = 0.0
     else:
         s1c = s1N / s1D

@@ -239,8 +239,6 @@ def laplace_3d(np.ndarray[np.float_t, ndim=3] field,
 
 def density(r, L, dx):
     assert r.ndim == 2
-#    if (L / dx) % 1 != 0:
- #       raise Warning('requested density field spatial step not compatible with system size')
     M = int(round(L / dx))
     dx = L / M
     inds = lattice.r_to_i(r, L, dx)

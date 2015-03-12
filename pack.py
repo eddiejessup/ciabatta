@@ -313,7 +313,7 @@ def pack_simple(d, R, L, seed=None, pf=None, n=None):
 
 
 def pack(d, R, L, seed=None, pf=None, n=None,
-         beta_max=1e4, dL_max=0.02, dr_max=0.02,):
+         beta_max=1e4, dL_max=0.02, dr_max=0.02):
     '''
     Pack a number of non-intersecting spheres into a periodic system.
 

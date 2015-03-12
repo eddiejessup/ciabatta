@@ -85,7 +85,6 @@ def make_maze_dfs(M=27, dim=2, seed=None):
             if not maze[tuple(step(pos, offset, M, 2))]:
                 neighbs.append(offset)
         if neighbs:
-            print(neighbs)
             offset = neighbs[rng.randint(len(neighbs))]
             for i in range(2):
                 pos = step(pos, offset, M)

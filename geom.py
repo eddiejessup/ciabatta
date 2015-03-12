@@ -91,7 +91,7 @@ def cylinder_volume(R, l):
 
 def cylinder_area(R, l):
     '''
-    Returns the volume of a cylinder.
+    Returns the area of a cylinder.
 
     Parameters
     ----------
@@ -130,7 +130,7 @@ def capsule_volume(R, l):
 
 def capsule_area(R, l):
     '''
-    Returns the volume of a
+    Returns the area of a
     [capsule](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters

@@ -18,7 +18,7 @@ reds = mpl.cm.Reds
 
 def set_pretty_plots(use_latex=False, use_pgf=False):
     if use_pgf:
-        register_backend('pdf', FigureCanvasPgf)
+        register_backend('pdf', FigureCanvasPgf, 'pgf')
         rcParams['pgf.texsystem'] = 'pdflatex'
 
     rcParams['font.family'] = 'serif'
