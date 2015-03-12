@@ -1,6 +1,7 @@
 
 import numpy as np
-from ciabatta import utils, field_numerics, walled_field_numerics
+from ciabatta import lattice, field_numerics, walled_field_numerics
+from field_numerics import *
 
 density = field_numerics.density
 
@@ -35,10 +36,10 @@ class Field(Space):
         return self.dx() ** self.dim
 
     def r_to_i(self, r):
-        return utils.r_to_i(r, self.L, self.dx())
+        return lattice.r_to_i(r, self.L, self.dx())
 
     def i_to_r(self, i):
-        return utils.i_to_r(i, self.L, self.dx())
+        return lattice.i_to_r(i, self.L, self.dx())
 
 
 class Scalar(Field):

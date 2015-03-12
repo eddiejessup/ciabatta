@@ -1,5 +1,5 @@
 import numpy as np
-from ciabatta import utils
+from ciabatta import lattice
 cimport numpy as np
 
 cdef unsigned int wrap_inc(unsigned int M, unsigned int i):
@@ -212,7 +212,7 @@ def density(r, L, dx):
  #       raise Warning('requested density field spatial step not compatible with system size')
     M = int(round(L / dx))
     dx = L / M
-    inds = utils.r_to_i(r, L, dx)
+    inds = lattice.r_to_i(r, L, dx)
     f = np.zeros(r.shape[1] * (M,), dtype=np.int)
     if f.ndim == 1: density_1d(inds, f)
     elif f.ndim == 2: density_2d(inds, f)

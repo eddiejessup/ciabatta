@@ -5,7 +5,7 @@ numpy arrays.
 
 import matplotlib.pyplot as plt
 import numpy as np
-from ciabatta import utils
+from ciabatta import lattice
 
 
 def shrink(w_old, n):
@@ -24,13 +24,13 @@ def shrink(w_old, n):
             y_ = y * n
             if w_old[x, y]:
                 w_new[x_ + mid, y_ + mid] = True
-                if w_old[utils.wrap_inc(M, x), y]:
+                if w_old[lattice.wrap_inc(M, x), y]:
                     w_new[x_ + mid:x_ + n, y_ + mid] = True
-                if w_old[utils.wrap_dec(M, x), y]:
+                if w_old[lattice.wrap_dec(M, x), y]:
                     w_new[x_:x_ + mid, y_ + mid] = True
-                if w_old[x, utils.wrap_inc(M, y)]:
+                if w_old[x, lattice.wrap_inc(M, y)]:
                     w_new[x_ + mid, y_ + mid:y_ + n] = True
-                if w_old[x, utils.wrap_dec(M, y)]:
+                if w_old[x, lattice.wrap_dec(M, y)]:
                     w_new[x_ + mid, y * n:y_ + mid] = True
     return w_new
 

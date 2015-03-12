@@ -5,7 +5,7 @@ find those within a cut-off distance of a separate set of points.
 
 import itertools
 import numpy as np
-from ciabatta import utils
+from ciabatta import lattice
 
 filler = np.frompyfunc(lambda x: list(), 1, 1)
 
@@ -16,7 +16,7 @@ def get_cell_list_2d(r_cl, R_cl, L):
     dx = L / M
     cl = np.empty([M, M], dtype=np.object)
     filler(cl, cl)
-    inds = utils.r_to_i(r_cl, L, dx)
+    inds = lattice.r_to_i(r_cl, L, dx)
     for i in range(len(inds)):
         cl[tuple(inds[i])].append(i)
     return cl
@@ -25,7 +25,7 @@ def get_cell_list_2d(r_cl, R_cl, L):
 def get_checks_2d(cl, r, L):
     M = cl.shape[0]
     dx = L / M
-    inds = utils.r_to_i(r, L, dx)
+    inds = lattice.r_to_i(r, L, dx)
     checks = np.empty([len(r)], dtype=np.object)
 
     xs, ys = inds.T
