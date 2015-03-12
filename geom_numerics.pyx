@@ -4,7 +4,9 @@ from libcpp cimport bool
 cimport numpy as np
 cimport cython
 
+
 cdef double SMALL = 1e-10
+
 
 @cython.cdivision(True)
 @cython.boundscheck(False)
@@ -92,6 +94,7 @@ cdef double segs_sep_sq(
         sep_sq += (w[i] + (s1c * s1[i]) - (s2c * s2[i])) ** 2
 
     return sep_sq
+
 
 @cython.cdivision(True)
 @cython.boundscheck(False)
@@ -213,6 +216,7 @@ def caps_intersect_intro(
                 break
 
     return collisions
+
 
 @cython.cdivision(True)
 @cython.boundscheck(False)

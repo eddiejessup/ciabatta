@@ -1,11 +1,14 @@
 import numpy as np
 cimport numpy as np
 
+
 cdef unsigned int wrap_inc(unsigned int M, unsigned int i):
     return i + 1 if i < M - 1 else 0
 
+
 cdef unsigned int wrap_dec(unsigned int M, unsigned int i):
     return i - 1 if i > 0 else M - 1
+
 
 def grad(field, dx, walls):
     assert field.shape == walls.shape
@@ -17,13 +20,15 @@ def grad(field, dx, walls):
     else: raise Exception("Walled grad not implemented in this dimension")
     return grad
 
+
 def grad_1d(np.ndarray[np.float_t, ndim=1] field,
-        np.ndarray[np.float_t, ndim=2] grad,
-        double dx, 
-        np.ndarray[np.uint8_t, ndim=1] walls):
-    cdef unsigned int i_x, i_inc, i_dec
-    cdef unsigned int M_x = walls.shape[0]
-    cdef np.float_t dx_double = 2.0 * dx, interval
+            np.ndarray[np.float_t, ndim=2] grad,
+            double dx,
+            np.ndarray[np.uint8_t, ndim=1] walls):
+    cdef:
+        unsigned int i_x, i_inc, i_dec
+        unsigned int M_x = walls.shape[0]
+        np.float_t dx_double = 2.0 * dx, interval
 
     for i_x in range(M_x):
         if not walls[i_x]:
@@ -42,13 +47,15 @@ def grad_1d(np.ndarray[np.float_t, ndim=1] field,
         else:
             grad[i_x, 0] = 0.0
 
+
 def grad_2d(np.ndarray[np.float_t, ndim=2] field,
-        np.ndarray[np.float_t, ndim=3] grad,
-        double dx, 
-        np.ndarray[np.uint8_t, ndim=2] walls):
-    cdef unsigned int i_x, i_y, i_inc, i_dec
-    cdef unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
-    cdef np.float_t dx_double = 2.0 * dx, interval
+            np.ndarray[np.float_t, ndim=3] grad,
+            double dx,
+            np.ndarray[np.uint8_t, ndim=2] walls):
+    cdef:
+        unsigned int i_x, i_y, i_inc, i_dec
+        unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
+        np.float_t dx_double = 2.0 * dx, interval
 
     for i_x in range(M_x):
         for i_y in range(M_y):
@@ -82,23 +89,25 @@ def grad_2d(np.ndarray[np.float_t, ndim=2] field,
                 grad[i_x, i_y, 0] = 0.0
                 grad[i_x, i_y, 1] = 0.0
 
+
 def grad_3d(np.ndarray[np.float_t, ndim=3] field,
-        np.ndarray[np.float_t, ndim=4] grad,
-        double dx, 
-        np.ndarray[np.uint8_t, ndim=3] walls):
-    cdef unsigned int i_x, i_y, i_z, i_inc, i_dec
-    cdef unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
-    cdef unsigned int M_z = walls.shape[2]
-    cdef np.float_t dx_double = 2.0 * dx, interval
+            np.ndarray[np.float_t, ndim=4] grad,
+            double dx,
+            np.ndarray[np.uint8_t, ndim=3] walls):
+    cdef:
+        unsigned int i_x, i_y, i_z, i_inc, i_dec
+        unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
+        unsigned int M_z = walls.shape[2]
+        np.float_t dx_double = 2.0 * dx, interval
 
     for i_x in range(M_x):
         for i_y in range(M_y):
             for i_z in range(M_z):
                 if not walls[i_x, i_y, i_z]:
                     i_inc = wrap_inc(M_x, i_x)
-                    i_dec = wrap_dec(M_x, i_x)  
+                    i_dec = wrap_dec(M_x, i_x)
 
-                    interval = dx_double                    
+                    interval = dx_double
                     if walls[i_inc, i_y, i_z]:
                         i_inc = i_x
                         interval = dx
@@ -122,7 +131,7 @@ def grad_3d(np.ndarray[np.float_t, ndim=3] field,
                     grad[i_x, i_y, i_z, 1] = (field[i_x, i_inc, i_z] - field[i_x, i_dec, i_z]) / interval
 
                     i_inc = wrap_inc(M_z, i_z)
-                    i_dec = wrap_dec(M_z, i_z)                    
+                    i_dec = wrap_dec(M_z, i_z)
 
                     interval = dx_double
                     if walls[i_x, i_y, i_inc]:
@@ -138,6 +147,7 @@ def grad_3d(np.ndarray[np.float_t, ndim=3] field,
                     grad[i_x, i_y, i_z, 1] = 0.0
                     grad[i_x, i_y, i_z, 2] = 0.0
 
+
 def grad_i(field, inds, dx, walls):
     assert field.shape == walls.shape
     assert dx > 0.0
@@ -150,14 +160,16 @@ def grad_i(field, inds, dx, walls):
     else: raise Exception("Walled Grad_i not implemented in this dimension")
     return grad_i
 
-def grad_i_1d(np.ndarray[np.float_t, ndim=1] field, 
-        np.ndarray[np.int_t, ndim=2] inds,
-        np.ndarray[np.float_t, ndim=2] grad_i,
-        double dx, 
-        np.ndarray[np.uint8_t, ndim=1] walls):
-    cdef unsigned int i, i_x, i_inc, i_dec
-    cdef unsigned int M_x = field.shape[0]
-    cdef double dx_double = 2.0 * dx, interval
+
+def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
+              np.ndarray[np.int_t, ndim=2] inds,
+              np.ndarray[np.float_t, ndim=2] grad_i,
+              double dx,
+              np.ndarray[np.uint8_t, ndim=1] walls):
+    cdef:
+        unsigned int i, i_x, i_inc, i_dec
+        unsigned int M_x = field.shape[0]
+        double dx_double = 2.0 * dx, interval
 
     for i in range(inds.shape[0]):
         i_x = inds[i, 0]
@@ -177,14 +189,16 @@ def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
         else:
             grad[i, 0] = 0.0
 
-def grad_i_2d(np.ndarray[np.float_t, ndim=2] field, 
-        np.ndarray[np.int_t, ndim=2] inds,
-        np.ndarray[np.float_t, ndim=2] grad_i,
-        double dx,
-        np.ndarray[np.uint8_t, ndim=2] walls):
-    cdef unsigned int i, i_x, i_y, i_inc, i_dec
-    cdef unsigned int M_x = field.shape[0], M_y = field.shape[1]
-    cdef double dx_double = 2.0 * dx, interval
+
+def grad_i_2d(np.ndarray[np.float_t, ndim=2] field,
+              np.ndarray[np.int_t, ndim=2] inds,
+              np.ndarray[np.float_t, ndim=2] grad_i,
+              double dx,
+              np.ndarray[np.uint8_t, ndim=2] walls):
+    cdef:
+        unsigned int i, i_x, i_y, i_inc, i_dec
+        unsigned int M_x = field.shape[0], M_y = field.shape[1]
+        double dx_double = 2.0 * dx, interval
 
     for i in range(inds.shape[0]):
         i_x, i_y = inds[i, 0], inds[i, 1]
@@ -218,15 +232,17 @@ def grad_i_2d(np.ndarray[np.float_t, ndim=2] field,
             grad_i[i, 0] = 0.0
             grad_i[i, 1] = 0.0
 
-def grad_i_3d(np.ndarray[np.float_t, ndim=3] field, 
-        np.ndarray[np.int_t, ndim=2] inds,
-        np.ndarray[np.float_t, ndim=2] grad_i,
-        double dx,
-        np.ndarray[np.uint8_t, ndim=3] walls):
-    cdef unsigned int i, i_x, i_y, i_z, i_inc, i_dec
-    cdef unsigned int M_x = field.shape[0], M_y = field.shape[1]
-    cdef unsigned int M_z = field.shape[2]
-    cdef double dx_double = 2.0 * dx, interval
+
+def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
+              np.ndarray[np.int_t, ndim=2] inds,
+              np.ndarray[np.float_t, ndim=2] grad_i,
+              double dx,
+              np.ndarray[np.uint8_t, ndim=3] walls):
+    cdef:
+        unsigned int i, i_x, i_y, i_z, i_inc, i_dec
+        unsigned int M_x = field.shape[0], M_y = field.shape[1]
+        unsigned int M_z = field.shape[2]
+        double dx_double = 2.0 * dx, interval
 
     for i in range(inds.shape[0]):
         i_x, i_y, i_z = inds[i, 0], inds[i, 1], inds[i, 2]
@@ -274,6 +290,7 @@ def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
             grad_i[i, 1] = 0.0
             grad_i[i, 2] = 0.0
 
+
 def laplace(field, dx, walls):
     assert field.shape == walls.shape
     assert dx > 0.0
@@ -282,16 +299,18 @@ def laplace(field, dx, walls):
     elif field.ndim == 2: laplace_2d(field, laplace, dx, walls)
     elif field.ndim == 3: laplace_3d(field, laplace, dx, walls)
     else: raise Exception('Laplacian not implemented in this dimension')
-    return laplace 
+    return laplace
+
 
 def laplace_1d(np.ndarray[np.float_t, ndim=1] field,
-        np.ndarray[np.float_t, ndim=1] laplace, 
-        double dx, 
-        np.ndarray[np.uint8_t, ndim=1] walls):
-    cdef unsigned int i_x
-    cdef unsigned int i_inc, i_dec
-    cdef unsigned int M_x = walls.shape[0]
-    cdef np.float_t dx_sq = dx * dx, diff
+               np.ndarray[np.float_t, ndim=1] laplace,
+               double dx,
+               np.ndarray[np.uint8_t, ndim=1] walls):
+    cdef:
+        unsigned int i_x
+        unsigned int i_inc, i_dec
+        unsigned int M_x = walls.shape[0]
+        np.float_t dx_sq = dx * dx, diff
 
     for i_x in range(M_x):
         if not walls[i_x]:
@@ -308,14 +327,16 @@ def laplace_1d(np.ndarray[np.float_t, ndim=1] field,
         else:
             laplace[i_x] = 0.0
 
+
 def laplace_2d(np.ndarray[np.float_t, ndim=2] field,
-        np.ndarray[np.float_t, ndim=2] laplace,
-        double dx, 
-        np.ndarray[np.uint8_t, ndim=2] walls):
-    cdef unsigned int i_x, i_y
-    cdef unsigned int i_inc, i_dec
-    cdef unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
-    cdef np.float_t dx_sq = dx * dx, diff
+               np.ndarray[np.float_t, ndim=2] laplace,
+               double dx,
+               np.ndarray[np.uint8_t, ndim=2] walls):
+    cdef:
+        unsigned int i_x, i_y
+        unsigned int i_inc, i_dec
+        unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
+        np.float_t dx_sq = dx * dx, diff
 
     for i_x in range(M_x):
         for i_y in range(M_y):
@@ -340,16 +361,18 @@ def laplace_2d(np.ndarray[np.float_t, ndim=2] field,
             else:
                 laplace[i_x, i_y] = 0.0
 
+
 def laplace_3d(np.ndarray[np.float_t, ndim=3] field,
                np.ndarray[np.float_t, ndim=3] laplace,
-               double dx, 
+               double dx,
                np.ndarray[np.uint8_t, ndim=3] walls):
-    cdef unsigned int i_x, i_y, i_z
-    cdef unsigned int i_inc, i_dec
-    cdef unsigned int M_x = walls.shape[0], M_y = walls.shape[1] 
-    cdef unsigned int M_z = walls.shape[2]
-    cdef np.float_t dx_sq = dx * dx, diff
-    
+    cdef:
+        unsigned int i_x, i_y, i_z
+        unsigned int i_inc, i_dec
+        unsigned int M_x = walls.shape[0], M_y = walls.shape[1]
+        unsigned int M_z = walls.shape[2]
+        np.float_t dx_sq = dx * dx, diff
+
     for i_x in range(M_x):
         for i_y in range(M_y):
             for i_z in range(M_z):
