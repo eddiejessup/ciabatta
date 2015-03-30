@@ -3,7 +3,7 @@ import numpy as np
 
 def vector_mag_sq(v):
     '''
-    Return the squared magnitude of vectors v.
+    Returns the squared magnitude of vectors.
 
     Parameters
     ----------
@@ -20,7 +20,7 @@ def vector_mag_sq(v):
 
 def vector_mag(v):
     '''
-    Return the magnitude of vectors v.
+    Returns the magnitude of vectors.
 
     Parameters
     ----------
@@ -37,8 +37,8 @@ def vector_mag(v):
 
 def vector_unit_nonull(v):
     '''
-    Return unit vectors of input vectors.
-    Any null vectors in v raise an Exception
+    Returns unit vectors of input vectors.
+    Any null vectors raise an Exception
 
     Parameters
     ----------
@@ -56,8 +56,8 @@ def vector_unit_nonull(v):
 
 def vector_unit_nullnull(v):
     '''
-    Return unit vectors of input vectors.
-    Any null vectors in v are mapped again to null vectors.
+    Returns unit vectors of input vectors.
+    Any null vectors remain null vectors.
 
     Parameters
     ----------
@@ -78,8 +78,8 @@ def vector_unit_nullnull(v):
 
 def vector_unit_nullrand(v):
     '''
-    Return unit vectors of input vectors.
-    Any null vectors in v are mapped to randomly picked unit vectors.
+    Returns unit vectors of input vectors.
+    Any null vectors are mapped to a uniformly picked unit vector.
 
     Parameters
     ----------
@@ -136,7 +136,7 @@ def vector_angle(a, b):
 
 def vector_perp(v):
     '''
-    Return vectors perpendicular to 2-dimensional vectors.
+    Returns vectors perpendicular to 2-dimensional vectors.
     If an input vector has components (x, y), the output vector has
     components (x, -y).
 
@@ -223,12 +223,13 @@ def cart_to_polar(arr_c):
 
 def sphere_pick_polar(d, n=1):
     '''
-    Return polar vectors randomly picked on the unit n-sphere.
+    Returns polar vectors uniformly picked on the unit sphere in a space
+    with an arbitrary number of dimensions.
 
     Parameters
     ----------
     d: float
-        Dimensionality of the sphere.
+        The number of dimensions of the space in which the sphere lives.
     n: integer
         Number of samples to pick.
 
@@ -255,12 +256,13 @@ def sphere_pick_polar(d, n=1):
 
 def sphere_pick(d, n=1):
     '''
-    Return cartesian vectors randomly picked on the unit n-sphere.
+    Returns cartesian vectors uniformly picked on the unit sphere in a space
+    with an arbitrary number of dimensions.
 
     Parameters
     ----------
     d: float
-        Dimensionality of the sphere.
+        The number of dimensions of the space in which the sphere lives.
     n: integer
         Number of samples to pick.
 
@@ -274,12 +276,13 @@ def sphere_pick(d, n=1):
 
 def disk_pick_polar(n=1):
     '''
-    Return polar vectors randomly picked on the 2-dimensional unit disk.
+    Returns polar vectors uniformly picked on the unit disk.
+    The unit disk is the space enclosed by the unit circle.
 
     Parameters
     ----------
     n: integer
-        Number of samples to pick.
+        Number of points to return.
 
     Returns
     -------
@@ -294,7 +297,8 @@ def disk_pick_polar(n=1):
 
 def disk_pick(n=1):
     '''
-    Return cartesian vectors randomly picked on the 2-dimensional unit disk.
+    Returns cartesian vectors uniformly picked on the unit disk.
+    The unit disk is the space enclosed by the unit circle.
 
     Parameters
     ----------

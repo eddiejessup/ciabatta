@@ -3,7 +3,7 @@ import numpy as np
 
 def extend_array(a, n):
     '''
-    Increase the resolution of an array by duplicating its values to fill
+    Increases the resolution of an array by duplicating its values to fill
      a larger array.
 
      Parameters
@@ -24,7 +24,7 @@ def extend_array(a, n):
 
 def field_subset(f, inds, rank=0):
     '''
-    Return the value of a field at a subset of points.
+    Returns the value of a field at a subset of points.
 
     Parameters
     ----------
@@ -56,7 +56,7 @@ def field_subset(f, inds, rank=0):
 
 def pad_to_3d(a):
     '''
-    Convert and return 1- or 2-dimensional cartesian vectors into a
+    Returns 1- or 2-dimensional cartesian vectors, converted into a
     3-dimensional representation, with additional dimensional coordinates
     assumed to be zero.
 
@@ -75,9 +75,13 @@ def pad_to_3d(a):
 
 def pad_length(x, d):
     '''
-    Convert a scalar value to a vector form appropriate to a dimensional space,
-    if needed. If the input is a vector, leave it untouched.
-    Useful when a function expects an array specifying lengths along each axis,
+    Returns a vector appropriate to a dimensional space, using an input vector
+    as a prompt depending on its type:
+
+        - If the input is a vector, return that vector.
+        - If the input is a scalar, return a vector filled with that value.
+
+    Useful when a function expects an array specifying values along each axis,
     but wants to also accept a scalar value in case the length is the same in
     all directions.
 
@@ -110,7 +114,7 @@ def wrap_dec(M, i):
 
 def r_to_i(r, L, dx):
     '''
-    Return closest indices on a square lattice of vectors in continuous space.
+    Returns closest indices on a square lattice of vectors in continuous space.
 
     Parameters
     ----------
@@ -133,7 +137,7 @@ def r_to_i(r, L, dx):
 
 def i_to_r(i, L, dx):
     '''
-    Return coordinates of lattice indices in continuous space.
+    Returns coordinates of lattice indices in continuous space.
 
     Parameters
     ----------

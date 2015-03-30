@@ -9,38 +9,38 @@ SMALL = 1e-10
 
 def sphere_volume(R, n):
     '''
-    Returns the volume of an n-dimensional sphere.
+    Returns the volume of a sphere in an arbitrary number of dimensions.
 
     Parameters
     ----------
     R: array-like
-        Radius
+        Radius.
     n: array-like
-        Dimensionality
+        The number of dimensions of the space in which the sphere lives.
 
     Returns
     -------
     V: array-like
-        Volume
+        Volume.
     '''
     return ((np.pi ** (n / 2.0)) / scipy.special.gamma(n / 2.0 + 1)) * R ** n
 
 
 def sphere_radius(V, n):
     '''
-    Returns the radius of an n-dimensional sphere.
+    Returns the radius of a sphere in an arbitrary number of dimensions.
 
     Parameters
     ----------
     V: array-like
-        Volume
+        Volume.
     n: array-like
-        Dimensionality
+        The number of dimensions of the space in which the sphere lives.
 
     Returns
     -------
     R: array-like
-        Radius
+        Radius.
     '''
     return (((scipy.special.gamma(n / 2.0 + 1.0) * V) ** (1.0 / n)) /
             np.sqrt(np.pi))
@@ -48,7 +48,7 @@ def sphere_radius(V, n):
 
 def sphere_area(R, n):
     '''
-    Returns the surface area of an n-dimensional sphere.
+    Returns the surface area of a sphere in an arbitrary number of dimensions.
 
     Note that in 2d this will return what is usually called a circle's
     circumference, not what is usually called its area
@@ -57,14 +57,14 @@ def sphere_area(R, n):
     Parameters
     ----------
     R: array-like
-        Radius
+        Radius.
     n: array-like
-        Dimensionality
+        The number of dimensions of the space in which the sphere lives.
 
     Returns
     -------
     A: array-like
-        Surface area
+        Surface area.
     '''
     return (n / R) * sphere_volume(R, n)
 
@@ -76,12 +76,13 @@ def ellipsoid_volume(a, b, c):
     Parameters
     ----------
     a, b, c: array-like
-        Semi-axes
+        Length of the semi-axes.
+        This is like a generalisation of the radius of a sphere.
 
     Returns
     -------
     V: array-like
-        Volume
+        Volume.
     '''
     return (4.0 / 3.0) * np.pi * a * b * c
 
@@ -93,14 +94,14 @@ def cylinder_volume(R, l):
     Parameters
     ----------
     R: array-like
-        Radius
+        Radius.
     l: array-like
-        Length
+        Length.
 
     Returns
     -------
     V: array-like
-        Volume
+        Volume.
     '''
     # Remember, the volume of a sphere in 2d is what's usually called its area
     return sphere_volume(R, 2) * l
@@ -113,14 +114,14 @@ def cylinder_area(R, l):
     Parameters
     ----------
     R: array-like
-        Radius
+        Radius.
     l: array-like
-        Length
+        Length.
 
     Returns
     -------
     A: array-like
-        Surface area
+        Surface area.
     '''
     return sphere_area(R, 2) * l
 
@@ -133,14 +134,14 @@ def capsule_volume(R, l):
     Parameters
     ----------
     R: array-like
-        Radius of the capsule hemispheres, and cylinder sections.
+        Radius of the hemispheres and cylinder sections.
     l: array-like
-        Length of the cylinder section
+        Length of the cylinder section.
 
     Returns
     -------
     V: array-like
-        Volume
+        Volume.
     '''
     return sphere_volume(R, 3) + cylinder_volume(R, l)
 
@@ -153,14 +154,14 @@ def capsule_area(R, l):
     Parameters
     ----------
     R: array-like
-        Radius of the capsule hemispheres, and cylinder sections.
+        Radius of the hemispheres and cylinder sections.
     l: array-like
-        Length of the cylinder section
+        Length of the cylinder section.
 
     Returns
     -------
     A: array-like
-        Surface area
+        Surface area.
     '''
     return sphere_area(R, 3) + cylinder_area(R, l)
 
@@ -174,9 +175,9 @@ def R_of_l(V, l):
     Parameters
     ----------
     V: float
-        Required volume.
+        Volume.
     l: float
-        Length of the capsule's line segment.
+        Length of the cylinder section.
 
     Returns
     -------
@@ -198,14 +199,16 @@ def capsule_aspect_ratio(l, R):
     Parameters
     ----------
     l: float
-        Length of the capsule's line segment.
+        Length of the cylinder section.
     R: float
-        Radius.
+        Radius of the hemispheres and cylinder sections.
 
     Returns
     -------
     ar: float
         Aspect ratio.
+        This is defined as the ratio of length including hemisphere
+        sections, to radius.
     '''
     return 1.0 + l / (2.0 * R)
 

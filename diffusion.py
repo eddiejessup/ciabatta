@@ -4,7 +4,7 @@ from ciabatta import rotation
 
 def rot_diff(v, D, dt):
     '''
-    Return cartesian velocity vectors, after applying rotational diffusion.
+    Returns cartesian velocity vectors, after applying rotational diffusion.
 
     Parameters
     ----------
@@ -37,7 +37,7 @@ def rot_diff(v, D, dt):
 
 def diff(r, D, dt):
     '''
-    Return cartesian position vectors, after applying translational diffusion.
+    Returns cartesian position vectors, after applying translational diffusion.
 
     Parameters
     ----------
