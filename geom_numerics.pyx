@@ -1,6 +1,5 @@
 import numpy as np
 from ciabatta.cell_list import intro as cl_intro
-from libcpp cimport bool
 cimport numpy as np
 cimport cython
 
@@ -133,11 +132,10 @@ def capsule_intersection(np.ndarray[np.float_t, ndim=2] r,
     '''
     cdef:
         unsigned int i, i_i2, i2, idim, n = r.shape[0], dim = r.shape[1]
-        np.ndarray[np.uint8_t, ndim=1, cast=True] collisions = np.zeros((n,), dtype=np.bool)
+        np.ndarray[np.uint8_t, ndim=1, cast=True] collisions = np.zeros(n, dtype=np.bool)
         np.ndarray[int, ndim=2] inters
         np.ndarray[int, ndim=1] intersi
-        tuple dims = (dim,)
-        np.ndarray[np.float_t, ndim=1] s1 = np.zeros(dims), s2 = np.zeros(dims), wd = np.zeros(dims), r1d = np.zeros(dims)
+        np.ndarray[np.float_t, ndim=1] s1 = np.empty(dim), s2 = np.empty(dim), wd = np.empty(dim), r1d = np.empty(dim)
         double sep_sq_max = (2.0 * R) ** 2, l_half = l / 2.0
 
     inters, intersi = cl_intro.get_inters(r, L, 2.0 * R + l)
@@ -162,7 +160,7 @@ def capsule_intersection(np.ndarray[np.float_t, ndim=2] r,
 @cython.cdivision(True)
 @cython.boundscheck(False)
 def sphere_intersection(np.ndarray[np.float_t, ndim=2] r,
-                        float R):
+                        double R):
     cdef:
         unsigned int i, j
         np.ndarray[np.uint8_t, ndim=1] c = np.zeros(r.shape[0], dtype=np.uint8)
