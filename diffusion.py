@@ -1,6 +1,86 @@
 from __future__ import print_function, division
 import numpy as np
-from ciabatta import rotation
+import scipy.constants
+from ciabatta import geom, rotation
+
+
+def spheroid_xi(p):
+    return np.sqrt(np.abs(p ** 2.0 - 1.0)) / p
+
+
+def perrin_factor(p):
+    xi = spheroid_xi(p)
+    if p > 1.0:
+        return 2.0 * np.arctanh(xi) / xi
+    else:
+        return 2.0 * np.arctan(xi) / xi
+
+
+def drag_coeff_sphere(R, eta):
+    return 6.0 * np.pi * eta * R
+
+
+def drag_coeff_rot_sphere(R, eta):
+    return 8.0 * np.pi * eta * R ** 3
+
+
+def drag_coeff_spheroid(a, b, eta):
+    p = a / b
+    S = perrin_factor(p)
+    f_p = 2 * p ** (2.0 / 3.0) / S
+    V = geom.ellipsoid_volume(a, b, b)
+    R_sph = geom.sphere_radius(V, n=3)
+    f_sph = drag_coeff_sphere(eta, R_sph)
+    return f_sph * f_p
+
+
+def drag_coeff_rot_spheroid(a, b, eta):
+    p = a / b
+    S = perrin_factor(p)
+    xi = spheroid_xi(p)
+    F_axial = (4.0 / 3.0) * xi ** 2 / (2.0 - (S / p ** 2))
+    F_equat = ((4.0 / 3.0) *
+               ((1.0 / p) ** 2 - p ** 2) / (2.0 - S * (2.0 - (1.0 / p) ** 2)))
+    return F_axial, F_equat
+
+
+def drag_coeff_spherocylinder(R, l, eta):
+    V = geom.capsule_volume(R, l)
+    R_sph = geom.sphere_radius(V, n=3)
+    return drag_coeff_sphere(R_sph, eta)
+
+
+def drag_coeff_rot_spherocylinder(R, l, eta):
+    V = geom.capsule_volume(R, l)
+    R_sph = geom.sphere_radius(V, n=3)
+    return drag_coeff_rot_sphere(R_sph, eta)
+
+
+def stokes_einstein(drag, T):
+    '''
+    Returns the diffusion coefficient for an object.
+
+    The viscosity of water at 300 K is 0.001 Pa.s,
+    which has base units kg / (m.s).
+
+    The diffusion constant might be translational or rotational.
+    It depends on which one the drag coefficient represents,
+    since the Stokes-Einstein relation is the same for both.
+
+    Parameters
+    ----------
+    drag:
+        The drag coefficient for the object
+    T:
+        Temperature
+
+    Returns
+    -------
+    D:
+        Diffusion constant.
+
+    '''
+    return scipy.constants.k * T / drag
 
 
 def rot_diff(v, D, dt):
