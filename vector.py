@@ -240,6 +240,65 @@ def sphere_pick(d, n=1):
     return polar_to_cart(sphere_pick_polar(d, n))
 
 
+def rejection_pick(L, n, d, valid):
+    '''
+    Returns cartesian vectors uniformly picked in a space with an arbitrary
+    number of dimensions, which is fully enclosed by a cube of finite length,
+    using a supplied function which should evaluate whether a picked point lies
+    within this space.
+
+    The picking is done by rejection sampling in the cube.
+
+    Parameters
+    ----------
+    L: float
+        Side length of the enclosing cube.
+    n: integer
+        Number of points to return
+    d: integer
+        The number of dimensions of the space
+
+    Returns
+    -------
+    r: array, shape (n, d)
+        Sample cartesian vectors
+    '''
+    rs = []
+    while len(rs) < n:
+        r = np.random.uniform(-L / 2.0, L / 2.0, size=d)
+        if valid(r):
+            rs.append(r)
+    return np.array(rs)
+
+
+def ball_pick(n, d):
+    '''
+    Returns cartesian vectors uniformly picked on the unit ball in an arbitrary
+    number of dimensions.
+
+    The unit ball is the space enclosed by the unit sphere.
+
+    The picking is done by rejection sampling in the unit cube.
+
+    In 3-dimensional space, the fraction `\pi / 6 \sim 0.52` points are valid.
+
+    Parameters
+    ----------
+    n: integer
+        Number of points to return.
+    d: integer
+        Number of dimensions of the space in which the ball lives
+
+    Returns
+    -------
+    r: array, shape (n, d)
+        Sample cartesian vectors.
+    '''
+    def valid(r):
+        return vector_mag_sq(r) < 1.0
+    return rejection_pick(L=2.0, n=n, d=d, valid=valid)
+
+
 def disk_pick_polar(n=1):
     '''
     Returns polar vectors uniformly picked on the unit disk.
