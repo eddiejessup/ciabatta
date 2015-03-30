@@ -127,10 +127,10 @@ def cylinder_area(R, l):
     return sphere_area(R, 2) * l
 
 
-def capsule_volume(R, l):
+def spherocylinder_volume(R, l):
     '''
     Returns the volume of a
-    [capsule](http://en.wikipedia.org/wiki/Capsule_(geometry)).
+    [spherocylinder](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters
     ----------
@@ -147,10 +147,10 @@ def capsule_volume(R, l):
     return sphere_volume(R, 3) + cylinder_volume(R, l)
 
 
-def capsule_area(R, l):
+def spherocylinder_area(R, l):
     '''
-    Returns the area of a
-    [capsule](http://en.wikipedia.org/wiki/Capsule_(geometry)).
+    Returns the surface area of a
+    [spherocylinder](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters
     ----------
@@ -167,11 +167,10 @@ def capsule_area(R, l):
     return sphere_area(R, 3) + cylinder_area(R, l)
 
 
-def R_of_l(V, l):
+def spherocylinder_radius(V, l):
     '''
-    Returns the radius of a capsule required for a given volume.
-
-    http://en.wikipedia.org/wiki/Capsule_(geometry)
+    Returns the radius of a
+    [spherocylinder](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters
     ----------
@@ -185,17 +184,12 @@ def R_of_l(V, l):
     R: float
         Radius.
     '''
-    R = scipy.roots([(4.0 / 3.0) * np.pi, np.pi * l, 0.0, -V])
-    R_phys = np.real(R[np.logical_and(np.isreal(R), R > 0.0)])
-    if len(R_phys) != 1:
-        raise Exception('More or less than one physical radius found')
-    return R_phys[0]
+    return np.roots([4.0 / 3.0, l, 0, -V / np.pi])[-1].real
 
 
-def capsule_aspect_ratio(l, R):
+def spherocylinder_aspect_ratio(l, R):
     '''
-    Returns the aspect ratio of a capsule, defined as the ratio of its length
-    including hemisphere sections, to its radius.
+    Returns the aspect ratio of a spherocylinder,
 
     Parameters
     ----------
@@ -212,6 +206,28 @@ def capsule_aspect_ratio(l, R):
         sections, to radius.
     '''
     return 1.0 + l / (2.0 * R)
+
+
+def spherocylinder_radius_for_aspect(V, ar):
+    '''
+    Returns the radius of a spherocylinder with a given volume and
+    aspect ratio.
+
+    Parameters
+    ----------
+    V: float
+        Volume.
+    ar: float
+        Aspect ratio.
+        This is defined as the ratio of length including hemisphere
+        sections, to radius.
+
+    Returns
+    -------
+    R: float
+        Radius.
+    '''
+    return (V / (2.0 * np.pi * (a - (1.0 / 3.0)))) ** (1.0 / 3.0)
 
 
 def spheres_sep(ar, aR, br, bR):
