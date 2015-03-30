@@ -3,6 +3,7 @@ Algorithms related to generating and processing mazes, represented as boolean
 numpy arrays.
 '''
 
+from __future__ import print_function, division
 import matplotlib.pyplot as plt
 import numpy as np
 from ciabatta import lattice

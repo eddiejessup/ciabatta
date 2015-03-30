@@ -2,6 +2,7 @@
 Pack spheres into periodic systems.
 '''
 
+from __future__ import print_function, division
 import numpy as np
 from ciabatta import geom
 from ciabatta.distance import pdist_sq_periodic, cdist_sq_periodic
