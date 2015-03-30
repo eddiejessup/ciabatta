@@ -100,41 +100,6 @@ def vector_unit_nullrand(v):
     return v_new
 
 
-def vector_angle(a, b):
-    '''
-    Return angles between two sets of vectors.
-
-    Parameters
-    ----------
-    a, b: array, shape (a1, a2, ..., d)
-        Cartesian vectors, with last axis indexing the dimension.
-
-    Returns
-    -------
-    theta: array, shape (a1, a2, ...)
-        Angles between a and b.
-    '''
-    cos_theta = np.sum(a * b, -1) / (vector_mag(a) * vector_mag(b))
-    theta = np.empty_like(cos_theta)
-    try:
-        theta[np.abs(cos_theta) <= 1.0] = np.arccos(
-            cos_theta[np.abs(cos_theta) <= 1.0])
-    except IndexError:
-        if np.abs(cos_theta) <= 1.0:
-            theta = np.arccos(cos_theta)
-        elif np.dot(a, b) > 0.0:
-            theta = 0.0
-        else:
-            theta = np.pi
-    else:
-        for i in np.where(np.abs(cos_theta) > 1.0)[0]:
-            if np.dot(a[i], b[i]) > 0.0:
-                theta[i] = 0.0
-            else:
-                theta[i] = np.pi
-    return theta
-
-
 def vector_perp(v):
     '''
     Returns vectors perpendicular to 2-dimensional vectors.

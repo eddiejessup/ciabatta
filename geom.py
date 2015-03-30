@@ -317,25 +317,3 @@ def point_seg_sep_sq(ar, br1, br2):
     b = c1 / c2
     bc = br1 + b * v
     return np.sum(np.square(ar - bc))
-
-
-def angular_distance(n1, n2):
-    '''
-    Returns the angular separation between two 3 dimensional vectors,
-    when embedded onto the surface of the unit sphere centred at the origin.
-
-    Parameters
-    ----------
-    n1, n2: array-like, shape (3,)
-        Coordinates of two vectors.
-        The magnitude of the vectors does not matter as both are normalised
-        to unit vectors.
-
-    Returns
-    -------
-    d_sigma: float
-        Angle between unit vectors of n1 and n2 in radians.
-    '''
-    r1, r2 = vector.vector_mag(n1), vector.vector_mag(n2)
-    u1, u2 = n1 / r1, n2 / r2
-    return np.arctan2(vector.vector_mag(np.cross(u1, u2)), np.dot(u1, u2))

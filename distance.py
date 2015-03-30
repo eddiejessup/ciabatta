@@ -4,6 +4,8 @@ Distance finding functions inspired by scipy.spatial.distance.
 
 from __future__ import print_function, division
 import numpy as np
+from ciabatta import vector
+from ciabatta.distance_numerics import *
 
 
 def csep(ra, rb):
@@ -154,3 +156,21 @@ def pdist_sq_periodic(r, L):
     d[np.identity(len(r), dtype=np.bool)] = np.inf
     d_sq = np.sum(np.square(d), axis=-1)
     return d_sq
+
+
+def angular_distance(n1, n2):
+    '''
+    Returns the angular separation between two 3 dimensional vectors.
+
+    Parameters
+    ----------
+    n1, n2: array-like, shape (3,)
+        Coordinates of two vectors.
+        Their magnitude does not matter.
+
+    Returns
+    -------
+    d_sigma: float
+        Angle between n1 and n2 in radians.
+    '''
+    return np.arctan2(vector.vector_mag(np.cross(n1, n2)), np.dot(n1, n2))
