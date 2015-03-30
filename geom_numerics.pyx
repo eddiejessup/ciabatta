@@ -102,33 +102,31 @@ cdef double line_segments_sep_sq(
 
 @cython.cdivision(True)
 @cython.boundscheck(False)
-def capsule_intersection(np.ndarray[np.float_t, ndim=2] r,
-                         np.ndarray[np.float_t, ndim=2] u,
-                         double l, double R, double L):
+def spherocylinder_intersection(np.ndarray[np.float_t, ndim=2] r,
+                                np.ndarray[np.float_t, ndim=2] u,
+                                double l, double R, double L):
     '''
-    For capsules in a periodic system, returns if each capsule intersects
-    at least one other capsule.
-
-    http://en.wikipedia.org/wiki/Capsule_(geometry)
+    Returns if a spherocylinder intersects at least one other spherocylinder,
+    in a periodic system.
 
     Parameters
     ----------
-    r: array-like, shape (m, 3) for m capsules in 3 dimensions
-        Coordinates for the centres of the capsules.
-    u: array-like, shape (m, n)
-        Unit vectors describing the orientation of the capsules.
-        The vectors should point along the capsule's axis in either direction.
+    r: array-like, shape (m, 3) for `m` spherocylinders
+        Coordinates of the centre of the spherocylinders.
+    u: array-like, shape (m, 3)
+        Unit vectors describing their orientation.
+        These should point along the axis, in either direction.
     l: float
-        Length of the capsules' line segments.
+        Length of the cylinder section.
     R: float
-        Radius of the capsule hemispheres, and cylinder sections.
+        Radius of the hemispheres and cylinder.
     L: float
         Length of the periodic system.
 
     Returns
     -------
     intersect: boolean array, shape (m,)
-        True if a capsule intersects at least one other capsule.
+        `True` if a spherocylinder intersects at least one other spherocylinder.
     '''
     cdef:
         unsigned int i, i_i2, i2, idim, n = r.shape[0], dim = r.shape[1]
