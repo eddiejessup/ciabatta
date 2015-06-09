@@ -45,13 +45,13 @@ def drag_coeff_rot_spheroid(a, b, eta):
 
 
 def drag_coeff_spherocylinder(R, l, eta):
-    V = geom.capsule_volume(R, l)
+    V = geom.spherocylinder_volume(R, l)
     R_sph = geom.sphere_radius(V, n=3)
     return drag_coeff_sphere(R_sph, eta)
 
 
 def drag_coeff_rot_spherocylinder(R, l, eta):
-    V = geom.capsule_volume(R, l)
+    V = geom.spherocylinder_volume(R, l)
     R_sph = geom.sphere_radius(V, n=3)
     return drag_coeff_rot_sphere(R_sph, eta)
 
