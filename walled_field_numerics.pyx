@@ -1,5 +1,6 @@
 import numpy as np
 cimport numpy as np
+cimport cython
 
 
 cdef unsigned int wrap_inc(unsigned int M, unsigned int i):
@@ -21,6 +22,8 @@ def grad(field, dx, walls):
     return grad
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_1d(np.ndarray[np.float_t, ndim=1] field,
             np.ndarray[np.float_t, ndim=2] grad,
             double dx,
@@ -48,6 +51,8 @@ def grad_1d(np.ndarray[np.float_t, ndim=1] field,
             grad[i_x, 0] = 0.0
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_2d(np.ndarray[np.float_t, ndim=2] field,
             np.ndarray[np.float_t, ndim=3] grad,
             double dx,
@@ -90,6 +95,8 @@ def grad_2d(np.ndarray[np.float_t, ndim=2] field,
                 grad[i_x, i_y, 1] = 0.0
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_3d(np.ndarray[np.float_t, ndim=3] field,
             np.ndarray[np.float_t, ndim=4] grad,
             double dx,
@@ -161,6 +168,8 @@ def grad_i(field, inds, dx, walls):
     return grad_i
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
               np.ndarray[np.int_t, ndim=2] inds,
               np.ndarray[np.float_t, ndim=2] grad_i,
@@ -190,6 +199,8 @@ def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
             grad[i, 0] = 0.0
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_i_2d(np.ndarray[np.float_t, ndim=2] field,
               np.ndarray[np.int_t, ndim=2] inds,
               np.ndarray[np.float_t, ndim=2] grad_i,
@@ -233,6 +244,8 @@ def grad_i_2d(np.ndarray[np.float_t, ndim=2] field,
             grad_i[i, 1] = 0.0
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
               np.ndarray[np.int_t, ndim=2] inds,
               np.ndarray[np.float_t, ndim=2] grad_i,
@@ -302,6 +315,8 @@ def laplace(field, dx, walls):
     return laplace
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def laplace_1d(np.ndarray[np.float_t, ndim=1] field,
                np.ndarray[np.float_t, ndim=1] laplace,
                double dx,
@@ -328,6 +343,8 @@ def laplace_1d(np.ndarray[np.float_t, ndim=1] field,
             laplace[i_x] = 0.0
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def laplace_2d(np.ndarray[np.float_t, ndim=2] field,
                np.ndarray[np.float_t, ndim=2] laplace,
                double dx,
@@ -362,6 +379,8 @@ def laplace_2d(np.ndarray[np.float_t, ndim=2] field,
                 laplace[i_x, i_y] = 0.0
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def laplace_3d(np.ndarray[np.float_t, ndim=3] field,
                np.ndarray[np.float_t, ndim=3] laplace,
                double dx,

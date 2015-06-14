@@ -1,6 +1,7 @@
 import numpy as np
 from ciabatta import lattice
 cimport numpy as np
+cimport cython
 
 
 cdef unsigned int wrap_inc(unsigned int M, unsigned int i):
@@ -21,6 +22,8 @@ def div(field, dx):
     return div
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def div_1d(np.ndarray[np.float_t, ndim=2] field,
            np.ndarray[np.float_t, ndim=1] div,
            double dx):
@@ -33,6 +36,8 @@ def div_1d(np.ndarray[np.float_t, ndim=2] field,
         div[i_x] = (field[wrap_inc(M_x, i_x), 0] - field[wrap_dec(M_x, i_x), 0]) / dx_double
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def div_2d(np.ndarray[np.float_t, ndim=3] field,
            np.ndarray[np.float_t, ndim=2] div,
            double dx):
@@ -49,6 +54,8 @@ def div_2d(np.ndarray[np.float_t, ndim=3] field,
                 (field[wrap_inc(M_x, i_x), i_y, 0] - field[wrap_dec(M_x, i_x), i_y, 0])) / dx_double
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def div_3d(np.ndarray[np.float_t, ndim=4] field,
            np.ndarray[np.float_t, ndim=3] div,
            double dx):
@@ -77,6 +84,8 @@ def grad(field, dx):
     return grad
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_1d(np.ndarray[np.float_t, ndim=1] field,
             np.ndarray[np.float_t, ndim=2] grad,
             double dx):
@@ -89,6 +98,8 @@ def grad_1d(np.ndarray[np.float_t, ndim=1] field,
         grad[i_x, 0] = (field[wrap_inc(M_x, i_x)] - field[wrap_dec(M_x, i_x)]) / dx_double
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_2d(np.ndarray[np.float_t, ndim=2] field,
             np.ndarray[np.float_t, ndim=3] grad,
             double dx):
@@ -103,6 +114,8 @@ def grad_2d(np.ndarray[np.float_t, ndim=2] field,
             grad[i_x, i_y, 1] = (field[i_x, wrap_inc(M_y, i_y)] - field[i_x, wrap_dec(M_y, i_y)]) / dx_double
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_3d(np.ndarray[np.float_t, ndim=3] field,
             np.ndarray[np.float_t, ndim=4] grad,
             double dx):
@@ -132,6 +145,8 @@ def grad_i(field, inds, dx):
     return grad_i
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
               np.ndarray[np.int_t, ndim=2] inds,
               np.ndarray[np.float_t, ndim=2] grad_i,
@@ -146,6 +161,8 @@ def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
         grad_i[i, 0] = (field[wrap_inc(M_x, i_x)] - field[wrap_dec(M_x, i_x)]) / dx_double
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_i_2d(np.ndarray[np.float_t, ndim=2] field,
               np.ndarray[np.int_t, ndim=2] inds,
               np.ndarray[np.float_t, ndim=2] grad_i,
@@ -161,6 +178,8 @@ def grad_i_2d(np.ndarray[np.float_t, ndim=2] field,
         grad_i[i, 1] = (field[i_x, wrap_inc(M_y, i_y)] - field[i_x, wrap_dec(M_y, i_y)]) / dx_double
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
               np.ndarray[np.int_t, ndim=2] inds,
               np.ndarray[np.float_t, ndim=2] grad_i,
@@ -188,6 +207,8 @@ def laplace(field, dx):
     return laplace
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def laplace_1d(np.ndarray[np.float_t, ndim=1] field,
                np.ndarray[np.float_t, ndim=1] laplace,
                double dx):
@@ -218,6 +239,8 @@ def laplace_2d(np.ndarray[np.float_t, ndim=2] field,
                 4.0 * field[i_x, i_y]) / dx_sq
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def laplace_3d(np.ndarray[np.float_t, ndim=3] field,
                np.ndarray[np.float_t, ndim=3] laplace,
                double dx):
@@ -250,6 +273,8 @@ def density(r, L, dx):
     return f / dx ** r.shape[1]
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def density_1d(np.ndarray[np.int_t, ndim=2] inds,
                np.ndarray[np.int_t, ndim=1] f):
     cdef:
@@ -258,6 +283,8 @@ def density_1d(np.ndarray[np.int_t, ndim=2] inds,
         f[inds[i_part, 0]] += 1
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def density_2d(np.ndarray[np.int_t, ndim=2] inds,
                np.ndarray[np.int_t, ndim=2] f):
     cdef:
@@ -266,6 +293,8 @@ def density_2d(np.ndarray[np.int_t, ndim=2] inds,
         f[inds[i_part, 0], inds[i_part, 1]] += 1
 
 
+@cython.cdivision(True)
+@cython.boundscheck(False)
 def density_3d(np.ndarray[np.int_t, ndim=2] inds,
                np.ndarray[np.int_t, ndim=3] f):
     cdef:
