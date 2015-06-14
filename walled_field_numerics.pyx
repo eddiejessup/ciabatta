@@ -11,17 +11,6 @@ cdef unsigned int wrap_dec(unsigned int M, unsigned int i):
     return i - 1 if i > 0 else M - 1
 
 
-def grad(field, dx, walls):
-    assert field.shape == walls.shape
-    assert dx > 0.0
-    grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
-    if field.ndim == 1: grad_1d(field, grad, dx, walls)
-    elif field.ndim == 2: grad_2d(field, grad, dx, walls)
-    elif field.ndim == 3: grad_3d(field, grad, dx, walls)
-    else: raise Exception("Walled grad not implemented in this dimension")
-    return grad
-
-
 @cython.cdivision(True)
 @cython.boundscheck(False)
 def grad_1d(np.ndarray[np.float_t, ndim=1] field,
@@ -153,19 +142,6 @@ def grad_3d(np.ndarray[np.float_t, ndim=3] field,
                     grad[i_x, i_y, i_z, 0] = 0.0
                     grad[i_x, i_y, i_z, 1] = 0.0
                     grad[i_x, i_y, i_z, 2] = 0.0
-
-
-def grad_i(field, inds, dx, walls):
-    assert field.shape == walls.shape
-    assert dx > 0.0
-    assert inds.ndim == 2
-    assert field.ndim == inds.shape[1]
-    grad_i = np.empty(inds.shape, dtype=field.dtype)
-    if field.ndim == 1: grad_i_1d(field, inds, grad_i, dx, walls)
-    elif field.ndim == 2: grad_i_2d(field, inds, grad_i, dx, walls)
-    elif field.ndim == 3: grad_i_3d(field, inds, grad_i, dx, walls)
-    else: raise Exception("Walled Grad_i not implemented in this dimension")
-    return grad_i
 
 
 @cython.cdivision(True)
@@ -302,17 +278,6 @@ def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
             grad_i[i, 0] = 0.0
             grad_i[i, 1] = 0.0
             grad_i[i, 2] = 0.0
-
-
-def laplace(field, dx, walls):
-    assert field.shape == walls.shape
-    assert dx > 0.0
-    laplace = np.empty_like(field)
-    if field.ndim == 1: laplace_1d(field, laplace, dx, walls)
-    elif field.ndim == 2: laplace_2d(field, laplace, dx, walls)
-    elif field.ndim == 3: laplace_3d(field, laplace, dx, walls)
-    else: raise Exception('Laplacian not implemented in this dimension')
-    return laplace
 
 
 @cython.cdivision(True)

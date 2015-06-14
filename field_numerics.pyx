@@ -1,5 +1,4 @@
 import numpy as np
-from ciabatta import lattice
 cimport numpy as np
 cimport cython
 
@@ -10,16 +9,6 @@ cdef unsigned int wrap_inc(unsigned int M, unsigned int i):
 
 cdef unsigned int wrap_dec(unsigned int M, unsigned int i):
     return i - 1 if i > 0 else M - 1
-
-
-def div(field, dx):
-    assert dx > 0.0
-    div = np.empty(field.shape[:-1], dtype=field.dtype)
-    if field.ndim == 2: div_1d(field, div, dx)
-    elif field.ndim == 3: div_2d(field, div, dx)
-    elif field.ndim == 4: div_3d(field, div, dx)
-    else: raise Exception('Divergence not implemented in this dimension')
-    return div
 
 
 @cython.cdivision(True)
@@ -74,16 +63,6 @@ def div_3d(np.ndarray[np.float_t, ndim=4] field,
                     (field[i_x, i_y, wrap_inc(M_z, i_z), 2] - field[i_x, i_y, wrap_dec(M_z, i_z), 2])) / dx_double
 
 
-def grad(field, dx):
-    assert dx > 0.0
-    grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
-    if field.ndim == 1: grad_1d(field, grad, dx)
-    elif field.ndim == 2: grad_2d(field, grad, dx)
-    elif field.ndim == 3: grad_3d(field, grad, dx)
-    else: raise Exception('Grad not implemented in this dimension')
-    return grad
-
-
 @cython.cdivision(True)
 @cython.boundscheck(False)
 def grad_1d(np.ndarray[np.float_t, ndim=1] field,
@@ -131,18 +110,6 @@ def grad_3d(np.ndarray[np.float_t, ndim=3] field,
                 grad[i_x, i_y, i_z, 0] = (field[wrap_inc(M_x, i_x), i_y, i_z] - field[wrap_dec(M_x, i_x), i_y, i_z]) / dx_double
                 grad[i_x, i_y, i_z, 1] = (field[i_x, wrap_inc(M_y, i_y), i_z] - field[i_x, wrap_dec(M_y, i_y), i_z]) / dx_double
                 grad[i_x, i_y, i_z, 2] = (field[i_x, i_y, wrap_inc(M_z, i_z)] - field[i_x, i_y, wrap_dec(M_z, i_z)]) / dx_double
-
-
-def grad_i(field, inds, dx):
-    assert dx > 0.0
-    assert inds.ndim == 2
-    assert field.ndim == inds.shape[1]
-    grad_i = np.empty(inds.shape, dtype=field.dtype)
-    if field.ndim == 1: grad_i_1d(field, inds, grad_i, dx)
-    elif field.ndim == 2: grad_i_2d(field, inds, grad_i, dx)
-    elif field.ndim == 3: grad_i_3d(field, grad_i, dx)
-    else: raise Exception("Grad_i not implemented in this dimension")
-    return grad_i
 
 
 @cython.cdivision(True)
@@ -197,16 +164,6 @@ def grad_i_3d(np.ndarray[np.float_t, ndim=3] field,
         grad_i[i, 2] = (field[i_x, i_y, wrap_inc(M_z, i_z)] - field[i_x, i_y, wrap_dec(M_z, i_z)]) / dx_double
 
 
-def laplace(field, dx):
-    assert dx > 0.0
-    laplace = np.empty_like(field)
-    if field.ndim == 1: laplace_1d(field, laplace, dx)
-    elif field.ndim == 2: laplace_2d(field, laplace, dx)
-    elif field.ndim == 3: laplace_3d(field, laplace, dx)
-    else: raise Exception('Laplacian not implemented in this dimension')
-    return laplace
-
-
 @cython.cdivision(True)
 @cython.boundscheck(False)
 def laplace_1d(np.ndarray[np.float_t, ndim=1] field,
@@ -258,19 +215,6 @@ def laplace_3d(np.ndarray[np.float_t, ndim=3] field,
                     field[i_x, wrap_inc(M_y, i_y), i_z] + field[i_x, wrap_dec(M_y, i_y), i_z] +
                     field[i_x, i_y, wrap_inc(M_z, i_z)] + field[i_x, i_y, wrap_dec(M_z, i_z)] -
                     6.0 * field[i_x, i_y, i_z]) / dx_sq
-
-
-def density(r, L, dx):
-    assert r.ndim == 2
-    M = int(round(L / dx))
-    dx = L / M
-    inds = lattice.r_to_i(r, L, dx)
-    f = np.zeros(r.shape[1] * (M,), dtype=np.int)
-    if f.ndim == 1: density_1d(inds, f)
-    elif f.ndim == 2: density_2d(inds, f)
-    elif f.ndim == 3: density_3d(inds, f)
-    else: raise Exception('Density calc not implemented in this dimension')
-    return f / dx ** r.shape[1]
 
 
 @cython.cdivision(True)
