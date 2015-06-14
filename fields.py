@@ -177,11 +177,11 @@ def walled_grad(field, dx, walls):
     assert dx > 0.0
     grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
     if field.ndim == 1:
-        walled_numerics.grad_1d(field, grad, dx, walls)
+        walled_field_numerics.grad_1d(field, grad, dx, walls)
     elif field.ndim == 2:
-        walled_numerics.grad_2d(field, grad, dx, walls)
+        walled_field_numerics.grad_2d(field, grad, dx, walls)
     elif field.ndim == 3:
-        walled_numerics.grad_3d(field, grad, dx, walls)
+        walled_field_numerics.grad_3d(field, grad, dx, walls)
     else:
         raise Exception("Walled grad not implemented in this dimension")
     return grad
@@ -194,11 +194,11 @@ def walled_grad_i(field, inds, dx, walls):
     assert field.ndim == inds.shape[1]
     grad_i = np.empty(inds.shape, dtype=field.dtype)
     if field.ndim == 1:
-        walled_numerics.grad_i_1d(field, inds, grad_i, dx, walls)
+        walled_field_numerics.grad_i_1d(field, inds, grad_i, dx, walls)
     elif field.ndim == 2:
-        walled_numerics.grad_i_2d(field, inds, grad_i, dx, walls)
+        walled_field_numerics.grad_i_2d(field, inds, grad_i, dx, walls)
     elif field.ndim == 3:
-        walled_numerics.grad_i_3d(field, inds, grad_i, dx, walls)
+        walled_field_numerics.grad_i_3d(field, inds, grad_i, dx, walls)
     else:
         raise Exception("Walled Grad_i not implemented in this dimension")
     return grad_i
@@ -209,11 +209,11 @@ def walled_laplace(field, dx, walls):
     assert dx > 0.0
     laplace = np.empty_like(field)
     if field.ndim == 1:
-        walled_numerics.laplace_1d(field, laplace, dx, walls)
+        walled_field_numerics.laplace_1d(field, laplace, dx, walls)
     elif field.ndim == 2:
-        walled_numerics.laplace_2d(field, laplace, dx, walls)
+        walled_field_numerics.laplace_2d(field, laplace, dx, walls)
     elif field.ndim == 3:
-        walled_numerics.laplace_3d(field, laplace, dx, walls)
+        walled_field_numerics.laplace_3d(field, laplace, dx, walls)
     else:
         raise Exception('Laplacian not implemented in this dimension')
     return laplace
