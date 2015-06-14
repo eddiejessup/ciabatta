@@ -172,7 +172,7 @@ def grad_i_1d(np.ndarray[np.float_t, ndim=1] field,
 
             grad_i[i, 0] = (field[i_inc] -  field[i_dec]) / interval
         else:
-            grad[i, 0] = 0.0
+            grad_i[i, 0] = 0.0
 
 
 @cython.cdivision(True)
