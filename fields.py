@@ -70,6 +70,7 @@ class Diffusing(Scalar):
 
 
 class WalledScalar(Scalar):
+
     def __init__(self, L, dim, dx, walls, a_0=0.0):
         Scalar.__init__(self, L, dim, dx, a_0=a_0)
         # Make field zero-valued where obstructed
@@ -90,6 +91,7 @@ class WalledScalar(Scalar):
 # Note, inheritance order matters to get walled grad & laplacian call
 # (see diamond problem on wikipedia and how python handles it)
 class WalledDiffusing(WalledScalar, Diffusing):
+
     def __init__(self, L, dim, dx, walls, D, dt, a_0=0.0):
         Diffusing.__init__(self, L, dim, dx, D, dt, a_0=a_0)
         WalledScalar.__init__(self, L, dim, dx, walls, a_0=a_0)
