@@ -1,6 +1,6 @@
-'''
+"""
 Pack spheres into periodic systems.
-'''
+"""
 
 from __future__ import print_function, division
 import numpy as np
@@ -90,8 +90,7 @@ class MetroRCP(object):
 
 
 def unwrap_one_layer(r, L, n):
-    '''
-    For a set of points in a 2 dimensional periodic system, extend the set of
+    """For a set of points in a 2 dimensional periodic system, extend the set of
     points to tile the points at a given period.
 
     Parameters
@@ -108,7 +107,7 @@ def unwrap_one_layer(r, L, n):
     rcu: float array, shape (:, 2).
         The set of points. tiled at the periods at a distance `n` from the
         origin.
-    '''
+    """
     try:
         L[0]
     except (TypeError, IndexError):
@@ -125,8 +124,7 @@ def unwrap_one_layer(r, L, n):
 
 
 def unwrap_to_layer(r, L, n=1):
-    '''
-    For a set of points in a 2 dimensional periodic system, extend the set of
+    """For a set of points in a 2 dimensional periodic system, extend the set of
     points to tile the points up to to a given period.
 
     Parameters
@@ -143,7 +141,7 @@ def unwrap_to_layer(r, L, n=1):
     rcu: float array, shape (:, 2).
         The set of points. tiled up to the periods at a distance `n` from the
         origin.
-    '''
+    """
     rcu = []
     for i_n in range(n + 1):
         rcu.extend(unwrap_one_layer(r, L, i_n))
@@ -151,8 +149,7 @@ def unwrap_to_layer(r, L, n=1):
 
 
 def draw_medium(r, R, L, n=1, ax=None):
-    '''
-    Draw circles representing circles in a two-dimensional periodic system.
+    """Draw circles representing circles in a two-dimensional periodic system.
     Circles may be tiled up to a number of periods.
 
     Parameters
@@ -171,7 +168,7 @@ def draw_medium(r, R, L, n=1, ax=None):
     Returns
     -------
     None
-    '''
+    """
     if ax is None:
         ax = plt.gca()
     for ru in unwrap_to_layer(r, L, n):
@@ -180,8 +177,7 @@ def draw_medium(r, R, L, n=1, ax=None):
 
 
 def n_to_pf(L, d, n, R):
-    '''
-    Returns the packing fraction for a number of non-intersecting spheres.
+    """Returns the packing fraction for a number of non-intersecting spheres.
 
     Parameters
     ----------
@@ -198,13 +194,12 @@ def n_to_pf(L, d, n, R):
     -------
     pf: float
         Fraction of space occupied by the spheres.
-    '''
+    """
     return (n * geom.sphere_volume(R=R, n=d)) / L ** d
 
 
 def pf_to_n(L, d, pf, R):
-    '''
-    Returns the number of non-intersecting spheres required to achieve
+    """Returns the number of non-intersecting spheres required to achieve
     as close to a given packing fraction as possible, along with the actual
     achieved packing fraction. for a number of non-intersecting spheres.
 
@@ -226,15 +221,14 @@ def pf_to_n(L, d, pf, R):
     pf_actual:
         Fraction of space occupied by `n` spheres.
         This is the closest possible fraction achievable to `pf`.
-    '''
+    """
     n = int(round(pf * L ** d / geom.sphere_volume(R, d)))
     pf_actual = n_to_pf(L, d, n, R)
     return n, pf_actual
 
 
 def calc_L_0(n, d, pf, R):
-    '''
-    Returns the system size required to achieve a given packing fraction,
+    """Returns the system size required to achieve a given packing fraction,
     for a number of non-intersecting spheres.
 
     Useful to initialise the Metropolis algorithm to a reasonable state.
@@ -254,13 +248,12 @@ def calc_L_0(n, d, pf, R):
     -------
     L_0: float
         System size.
-    '''
+    """
     return ((n * geom.sphere_volume(R=R, n=d)) / pf) ** (1.0 / d)
 
 
 def pack_simple(d, R, L, seed=None, pf=None, n=None):
-    '''
-    Pack a number of non-intersecting spheres into a periodic system.
+    """Pack a number of non-intersecting spheres into a periodic system.
 
     Can specify packing by number of spheres or packing fraction.
 
@@ -294,7 +287,7 @@ def pack_simple(d, R, L, seed=None, pf=None, n=None):
         In this implementation this will always be equal to `R`;
         it is returned only to provide a uniform interface with the
         Metropolis-Hastings implementation.
-    '''
+    """
     np.random.seed(seed)
 
     if pf is not None:
@@ -315,8 +308,7 @@ def pack_simple(d, R, L, seed=None, pf=None, n=None):
 
 def pack(d, R, L, seed=None, pf=None, n=None,
          beta_max=1e4, dL_max=0.02, dr_max=0.02):
-    '''
-    Pack a number of non-intersecting spheres into a periodic system.
+    """Pack a number of non-intersecting spheres into a periodic system.
 
     Can specify packing by number of spheres or packing fraction.
 
@@ -356,7 +348,7 @@ def pack(d, R, L, seed=None, pf=None, n=None,
         Coordinates of the centres of the spheres for a valid configuration.
     R_actual: float
         Actual sphere radius used in the packing.
-    '''
+    """
     np.random.seed(seed)
     if pf is not None:
         if pf == 0.0:

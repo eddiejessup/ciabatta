@@ -5,8 +5,7 @@ import socket
 
 def email_with_gmail(username, password,
                      to, subject, body):
-    '''
-    Sends an email from an gmail account.
+    """Sends an email from an gmail account.
 
     Parameters
     ----------
@@ -20,7 +19,7 @@ def email_with_gmail(username, password,
     Returns
     -------
     None
-    '''
+    """
     headers = '\r\n'.join([
         'from: {}'.format(username),
         'subject: {}'.format(subject),
@@ -36,8 +35,7 @@ def email_with_gmail(username, password,
 
 
 def get_local_ip():
-    '''
-    Returns the local IP address.
+    """Returns the local IP address.
 
     Parameters
     ----------
@@ -47,7 +45,7 @@ def get_local_ip():
     -------
     IP: string
         IP address
-    '''
+    """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(("gmail.com", 80))

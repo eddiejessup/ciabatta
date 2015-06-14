@@ -57,8 +57,7 @@ def drag_coeff_rot_spherocylinder(R, l, eta):
 
 
 def stokes_einstein(drag, T):
-    '''
-    Returns the diffusion coefficient for an object.
+    """Returns the diffusion coefficient for an object.
 
     The viscosity of water at 300 K is 0.001 Pa.s,
     which has base units kg / (m.s).
@@ -79,13 +78,12 @@ def stokes_einstein(drag, T):
     D:
         Diffusion constant.
 
-    '''
+    """
     return scipy.constants.k * T / drag
 
 
 def rot_diff(v, D, dt):
-    '''
-    Returns cartesian velocity vectors, after applying rotational diffusion.
+    """Returns cartesian velocity vectors, after applying rotational diffusion.
 
     Parameters
     ----------
@@ -100,7 +98,7 @@ def rot_diff(v, D, dt):
     -------
     vr: array, shape of v
         Velocity vectors after rotational diffusion is applied.
-    '''
+    """
     # Account for possibility of D being an array
     try:
         D = D[:, np.newaxis]
@@ -117,8 +115,7 @@ def rot_diff(v, D, dt):
 
 
 def diff(r, D, dt):
-    '''
-    Returns cartesian position vectors, after applying translational diffusion.
+    """Returns cartesian position vectors, after applying translational diffusion.
 
     Parameters
     ----------
@@ -133,7 +130,7 @@ def diff(r, D, dt):
     -------
     rr: array, shape of r
         Velocity vectors after translational diffusion is applied.
-    '''
+    """
     if dt == 0.0:
         return r.copy()
     return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)

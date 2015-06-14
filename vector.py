@@ -3,8 +3,7 @@ import numpy as np
 
 
 def vector_mag_sq(v):
-    '''
-    Returns the squared magnitude of vectors.
+    """Returns the squared magnitude of vectors.
 
     Parameters
     ----------
@@ -15,13 +14,12 @@ def vector_mag_sq(v):
     -------
     mag: array, shape (a1, a2, ...)
         Vector squared magnitudes
-    '''
+    """
     return np.square(v).sum(axis=-1)
 
 
 def vector_mag(v):
-    '''
-    Returns the magnitude of vectors.
+    """Returns the magnitude of vectors.
 
     Parameters
     ----------
@@ -32,14 +30,12 @@ def vector_mag(v):
     -------
     mag: array, shape (a1, a2, ...)
         Vector magnitudes
-    '''
+    """
     return np.sqrt(vector_mag_sq(v))
 
 
 def vector_unit_nonull(v):
-    '''
-    Returns unit vectors of input vectors.
-    Any null vectors raise an Exception
+    """Returns unit vectors of input vectors. Any null vectors raise an Exception.
 
     Parameters
     ----------
@@ -49,16 +45,14 @@ def vector_unit_nonull(v):
     Returns
     -------
     v_new: array, shape of v
-    '''
+    """
     if v.size == 0:
         return v
     return v / vector_mag(v)[..., np.newaxis]
 
 
 def vector_unit_nullnull(v):
-    '''
-    Returns unit vectors of input vectors.
-    Any null vectors remain null vectors.
+    """Returns unit vectors of input vectors. Any null vectors remain null vectors.
 
     Parameters
     ----------
@@ -68,7 +62,7 @@ def vector_unit_nullnull(v):
     Returns
     -------
     v_new: array, shape of v
-    '''
+    """
     if v.size == 0:
         return v
     mag = vector_mag(v)
@@ -78,8 +72,7 @@ def vector_unit_nullnull(v):
 
 
 def vector_unit_nullrand(v):
-    '''
-    Returns unit vectors of input vectors.
+    """Returns unit vectors of input vectors.
     Any null vectors are mapped to a uniformly picked unit vector.
 
     Parameters
@@ -90,7 +83,7 @@ def vector_unit_nullrand(v):
     Returns
     -------
     v_new: array, shape of v
-    '''
+    """
     if v.size == 0:
         return v
     mag = vector_mag(v)
@@ -101,8 +94,7 @@ def vector_unit_nullrand(v):
 
 
 def vector_perp(v):
-    '''
-    Returns vectors perpendicular to 2-dimensional vectors.
+    """Returns vectors perpendicular to 2-dimensional vectors.
     If an input vector has components (x, y), the output vector has
     components (x, -y).
 
@@ -113,7 +105,7 @@ def vector_perp(v):
     Returns
     -------
     v_perp: array, shape of v
-    '''
+    """
     if v.shape[-1] != 2:
         raise Exception('Can only define a unique perpendicular vector in 2d')
     v_perp = np.empty_like(v)
@@ -125,8 +117,7 @@ def vector_perp(v):
 # Coordinate system transformations
 
 def polar_to_cart(arr_p):
-    '''
-    Convert and return polar vectors in their cartesian representation.
+    """Convert and return polar vectors in their cartesian representation.
 
     Parameters
     ----------
@@ -138,7 +129,7 @@ def polar_to_cart(arr_p):
     -------
     arr_c: array, shape of arr_p
         Cartesian vectors.
-    '''
+    """
     if arr_p.shape[-1] == 1:
         arr_c = arr_p.copy()
     elif arr_p.shape[-1] == 2:
@@ -158,8 +149,7 @@ def polar_to_cart(arr_p):
 
 
 def cart_to_polar(arr_c):
-    '''
-    Convert and return cartesian vectors in their polar representation.
+    """Convert and return cartesian vectors in their polar representation.
 
     Parameters
     ----------
@@ -170,7 +160,7 @@ def cart_to_polar(arr_c):
     -------
     arr_p: array, shape of arr_c
         Polar vectors, using (radius, inclination, azimuth) convention.
-    '''
+    """
     if arr_c.shape[-1] == 1:
         arr_p = arr_c.copy()
     elif arr_c.shape[-1] == 2:
@@ -188,8 +178,7 @@ def cart_to_polar(arr_c):
 
 
 def sphere_pick_polar(d, n=1):
-    '''
-    Returns polar vectors uniformly picked on the unit sphere in a space
+    """Returns polar vectors uniformly picked on the unit sphere in a space
     with an arbitrary number of dimensions.
 
     Parameters
@@ -203,7 +192,7 @@ def sphere_pick_polar(d, n=1):
     -------
     r: array, shape (n, d)
         Sample vectors.
-    '''
+    """
     a = np.empty([n, d])
     if d == 1:
         a[:, 0] = np.random.randint(2, size=n) * 2 - 1
@@ -221,8 +210,7 @@ def sphere_pick_polar(d, n=1):
 
 
 def sphere_pick(d, n=1):
-    '''
-    Returns cartesian vectors uniformly picked on the unit sphere in a space
+    """Returns cartesian vectors uniformly picked on the unit sphere in a space
     with an arbitrary number of dimensions.
 
     Parameters
@@ -236,13 +224,12 @@ def sphere_pick(d, n=1):
     -------
     r: array, shape (n, d)
         Sample cartesian vectors.
-    '''
+    """
     return polar_to_cart(sphere_pick_polar(d, n))
 
 
 def rejection_pick(L, n, d, valid):
-    '''
-    Returns cartesian vectors uniformly picked in a space with an arbitrary
+    """Returns cartesian vectors uniformly picked in a space with an arbitrary
     number of dimensions, which is fully enclosed by a cube of finite length,
     using a supplied function which should evaluate whether a picked point lies
     within this space.
@@ -262,7 +249,7 @@ def rejection_pick(L, n, d, valid):
     -------
     r: array, shape (n, d)
         Sample cartesian vectors
-    '''
+    """
     rs = []
     while len(rs) < n:
         r = np.random.uniform(-L / 2.0, L / 2.0, size=d)
@@ -272,8 +259,7 @@ def rejection_pick(L, n, d, valid):
 
 
 def ball_pick(n, d):
-    '''
-    Returns cartesian vectors uniformly picked on the unit ball in an arbitrary
+    """Returns cartesian vectors uniformly picked on the unit ball in an arbitrary
     number of dimensions.
 
     The unit ball is the space enclosed by the unit sphere.
@@ -293,15 +279,14 @@ def ball_pick(n, d):
     -------
     r: array, shape (n, d)
         Sample cartesian vectors.
-    '''
+    """
     def valid(r):
         return vector_mag_sq(r) < 1.0
     return rejection_pick(L=2.0, n=n, d=d, valid=valid)
 
 
 def disk_pick_polar(n=1):
-    '''
-    Returns polar vectors uniformly picked on the unit disk.
+    """Returns polar vectors uniformly picked on the unit disk.
     The unit disk is the space enclosed by the unit circle.
 
     Parameters
@@ -313,7 +298,7 @@ def disk_pick_polar(n=1):
     -------
     r: array, shape (n, 2)
         Sample vectors.
-    '''
+    """
     a = np.zeros([n, 2], dtype=np.float)
     a[:, 0] = np.sqrt(np.random.uniform(size=n))
     a[:, 1] = np.random.uniform(0.0, 2.0 * np.pi, size=n)
@@ -321,8 +306,7 @@ def disk_pick_polar(n=1):
 
 
 def disk_pick(n=1):
-    '''
-    Returns cartesian vectors uniformly picked on the unit disk.
+    """Returns cartesian vectors uniformly picked on the unit disk.
     The unit disk is the space enclosed by the unit circle.
 
     Parameters
@@ -334,5 +318,5 @@ def disk_pick(n=1):
     -------
     r: array, shape (n, 2)
         Sample vectors.
-    '''
+    """
     return polar_to_cart(disk_pick_polar(n))

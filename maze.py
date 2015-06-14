@@ -1,7 +1,7 @@
-'''
+"""
 Algorithms related to generating and processing mazes, represented as boolean
 numpy arrays.
-'''
+"""
 
 from __future__ import print_function, division
 import matplotlib.pyplot as plt
@@ -51,8 +51,7 @@ def step(p, o, m, n=1):
 
 
 def make_maze_dfs(M=27, dim=2, seed=None):
-    '''
-    Generate a maze using the Depth-first search algorithm.
+    """Generate a maze using the Depth-first search algorithm.
 
     http://en.wikipedia.org/wiki/Depth-first_search
 
@@ -71,7 +70,7 @@ def make_maze_dfs(M=27, dim=2, seed=None):
     -------
     maze: boolean array, shape (M, M)
         Array defining the maze. Walls are represented by `True`.
-    '''
+    """
     if M % 2 != 0:
         raise Exception('Require Maze size to be even.')
     rng = np.random.RandomState(seed)

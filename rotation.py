@@ -3,8 +3,7 @@ import numpy as np
 
 
 def R_rot_2d(th):
-    '''
-    Returns a 2-dimensional rotation matrix.
+    """Returns a 2-dimensional rotation matrix.
 
     Parameters
     ----------
@@ -14,7 +13,7 @@ def R_rot_2d(th):
     Returns
     -------
     R: array, shape (n, 2, 2)
-    '''
+    """
     s, = np.sin(th).T
     c, = np.cos(th).T
     R = np.empty((len(th), 2, 2), dtype=np.float)
@@ -29,8 +28,7 @@ def R_rot_2d(th):
 
 
 def R_rot_3d(th):
-    '''
-    Returns a 3-dimensional rotation matrix.
+    """Returns a 3-dimensional rotation matrix.
 
     Parameters
     ----------
@@ -40,7 +38,7 @@ def R_rot_3d(th):
     Returns
     -------
     R: array, shape (n, 3, 3)
-    '''
+    """
     sx, sy, sz = np.sin(th).T
     cx, cy, cz = np.cos(th).T
     R = np.empty((len(th), 3, 3), dtype=np.float)
@@ -60,8 +58,7 @@ def R_rot_3d(th):
 
 
 def R_rot(th):
-    '''
-    Returns a rotation matrix.
+    """Returns a rotation matrix.
 
     Parameters
     ----------
@@ -72,7 +69,7 @@ def R_rot(th):
     Returns
     -------
     R: array, shape (n, m, m)
-    '''
+    """
     try:
         dof = th.shape[-1]
     # If th is a python float
@@ -92,8 +89,7 @@ def R_rot(th):
 
 
 def rotate(a, th):
-    '''
-    Returns cartesian vectors, after rotation by specified angles about
+    """Returns cartesian vectors, after rotation by specified angles about
     each degree of freedom.
 
     Parameters
@@ -108,5 +104,5 @@ def rotate(a, th):
     -------
     ar: array, shape of a
         Rotated cartesian vectors.
-    '''
+    """
     return np.sum(a[..., np.newaxis] * R_rot(th), axis=-2)

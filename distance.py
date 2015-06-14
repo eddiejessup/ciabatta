@@ -1,6 +1,6 @@
-'''
+"""
 Distance finding functions inspired by scipy.spatial.distance.
-'''
+"""
 
 from __future__ import print_function, division
 import numpy as np
@@ -9,8 +9,7 @@ from ciabatta.distance_numerics import *
 
 
 def csep(ra, rb):
-    '''
-    Returns separation vectors between each pair of the two sets of points.
+    """Returns separation vectors between each pair of the two sets of points.
 
     Parameters
     ----------
@@ -22,13 +21,12 @@ def csep(ra, rb):
     csep: float array-like, shape (n, m, d)
         csep[i, j] is the separation vector from point j to point i.
         Note the un-intuitive vector direction.
-    '''
+    """
     return ra[:, np.newaxis, :] - rb[np.newaxis, :, :]
 
 
 def csep_close(ra, rb):
-    '''
-    Returns the closest separation vector between each point in one set,
+    """Returns the closest separation vector between each point in one set,
     and every point in a second set.
 
     Parameters
@@ -43,7 +41,7 @@ def csep_close(ra, rb):
         csep[i] is the closest separation vector from point ra[j]
         to any point rb[i].
         Note the un-intuitive vector direction.
-    '''
+    """
     seps = csep(ra, rb)
     seps_sq = np.sum(np.square(seps), axis=-1)
 
@@ -56,8 +54,7 @@ def csep_close(ra, rb):
 
 
 def csep_periodic(ra, rb, L):
-    '''
-    Returns separation vectors between each pair of the two sets of points.
+    """Returns separation vectors between each pair of the two sets of points.
 
     Parameters
     ----------
@@ -71,7 +68,7 @@ def csep_periodic(ra, rb, L):
     csep: float array-like, shape (n, m, d)
         csep[i, j] is the separation vector from point j to point i.
         Note the un-intuitive vector direction.
-    '''
+    """
     try:
         L[0]
     except (TypeError, IndexError):
@@ -85,8 +82,7 @@ def csep_periodic(ra, rb, L):
 
 
 def csep_periodic_close(ra, rb, L):
-    '''
-    Returns the closest separation vector between each point in one set,
+    """Returns the closest separation vector between each point in one set,
     and every point in a second set, in periodic space.
 
     Parameters
@@ -103,7 +99,7 @@ def csep_periodic_close(ra, rb, L):
         csep[i] is the closest separation vector from point ra[j]
         to any point rb[i].
         Note the un-intuitive vector direction.
-    '''
+    """
     seps = csep_periodic(ra, rb, L)
     seps_sq = np.sum(np.square(seps), axis=-1)
 
@@ -116,8 +112,7 @@ def csep_periodic_close(ra, rb, L):
 
 
 def cdist_sq_periodic(ra, rb, L):
-    '''
-    Returns the squared distance between each point in on set,
+    """Returns the squared distance between each point in on set,
     and every point in a second set, in periodic space.
 
     Parameters
@@ -131,13 +126,12 @@ def cdist_sq_periodic(ra, rb, L):
     -------
     cdist_sq: float array-like, shape (n, m, d)
         cdist_sq[i, j] is the squared distance between point j and point i.
-    '''
+    """
     return np.sum(np.square(csep_periodic(ra, rb, L)), axis=-1)
 
 
 def pdist_sq_periodic(r, L):
-    '''
-    Returns the squared distance between all combinations of
+    """Returns the squared distance between all combinations of
     a set of points, in periodic space.
 
     Parameters
@@ -151,7 +145,7 @@ def pdist_sq_periodic(r, L):
     -------
     d_sq: float array, shape (n, n, d)
         Squared distances
-    '''
+    """
     d = csep_periodic(r, r, L)
     d[np.identity(len(r), dtype=np.bool)] = np.inf
     d_sq = np.sum(np.square(d), axis=-1)
@@ -159,8 +153,7 @@ def pdist_sq_periodic(r, L):
 
 
 def angular_distance(n1, n2):
-    '''
-    Returns the angular separation between two 3 dimensional vectors.
+    """Returns the angular separation between two 3 dimensional vectors.
 
     Parameters
     ----------
@@ -172,5 +165,5 @@ def angular_distance(n1, n2):
     -------
     d_sigma: float
         Angle between n1 and n2 in radians.
-    '''
+    """
     return np.arctan2(vector.vector_mag(np.cross(n1, n2)), np.dot(n1, n2))

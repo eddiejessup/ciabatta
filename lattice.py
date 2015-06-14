@@ -4,20 +4,19 @@ from ciabatta import lattice_numerics
 
 
 def extend_array(a, n):
-    '''
-    Increases the resolution of an array by duplicating its values to fill
-     a larger array.
+    """Increases the resolution of an array by duplicating its values to fill
+    a larger array.
 
-     Parameters
-     ----------
-     a: array, shape (a1, a2, a3, ...)
-     n: integer
+    Parameters
+    ----------
+    a: array, shape (a1, a2, a3, ...)
+    n: integer
         Factor by which to expand the array.
 
     Returns
     -------
     ae: array, shape (n * a1, n * a2, n * a3, ...)
-    '''
+    """
     a_new = a.copy()
     for d in range(a.ndim):
         a_new = np.repeat(a_new, n, axis=d)
@@ -25,8 +24,7 @@ def extend_array(a, n):
 
 
 def field_subset(f, inds, rank=0):
-    '''
-    Returns the value of a field at a subset of points.
+    """Returns the value of a field at a subset of points.
 
     Parameters
     ----------
@@ -41,7 +39,7 @@ def field_subset(f, inds, rank=0):
     -------
     f_sub: array, shape (n, rank)
         The subset of field values.
-    '''
+    """
     f_dim_space = f.ndim - rank
     if inds.ndim > 2:
         raise Exception('Too many dimensions in indices array')
@@ -57,8 +55,7 @@ def field_subset(f, inds, rank=0):
 
 
 def pad_to_3d(a):
-    '''
-    Returns 1- or 2-dimensional cartesian vectors, converted into a
+    """Returns 1- or 2-dimensional cartesian vectors, converted into a
     3-dimensional representation, with additional dimensional coordinates
     assumed to be zero.
 
@@ -69,15 +66,14 @@ def pad_to_3d(a):
     Returns
     -------
     ap: array, shape (n, 3)
-    '''
+    """
     a_pad = np.zeros([len(a), 3], dtype=a.dtype)
     a_pad[:, :a.shape[-1]] = a
     return a_pad
 
 
 def pad_length(x, d):
-    '''
-    Returns a vector appropriate to a dimensional space, using an input vector
+    """Returns a vector appropriate to a dimensional space, using an input vector
     as a prompt depending on its type:
 
         - If the input is a vector, return that vector.
@@ -98,7 +94,7 @@ def pad_length(x, d):
     -------
     x_pad: array-like, shape (d,)
         The padded parameter.
-    '''
+    """
     try:
         x[0]
     except TypeError:
@@ -115,8 +111,7 @@ def wrap_dec(M, i):
 
 
 def r_to_i(r, L, dx):
-    '''
-    Returns closest indices on a square lattice of vectors in continuous space.
+    """Returns closest indices on a square lattice of vectors in continuous space.
 
     Parameters
     ----------
@@ -133,13 +128,12 @@ def r_to_i(r, L, dx):
     Returns
     -------
     inds: integer array, shape of r
-    '''
+    """
     return lattice_numerics.r_to_i(r, L, dx)
 
 
 def i_to_r(i, L, dx):
-    '''
-    Returns coordinates of lattice indices in continuous space.
+    """Returns coordinates of lattice indices in continuous space.
 
     Parameters
     ----------
@@ -158,5 +152,5 @@ def i_to_r(i, L, dx):
     r: float array, shape of i
         Coordinate vectors of the lattice points specified by the indices.
 
-    '''
+    """
     return -L / 2.0 + (i + 0.5) * dx
