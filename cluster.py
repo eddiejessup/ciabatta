@@ -48,5 +48,6 @@ def norm_to_colour(x):
     return c
 
 
-def biggest_cluster_fraction(labels):
-    return cluster_sizes(labels).max() / float(labels.shape[0])
+def biggest_cluster_fraction(clust_sizes):
+    clust_sizes = np.array(clust_sizes)
+    return clust_sizes.max() / float(clust_sizes.sum())
