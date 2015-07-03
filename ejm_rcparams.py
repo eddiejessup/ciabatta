@@ -14,8 +14,6 @@ almost_white = '#FEFEFA'
 set2 = brewer2mpl.get_map('Set2', 'qualitative', 8).mpl_colors
 reds = brewer2mpl.get_map('Reds', 'sequential', 3).mpl_colormap
 red_blue = brewer2mpl.get_map('RdBu', 'diverging', 11).mpl_colormap
-red_blue = mpl.cm.RdBu
-reds = mpl.cm.Reds
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False):
