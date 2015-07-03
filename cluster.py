@@ -49,5 +49,60 @@ def norm_to_colour(x):
 
 
 def biggest_cluster_fraction(clust_sizes):
+    """Calculate the fraction of points that lie in the biggest cluster.
+
+    The measure to some extent indicates the degree to which points belong to
+    a few clusters. However, it is a bad measure, because it gives results that
+    are counter-intuitive. For example, these distributions all give the same
+    result:
+
+    - [n - 10, 10]
+    - [n - 10, 5, 5]
+    - [n - 10, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+    Parameters
+    ----------
+    clust_sizes: list[int]
+        The number of points in each cluster.
+
+    Returns
+    -------
+    m: float
+        Cluster measure.
+    """
     clust_sizes = np.array(clust_sizes)
     return clust_sizes.max() / float(clust_sizes.sum())
+
+
+def cluster_measure(clust_sizes):
+    """Calculate how clumpy a set of clustered points are.
+
+    The measure indicates the degree to which points belong to a few clusters.
+    This is calculated by finding all clusters with more than one point.
+    These clusters are then normalised to give their fraction of the whole.
+    The square root of the sum of the square of these values then gives the
+    final measure.
+
+    This is chosen to give intuitively sensible orderings to distributions of
+    points. For example, these are in order of decreasing measure,
+
+    - [n] = 1
+    - [n, 2]
+    - [n, 1, 1]
+    - [n / 10, 1, 1]
+    - [1, 1, 1, ...] = 0
+
+    Parameters
+    ----------
+    clust_sizes: list[int]
+        The number of points in each cluster.
+
+    Returns
+    -------
+    m: float
+        Cluster measure.
+    """
+    clust_sizes = np.array(clust_sizes)
+    nontrivial_clust_sizes = clust_sizes[clust_sizes > 1]
+    nontrivial_clust_fracs = nontrivial_clust_sizes / float(clust_sizes.sum())
+    return np.sqrt(np.sum(np.square(nontrivial_clust_fracs)))
