@@ -78,19 +78,21 @@ def cluster_measure(clust_sizes):
     """Calculate how clumpy a set of clustered points are.
 
     The measure indicates the degree to which points belong to a few clusters.
-    This is calculated by finding all clusters with more than one point.
-    These clusters are then normalised to give their fraction of the whole.
-    The square root of the sum of the square of these values then gives the
-    final measure.
+    This is calculated by finding the clumpiness of a point in each cluster,
+    which is its contribution to the overall population. This is then
+    weighted by the number of points with that clumpiness value, and the sum
+    taken of this over all clusters.
 
     This is chosen to give intuitively sensible orderings to distributions of
-    points. For example, these are in order of decreasing measure,
+    points. For example, these are examples of its values for some populations:
 
-    - [n] = 1
-    - [n, 2]
-    - [n, 1, 1]
-    - [n / 10, 1, 1]
-    - [1, 1, 1, ...] = 0
+    - [6]: 1
+    - [5, 1]: 0.67
+    - [4, 2]: 0.47
+    - [4, 1, 1]: 0.4
+    - [3, 3]: 0.4
+    - [2, 1, 1, 1, 1, 1]: 0.05
+    - [1, 1, 1, 1, 1, 1]: 0
 
     Parameters
     ----------
@@ -102,7 +104,6 @@ def cluster_measure(clust_sizes):
     m: float
         Cluster measure.
     """
-    clust_sizes = np.array(clust_sizes)
-    nontrivial_clust_sizes = clust_sizes[clust_sizes > 1]
-    nontrivial_clust_fracs = nontrivial_clust_sizes / float(clust_sizes.sum())
-    return np.sqrt(np.sum(np.square(nontrivial_clust_fracs)))
+    clust_fracs = clust_sizes / float(clust_sizes.sum())
+    clumpinesses = (clust_sizes - 1.0) / float(clust_sizes.sum() - 1.0)
+    return np.sum(clust_fracs * clumpinesses)
