@@ -33,7 +33,12 @@ def nclusters(labels):
 
 
 def cluster_sizes(labels):
-    return np.bincount(labels - 1)
+    if labels.min() == 0:
+        return np.bincount(labels)
+    elif labels.min() == 1:
+        return np.bincount(labels - 1)
+    else:
+        raise Exception
 
 
 def norm_to_colour(x):
