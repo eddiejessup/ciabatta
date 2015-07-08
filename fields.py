@@ -1,9 +1,10 @@
 from __future__ import print_function, division
 import numpy as np
-from ciabatta import lattice, field_numerics, walled_field_numerics
+from ciabatta import lattice, field_numerics, walled_field_numerics, fileio
 
 
 class Space(object):
+    repr_fields = ['dim', 'L']
 
     def __init__(self, L, dim):
         self.L = L
@@ -16,8 +17,13 @@ class Space(object):
     def iterate(self, *args, **kwargs):
         pass
 
+    def __repr__(self):
+        return '{}_{}'.format(self.__class__.__name__,
+                              fileio.reprify(self, self.repr_fields))
+
 
 class Field(Space):
+    repr_fields = Space.repr_fields + ['dx']
 
     def __init__(self, L, dim, dx):
         Space.__init__(self, L, dim)
@@ -54,6 +60,7 @@ class Scalar(Field):
 
 
 class Diffusing(Scalar):
+    repr_fields = Scalar.repr_fields + ['D', 'dt']
 
     def __init__(self, L, dim, dx, D, dt, a_0=0.0):
         Scalar.__init__(self, L, dim, dx, a_0=a_0)
