@@ -22,21 +22,19 @@ class Field(Space):
     def __init__(self, L, dim, dx):
         Space.__init__(self, L, dim)
         self.M = int(self.L / dx)
-
-    def dx(self):
-        return self.L / self.M
+        self.dx = self.L / self.M
 
     def A_i(self):
         return self.M ** self.dim
 
     def dA(self):
-        return self.dx() ** self.dim
+        return self.dx ** self.dim
 
     def r_to_i(self, r):
-        return lattice.r_to_i(r, self.L, self.dx())
+        return lattice.r_to_i(r, self.L, self.dx)
 
     def i_to_r(self, i):
-        return lattice.i_to_r(i, self.L, self.dx())
+        return lattice.i_to_r(i, self.L, self.dx)
 
 
 class Scalar(Field):
@@ -46,13 +44,13 @@ class Scalar(Field):
         self.a = np.ones(self.dim * (self.M,), dtype=np.float) * a_0
 
     def grad(self):
-        return grad(self.a, self.dx())
+        return grad(self.a, self.dx)
 
     def grad_i(self, r):
-        return grad_i(self.a, self.r_to_i(r), self.dx())
+        return grad_i(self.a, self.r_to_i(r), self.dx)
 
     def laplacian(self):
-        return laplace(self.a, self.dx())
+        return laplace(self.a, self.dx)
 
 
 class Diffusing(Scalar):
@@ -62,7 +60,7 @@ class Diffusing(Scalar):
         self.D = D
         self.dt = dt
 
-        if self.D > self.dx() ** 2 / (2.0 * self.dim * self.dt):
+        if self.D > self.dx ** 2 / (2.0 * self.dim * self.dt):
             raise Exception('Unstable diffusion constant')
 
     def iterate(self):
@@ -78,14 +76,14 @@ class WalledScalar(Scalar):
         self.a *= np.logical_not(self.walls)
 
     def grad(self):
-        return walled_grad(self.a, self.dx(), self.walls)
+        return walled_grad(self.a, self.dx, self.walls)
 
     def grad_i(self, r):
-        return walled_grad_i(self.a, self.r_to_i(r), self.dx(),
+        return walled_grad_i(self.a, self.r_to_i(r), self.dx,
                              self.walls)
 
     def laplacian(self):
-        return walled_laplace(self.a, self.dx(), self.walls)
+        return walled_laplace(self.a, self.dx, self.walls)
 
 
 # Note, inheritance order matters to get walled grad & laplacian call
