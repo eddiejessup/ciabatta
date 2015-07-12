@@ -75,8 +75,8 @@ def biggest_cluster_fraction(clust_sizes):
     return clust_sizes.max() / float(clust_sizes.sum())
 
 
-def cluster_measure(clust_sizes):
-    """Calculate how clumpy a set of clustered points are.
+def get_clumpiness(clust_sizes):
+    """Calculate how 'clumpy' a set of clustered points are.
 
     The measure indicates the degree to which points belong to a few clusters.
     This is calculated by finding the clumpiness of a point in each cluster,
@@ -102,8 +102,8 @@ def cluster_measure(clust_sizes):
 
     Returns
     -------
-    m: float
-        Cluster measure.
+    k: float
+        Clumpiness measure.
     """
     clust_fracs = clust_sizes / float(clust_sizes.sum())
     clumpinesses = (clust_sizes - 1.0) / float(clust_sizes.sum() - 1.0)
