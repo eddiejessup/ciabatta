@@ -11,9 +11,20 @@ golden_ratio = (np.sqrt(5) - 1.0) / 2.0
 almost_black = '#262626'
 almost_white = '#FEFEFA'
 
-set2 = brewer2mpl.get_map('Set2', 'qualitative', 8).mpl_colors
-reds = brewer2mpl.get_map('Reds', 'sequential', 3).mpl_colormap
-red_blue = brewer2mpl.get_map('RdBu', 'diverging', 11).mpl_colormap
+set2_map = brewer2mpl.get_map('Set2', 'qualitative', 8)
+brown_teal_map = brewer2mpl.get_map('BrBg', 'diverging', 9)
+reds_map = brewer2mpl.get_map('Reds', 'sequential', 3)
+red_blue_map = brewer2mpl.get_map('RdBu', 'diverging', 11)
+
+set2 = set2_map.mpl_colors
+brown_teal = brown_teal_map.mpl_colors
+reds = reds_map.mpl_colors
+red_blue = red_blue_map.mpl_colors
+
+set2_cmap = set2_map.mpl_colormap
+brown_teal_cmap = brown_teal_map.mpl_colormap
+reds_cmap = reds_map.mpl_colormap
+red_blue_cmap = red_blue_map.mpl_colormap
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False):
