@@ -25,8 +25,8 @@ def test_flat_cluster():
 
 
 def cluster(r, r_max):
-    linkage_matrix = hc.linkage(r, method='single')
-    return hc.fcluster(linkage_matrix, t=r_max, criterion='distance')
+    linkage_matrix = hc.linkage(r, method='single', metric='sqeuclidean')
+    return hc.fcluster(linkage_matrix, t=r_max ** 2, criterion='distance')
 
 
 def nclusters(labels):
