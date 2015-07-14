@@ -27,7 +27,7 @@ class Field(Space):
 
     def __init__(self, L, dim, dx):
         Space.__init__(self, L, dim)
-        self.M = int(self.L / dx)
+        self.M = int(round(self.L / dx))
         self.dx = self.L / self.M
 
     def A_i(self):
