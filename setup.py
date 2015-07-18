@@ -21,4 +21,3 @@ setup(
     ]),
     include_dirs=[numpy.get_include()],
 )
-
