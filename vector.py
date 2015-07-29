@@ -326,3 +326,13 @@ def disk_pick(n=1, rng=None):
         Sample vectors.
     """
     return polar_to_cart(disk_pick_polar(n), rng)
+
+
+def normalise_angle(th):
+    return th - (2.0 * np.pi) * np.floor((th + np.pi) / (2.0 * np.pi))
+
+
+def smallest_signed_angle(source, target):
+    dth = target - source
+    dth = (dth + np.pi) % (2.0 * np.pi) - np.pi
+    return dth
