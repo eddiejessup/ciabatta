@@ -15,7 +15,6 @@ class MetroRCP(object):
 
     def __init__(self, r_0, L_0, R, dr_max, dL_max, rng=None):
         self.r = r_0
-        self.n, self.dim = self.r.shape
         self.L = L_0
         self.R = R
         self.dr_max = dr_max
@@ -29,7 +28,7 @@ class MetroRCP(object):
     def U(self):
         if np.any(self.sep_sq < (2.0 * self.R) ** 2):
             return np.inf
-        return 1.0 / self.pf()
+        return 1.0 / self.pf
 
     def displace_r(self):
         self.i = self.rng.randint(self.n)
@@ -87,14 +86,29 @@ class MetroRCP(object):
         if np.exp(-beta * (U_new - U_0)) < self.rng.uniform():
             revert()
 
+    @property
+    def n(self):
+        return self.r.shape[0]
+
+    @property
+    def dim(self):
+        return self.L.shape[0]
+
+    @property
     def V(self):
         return np.product(self.L)
 
+    @property
     def V_full(self):
-        return self.n * geom.sphere_volume(self.R, self.dim)
+        return self.n * self.V_1
 
+    @property
+    def V_1(self):
+        return geom.sphere_volume(self.R, self.dim)
+
+    @property
     def pf(self):
-        return self.V_full() / self.V()
+        return self.V_full / self.V
 
 
 def unwrap_one_layer(r, L, n):
@@ -356,14 +370,14 @@ def pack(R, L, pf=None, n=None, rng=None,
     print('Initial packing done, Initial packing: {:g}'.format(mg.pf))
 
     t = 0
-    while mg.pf() < pf_actual:
+    while mg.pf < pf_actual:
         t += 1
-        beta = beta_max * mg.pf()
+        beta = beta_max * mg.pf
         mg.iterate(beta)
 
         if not t % every:
-            print('Packing: {:.1f}%'.format(100.0 * mg.pf()))
+            print('Packing: {:g}%'.format(100.0 * mg.pf))
 
-    # print('Final packing: {:.1f}%'.format(100.0 * mg.pf()))
+    print('Final packing: {:g}%'.format(100.0 * mg.pf))
 
     return mg.r, mg.R
