@@ -50,7 +50,7 @@ def step(p, o, m, n=1):
     return p_new
 
 
-def make_maze_dfs(M=27, dim=2, seed=None):
+def make_maze_dfs(M=27, dim=2, rng=None):
     """Generate a maze using the Depth-first search algorithm.
 
     http://en.wikipedia.org/wiki/Depth-first_search
@@ -73,7 +73,8 @@ def make_maze_dfs(M=27, dim=2, seed=None):
     """
     if M % 2 != 0:
         raise Exception('Require Maze size to be even.')
-    rng = np.random.RandomState(seed)
+    if rng is None:
+        rng = np.random
     maze = np.zeros(dim * (M,), dtype=np.bool)
     pos = rng.randint(0, M, dim)
     maze[tuple(pos)] = True

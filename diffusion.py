@@ -82,7 +82,7 @@ def stokes_einstein(drag, T):
     return scipy.constants.k * T / drag
 
 
-def rot_diff(v, D, dt):
+def rot_diff(v, D, dt, rng=None):
     """Returns cartesian velocity vectors, after applying rotational diffusion.
 
     Parameters
@@ -99,6 +99,8 @@ def rot_diff(v, D, dt):
     vr: array, shape of v
         Velocity vectors after rotational diffusion is applied.
     """
+    if rng is None:
+        rng = np.random
     # Account for possibility of D being an array
     try:
         D = D[:, np.newaxis]
@@ -110,11 +112,11 @@ def rot_diff(v, D, dt):
         pass
     dim = v.shape[-1]
     dof = dim * (dim - 1) // 2
-    th = np.sqrt(2.0 * D * dt) * np.random.standard_normal((len(v), dof))
+    th = np.sqrt(2.0 * D * dt) * rng.standard_normal((v.shape[0], dof))
     return rotation.rotate(v, th)
 
 
-def diff(r, D, dt):
+def diff(r, D, dt, rng=None):
     """Returns cartesian position vectors, after applying translational diffusion.
 
     Parameters
@@ -131,6 +133,8 @@ def diff(r, D, dt):
     rr: array, shape of r
         Velocity vectors after translational diffusion is applied.
     """
+    if rng is None:
+        rng = np.random
     if dt == 0.0:
         return r.copy()
-    return r + np.sqrt(2.0 * D * dt) * np.random.standard_normal(r.shape)
+    return r + np.sqrt(2.0 * D * dt) * rng.standard_normal(r.shape)

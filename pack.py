@@ -13,13 +13,16 @@ every = 5000
 
 class MetroRCP(object):
 
-    def __init__(self, r_0, L_0, R, dr_max, dL_max):
+    def __init__(self, r_0, L_0, R, dr_max, dL_max, rng=None):
         self.r = r_0
         self.n, self.dim = self.r.shape
         self.L = L_0
         self.R = R
         self.dr_max = dr_max
         self.dL_max = dL_max
+        if rng is None:
+            rng = np.random.RandomState()
+        self.rng = rng
 
         self.sep_sq = pdist_sq_periodic(r_0, self.L)
 
@@ -29,11 +32,11 @@ class MetroRCP(object):
         return 1.0 / self.pf()
 
     def displace_r(self):
-        self.i = np.random.randint(self.n)
+        self.i = self.rng.randint(self.n)
         self.r_old = self.r[self.i].copy()
 
-        dr = np.random.uniform(-self.dr_max * self.L,
-                               self.dr_max * self.L, self.dim)
+        dr = self.rng.uniform(-self.dr_max * self.L,
+                              self.dr_max * self.L, self.dim)
         self.r[self.i] += dr
         self.r[self.r > self.L / 2.0] -= self.L
         self.r[self.r < -self.L / 2.0] += self.L
@@ -53,7 +56,7 @@ class MetroRCP(object):
         self.sep_sq[:, self.i] = self.sep_sq_old.copy()
 
     def displace_L(self):
-        self.dL = 1.0 + np.random.uniform(-self.dL_max, self.dL_max)
+        self.dL = 1.0 + self.rng.uniform(-self.dL_max, self.dL_max)
 
         self.L *= self.dL
         self.r *= self.dL
@@ -67,7 +70,7 @@ class MetroRCP(object):
     def iterate(self, beta):
         U_0 = self.U()
 
-        i = np.random.randint(self.n + 1)
+        i = self.rng.randint(self.n + 1)
         if i < len(self.r):
             self.displace_r()
             revert = self.revert_r
@@ -76,7 +79,7 @@ class MetroRCP(object):
             revert = self.revert_L
 
         U_new = self.U()
-        if np.exp(-beta * (U_new - U_0)) < np.random.uniform():
+        if np.exp(-beta * (U_new - U_0)) < self.rng.uniform():
             revert()
 
     def V(self):
@@ -252,7 +255,7 @@ def calc_L_0(n, d, pf, R):
     return ((n * geom.sphere_volume(R=R, n=d)) / pf) ** (1.0 / d)
 
 
-def pack_simple(d, R, L, seed=None, pf=None, n=None):
+def pack_simple(d, R, L, pf=None, n=None, rng=None):
     """Pack a number of non-intersecting spheres into a periodic system.
 
     Can specify packing by number of spheres or packing fraction.
@@ -270,13 +273,12 @@ def pack_simple(d, R, L, seed=None, pf=None, n=None):
         Sphere radius.
     L: float
         System size.
-    seed: integer or None.
-        Seed for the random number generator.
-        None will use a different seed for each call.
     pf: float or None
         Packing fraction
     n: integer or None
         Number of spheres.
+    rng: RandomState or None
+        Random number generator. If None, use inbuilt numpy state.
 
     Returns
     -------
@@ -288,8 +290,8 @@ def pack_simple(d, R, L, seed=None, pf=None, n=None):
         it is returned only to provide a uniform interface with the
         Metropolis-Hastings implementation.
     """
-    np.random.seed(seed)
-
+    if rng is None:
+        rng = np.random
     if pf is not None:
         if pf == 0.0:
             return np.array([]), R
@@ -301,12 +303,12 @@ def pack_simple(d, R, L, seed=None, pf=None, n=None):
             return np.array([]), R
 
     while True:
-        r = np.random.uniform(-L / 2.0, L / 2.0, size=(n, d))
+        r = rng.uniform(-L / 2.0, L / 2.0, size=(n, d))
         if not np.any(pdist_sq_periodic(r, L) < (2.0 * R) ** 2):
             return r, R
 
 
-def pack(d, R, L, seed=None, pf=None, n=None,
+def pack(d, R, L, pf=None, n=None, rng=None,
          beta_max=1e4, dL_max=0.02, dr_max=0.02):
     """Pack a number of non-intersecting spheres into a periodic system.
 
@@ -323,13 +325,12 @@ def pack(d, R, L, seed=None, pf=None, n=None,
         Sphere radius.
     L: float
         System size.
-    seed: integer or None.
-        Seed for the random number generator.
-        None will use a different seed for each call.
     pf: float or None
         Packing fraction
     n: integer or None
         Number of spheres.
+    rng: RandomState or None
+        Random number generator. If None, use inbuilt numpy state.
 
     Metropolis-Hastings parameters
     ------------------------------
@@ -349,7 +350,6 @@ def pack(d, R, L, seed=None, pf=None, n=None,
     R_actual: float
         Actual sphere radius used in the packing.
     """
-    np.random.seed(seed)
     if pf is not None:
         if pf == 0.0:
             return np.array([]), R
@@ -369,10 +369,12 @@ def pack(d, R, L, seed=None, pf=None, n=None,
     L_0 = calc_L_0(n, d, pf_initial, R)
 
     # Pack naively into this system
-    r_0, R = pack_simple(d, R, L_0, seed, n=n)
+    r_0, R = pack_simple(d, R, L_0, n=n, rng=rng)
     print('Initial packing done')
 
-    mg = MetroRCP(r_0, L_0, R, dr_max, dL_max)
+    mg = MetroRCP(r_0, L_0, R, dr_max, dL_max, rng=rng)
+
+    print('Initial packing done, Initial packing: {:g}'.format(mg.pf))
 
     t = 0
     while mg.pf() < pf_actual:

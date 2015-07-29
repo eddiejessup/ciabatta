@@ -71,7 +71,7 @@ def vector_unit_nullnull(v):
     return v_new
 
 
-def vector_unit_nullrand(v):
+def vector_unit_nullrand(v, rng=None):
     """Returns unit vectors of input vectors.
     Any null vectors are mapped to a uniformly picked unit vector.
 
@@ -88,7 +88,7 @@ def vector_unit_nullrand(v):
         return v
     mag = vector_mag(v)
     v_new = v.copy()
-    v_new[mag == 0.0] = sphere_pick(v.shape[-1], (mag == 0.0).sum())
+    v_new[mag == 0.0] = sphere_pick(v.shape[-1], (mag == 0.0).sum(), rng)
     v_new[mag > 0.0] /= mag[mag > 0.0][..., np.newaxis]
     return v_new
 
@@ -177,7 +177,7 @@ def cart_to_polar(arr_c):
     return arr_p
 
 
-def sphere_pick_polar(d, n=1):
+def sphere_pick_polar(d, n=1, rng=None):
     """Returns polar vectors uniformly picked on the unit sphere in a space
     with an arbitrary number of dimensions.
 
@@ -193,14 +193,16 @@ def sphere_pick_polar(d, n=1):
     r: array, shape (n, d)
         Sample vectors.
     """
+    if rng is None:
+        rng = np.random
     a = np.empty([n, d])
     if d == 1:
-        a[:, 0] = np.random.randint(2, size=n) * 2 - 1
+        a[:, 0] = rng.randint(2, size=n) * 2 - 1
     elif d == 2:
         a[:, 0] = 1.0
-        a[:, 1] = np.random.uniform(-np.pi, +np.pi, n)
+        a[:, 1] = rng.uniform(-np.pi, +np.pi, n)
     elif d == 3:
-        u, v = np.random.uniform(0.0, 1.0, (2, n))
+        u, v = rng.uniform(0.0, 1.0, (2, n))
         a[:, 0] = 1.0
         a[:, 1] = np.arccos(2.0 * v - 1.0)
         a[:, 2] = 2.0 * np.pi * u
@@ -209,7 +211,7 @@ def sphere_pick_polar(d, n=1):
     return a
 
 
-def sphere_pick(d, n=1):
+def sphere_pick(d, n=1, rng=None):
     """Returns cartesian vectors uniformly picked on the unit sphere in a space
     with an arbitrary number of dimensions.
 
@@ -225,10 +227,10 @@ def sphere_pick(d, n=1):
     r: array, shape (n, d)
         Sample cartesian vectors.
     """
-    return polar_to_cart(sphere_pick_polar(d, n))
+    return polar_to_cart(sphere_pick_polar(d, n, rng))
 
 
-def rejection_pick(L, n, d, valid):
+def rejection_pick(L, n, d, valid, rng=None):
     """Returns cartesian vectors uniformly picked in a space with an arbitrary
     number of dimensions, which is fully enclosed by a cube of finite length,
     using a supplied function which should evaluate whether a picked point lies
@@ -250,15 +252,17 @@ def rejection_pick(L, n, d, valid):
     r: array, shape (n, d)
         Sample cartesian vectors
     """
+    if rng is None:
+        rng = np.random
     rs = []
     while len(rs) < n:
-        r = np.random.uniform(-L / 2.0, L / 2.0, size=d)
+        r = rng.uniform(-L / 2.0, L / 2.0, size=d)
         if valid(r):
             rs.append(r)
     return np.array(rs)
 
 
-def ball_pick(n, d):
+def ball_pick(n, d, rng=None):
     """Returns cartesian vectors uniformly picked on the unit ball in an arbitrary
     number of dimensions.
 
@@ -282,10 +286,10 @@ def ball_pick(n, d):
     """
     def valid(r):
         return vector_mag_sq(r) < 1.0
-    return rejection_pick(L=2.0, n=n, d=d, valid=valid)
+    return rejection_pick(L=2.0, n=n, d=d, valid=valid, rng=rng)
 
 
-def disk_pick_polar(n=1):
+def disk_pick_polar(n=1, rng=None):
     """Returns polar vectors uniformly picked on the unit disk.
     The unit disk is the space enclosed by the unit circle.
 
@@ -299,13 +303,15 @@ def disk_pick_polar(n=1):
     r: array, shape (n, 2)
         Sample vectors.
     """
+    if rng is None:
+        rng = np.random
     a = np.zeros([n, 2], dtype=np.float)
-    a[:, 0] = np.sqrt(np.random.uniform(size=n))
-    a[:, 1] = np.random.uniform(0.0, 2.0 * np.pi, size=n)
+    a[:, 0] = np.sqrt(rng.uniform(size=n))
+    a[:, 1] = rng.uniform(0.0, 2.0 * np.pi, size=n)
     return a
 
 
-def disk_pick(n=1):
+def disk_pick(n=1, rng=None):
     """Returns cartesian vectors uniformly picked on the unit disk.
     The unit disk is the space enclosed by the unit circle.
 
@@ -319,4 +325,4 @@ def disk_pick(n=1):
     r: array, shape (n, 2)
         Sample vectors.
     """
-    return polar_to_cart(disk_pick_polar(n))
+    return polar_to_cart(disk_pick_polar(n), rng)
