@@ -5,7 +5,7 @@ Distance finding functions inspired by scipy.spatial.distance.
 from __future__ import print_function, division
 import numpy as np
 from ciabatta import vector
-from ciabatta.distance_numerics import *
+from ciabatta.distance_numerics import pdist_angle
 
 
 def csep(ra, rb):
