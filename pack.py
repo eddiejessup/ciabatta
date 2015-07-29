@@ -35,11 +35,16 @@ class MetroRCP(object):
         self.i = self.rng.randint(self.n)
         self.r_old = self.r[self.i].copy()
 
-        dr = self.rng.uniform(-self.dr_max * self.L,
-                              self.dr_max * self.L, self.dim)
+        dr = np.zeros([self.dim])
+        for i_dim in range(self.dim):
+            dr[i_dim] = self.rng.uniform(-self.dr_max * self.L[i_dim],
+                                         self.dr_max * self.L[i_dim])
+
         self.r[self.i] += dr
-        self.r[self.r > self.L / 2.0] -= self.L
-        self.r[self.r < -self.L / 2.0] += self.L
+        for i_dim in range(self.dim):
+            r = self.r[:, i_dim]
+            r[r > self.L[i_dim] / 2.0] -= self.L[i_dim]
+            r[r < -self.L[i_dim] / 2.0] += self.L[i_dim]
 
         self.sep_sq_old = self.sep_sq[self.i].copy()
 
@@ -83,7 +88,7 @@ class MetroRCP(object):
             revert()
 
     def V(self):
-        return self.L ** self.dim
+        return np.product(self.L)
 
     def V_full(self):
         return self.n * geom.sphere_volume(self.R, self.dim)
@@ -100,8 +105,8 @@ def unwrap_one_layer(r, L, n):
     ----------
     r: float array, shape (:, 2).
         Set of points.
-    L: float.
-        System size.
+    L: float array, shape (2,)
+        System lengths.
     n: integer.
         Period to unwrap.
 
@@ -134,8 +139,8 @@ def unwrap_to_layer(r, L, n=1):
     ----------
     r: float array, shape (:, 2).
         Set of points.
-    L: float.
-        System size.
+    L: float array, shape (2,)
+        System lengths.
     n: integer.
         Period to unwrap up to.
 
@@ -161,8 +166,8 @@ def draw_medium(r, R, L, n=1, ax=None):
         Set of points.
     R: float
         Circle radius.
-    L: float.
-        System size.
+    L: float array, shape (2,)
+        System lengths.
     n: integer.
         Period to unwrap up to.
     ax: matplotlib axes instance or None
@@ -179,15 +184,13 @@ def draw_medium(r, R, L, n=1, ax=None):
         ax.add_artist(c)
 
 
-def n_to_pf(L, d, n, R):
+def n_to_pf(L, n, R):
     """Returns the packing fraction for a number of non-intersecting spheres.
 
     Parameters
     ----------
-    L: float
-        System length.
-    d: integer
-        System dimension.
+    L: float array, shape (d,)
+        System lengths.
     n: integer
         Number of spheres.
     R: float
@@ -198,20 +201,19 @@ def n_to_pf(L, d, n, R):
     pf: float
         Fraction of space occupied by the spheres.
     """
-    return (n * geom.sphere_volume(R=R, n=d)) / L ** d
+    dim = L.shape[0]
+    return (n * geom.sphere_volume(R=R, n=dim)) / np.product(L)
 
 
-def pf_to_n(L, d, pf, R):
+def pf_to_n(L, pf, R):
     """Returns the number of non-intersecting spheres required to achieve
     as close to a given packing fraction as possible, along with the actual
     achieved packing fraction. for a number of non-intersecting spheres.
 
     Parameters
     ----------
-    L: float
-        System length.
-    d: integer
-        System dimension.
+    L: float array, shape (d,)
+        System lengths.
     pf: float
         Fraction of space to be occupied by the spheres.
     R: float
@@ -225,37 +227,13 @@ def pf_to_n(L, d, pf, R):
         Fraction of space occupied by `n` spheres.
         This is the closest possible fraction achievable to `pf`.
     """
-    n = int(round(pf * L ** d / geom.sphere_volume(R, d)))
-    pf_actual = n_to_pf(L, d, n, R)
+    dim = L.shape[0]
+    n = int(round(pf * np.product(L) / geom.sphere_volume(R, dim)))
+    pf_actual = n_to_pf(L, n, R)
     return n, pf_actual
 
 
-def calc_L_0(n, d, pf, R):
-    """Returns the system size required to achieve a given packing fraction,
-    for a number of non-intersecting spheres.
-
-    Useful to initialise the Metropolis algorithm to a reasonable state.
-
-    Parameters
-    ----------
-    n: integer
-        Number of spheres.
-    d: integer
-        System dimension.
-    pf: float
-        Fraction of space to be occupied by the spheres.
-    R: float
-        Sphere radius.
-
-    Returns
-    -------
-    L_0: float
-        System size.
-    """
-    return ((n * geom.sphere_volume(R=R, n=d)) / pf) ** (1.0 / d)
-
-
-def pack_simple(d, R, L, pf=None, n=None, rng=None):
+def pack_simple(R, L, pf=None, n=None, rng=None):
     """Pack a number of non-intersecting spheres into a periodic system.
 
     Can specify packing by number of spheres or packing fraction.
@@ -267,12 +245,10 @@ def pack_simple(d, R, L, pf=None, n=None, rng=None):
 
     Parameters
     ----------
-    d: integer
-        System dimension.
     R: float
         Sphere radius.
-    L: float
-        System size.
+    L: float array, shape (d,)
+        System lengths.
     pf: float or None
         Packing fraction
     n: integer or None
@@ -297,18 +273,22 @@ def pack_simple(d, R, L, pf=None, n=None, rng=None):
             return np.array([]), R
         # If packing fraction is specified, find required number of spheres
         # and the actual packing fraction this will produce
-        n, pf_actual = pf_to_n(L, d, pf, R)
+        n, pf_actual = pf_to_n(L, pf, R)
     elif n is not None:
         if n == 0:
             return np.array([]), R
 
+    dim = L.shape[0]
+    r = np.empty([n, dim])
     while True:
-        r = rng.uniform(-L / 2.0, L / 2.0, size=(n, d))
+        for i_dim in range(L.shape[0]):
+            r[:, i_dim] = rng.uniform(-L[i_dim] / 2.0, L[i_dim] / 2.0,
+                                      size=(n,))
         if not np.any(pdist_sq_periodic(r, L) < (2.0 * R) ** 2):
             return r, R
 
 
-def pack(d, R, L, pf=None, n=None, rng=None,
+def pack(R, L, pf=None, n=None, rng=None,
          beta_max=1e4, dL_max=0.02, dr_max=0.02):
     """Pack a number of non-intersecting spheres into a periodic system.
 
@@ -319,12 +299,10 @@ def pack(d, R, L, pf=None, n=None, rng=None,
 
     Parameters
     ----------
-    d: integer
-        System dimension.
     R: float
         Sphere radius.
-    L: float
-        System size.
+    L: float array, shape (d,)
+        System lengths.
     pf: float or None
         Packing fraction
     n: integer or None
@@ -355,22 +333,23 @@ def pack(d, R, L, pf=None, n=None, rng=None,
             return np.array([]), R
         # If packing fraction is specified, find required number of spheres
         # and the actual packing fraction this will produce
-        n, pf_actual = pf_to_n(L, d, pf, R)
+        n, pf_actual = pf_to_n(L, pf, R)
     elif n is not None:
         if n == 0:
             return np.array([]), R
         # If n is specified, find packing fraction
-        pf_actual = n_to_pf(L, d, n, R)
+        pf_actual = n_to_pf(L, n, R)
 
     # Calculate an initial packing fraction and system size
     # Start at at most 0.5%; lower if the desired packing fraction is very low
     pf_initial = min(0.005, pf_actual / 2.0)
     # Find system size that will create this packing fraction
-    L_0 = calc_L_0(n, d, pf_initial, R)
+    dim = L.shape[0]
+    increase_initial_ratio = (pf_actual / pf_initial) ** (1.0 / dim)
+    L_0 = L * increase_initial_ratio
 
     # Pack naively into this system
-    r_0, R = pack_simple(d, R, L_0, n=n, rng=rng)
-    print('Initial packing done')
+    r_0, R = pack_simple(R, L_0, n=n, rng=rng)
 
     mg = MetroRCP(r_0, L_0, R, dr_max, dL_max, rng=rng)
 

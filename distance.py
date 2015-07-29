@@ -60,8 +60,8 @@ def csep_periodic(ra, rb, L):
     ----------
     ra, rb: float array-like, shape (n, d) and (m, d) in d dimensions.
         Two sets of points.
-    L: float
-        System size.
+    L: float array, shape (d,)
+        System lengths.
 
     Returns
     -------
@@ -69,10 +69,6 @@ def csep_periodic(ra, rb, L):
         csep[i, j] is the separation vector from point j to point i.
         Note the un-intuitive vector direction.
     """
-    try:
-        L[0]
-    except (TypeError, IndexError):
-        L = np.ones([ra.shape[1]]) * L
     seps = ra[:, np.newaxis, :] - rb[np.newaxis, :, :]
     for i_dim in range(ra.shape[1]):
         seps_dim = seps[:, :, i_dim]
@@ -90,8 +86,8 @@ def csep_periodic_close(ra, rb, L):
     ra, rb: float array-like, shape (n, d) and (m, d) in d dimensions.
         Two sets of points. `ra` is the set of points from which the closest
         separation vectors to points `rb` are calculated.
-    L: float
-        System size.
+    L: float array, shape (d,)
+        System lengths.
 
     Returns
     -------
@@ -119,8 +115,8 @@ def cdist_sq_periodic(ra, rb, L):
     ----------
     ra, rb: float array-like, shape (n, d) and (m, d) in d dimensions.
         Two sets of points.
-    L: float
-        System size.
+    L: float array, shape (d,)
+        System lengths.
 
     Returns
     -------
@@ -138,8 +134,8 @@ def pdist_sq_periodic(r, L):
     ----------
     r: shape (n, d) for n points in d dimensions.
         Set of points
-    L: float
-        System size.
+    L: float array, shape (d,)
+        System lengths.
 
     Returns
     -------
