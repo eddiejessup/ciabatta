@@ -4,27 +4,6 @@ from scipy.spatial.distance import cdist
 from _periodic_cluster import get_cluster_list
 
 
-def test_flat_cluster():
-    rs = np.random.uniform(-1.0, 1.0, size=(400, 2))
-    threshold = 0.11
-    ls = cluster(rs, threshold)
-
-    for i in range(len(rs)):
-        l = ls[i]
-        r = rs[i]
-        rs_clust = rs[np.logical_and(ls == l, np.any(r != rs, axis=1))]
-        rs_nonclust = rs[ls != l]
-        d_clust = cdist(np.array([r]), rs_clust)
-        d_nonclust = cdist(np.array([r]), rs_nonclust)
-        if d_clust.shape[1]:
-            if d_clust.min() > threshold:
-                print('ERROR: cluster with smallest '
-                      'distance greater than threshold')
-            if d_nonclust.min() < threshold:
-                print('ERROR: distance between non-clustered'
-                      'points less than threshold')
-
-
 def cluster(r, r_max):
     linkage_matrix = hc.linkage(r, method='single', metric='sqeuclidean')
     return hc.fcluster(linkage_matrix, t=r_max ** 2, criterion='distance')
