@@ -4,6 +4,7 @@ Pack spheres into periodic systems.
 
 from __future__ import print_function, division
 import numpy as np
+from scipy.spatial.distance import pdist
 from ciabatta import geom
 from ciabatta.distance import pdist_sq_periodic, cdist_sq_periodic
 import matplotlib.pyplot as plt
@@ -23,11 +24,13 @@ class MetroRCP(object):
             rng = np.random.RandomState()
         self.rng = rng
 
-        self.sep_sq = pdist_sq_periodic(r_0, self.L)
-
     def U(self):
-        if np.any(self.sep_sq < (2.0 * self.R) ** 2):
+        sep_sq = pdist(self.r, metric='sqeuclidean')
+        if np.any(sep_sq < (2.0 * self.R) ** 2):
             return np.inf
+        for i_dim in range(self.dim):
+            if np.any(np.abs(self.r[:, i_dim]) + self.R > self.L[i_dim] / 2.0):
+                return np.inf
         return 1.0 / self.pf
 
     def displace_r(self):
@@ -40,36 +43,18 @@ class MetroRCP(object):
                                          self.dr_max * self.L[i_dim])
 
         self.r[self.i] += dr
-        for i_dim in range(self.dim):
-            r = self.r[:, i_dim]
-            r[r > self.L[i_dim] / 2.0] -= self.L[i_dim]
-            r[r < -self.L[i_dim] / 2.0] += self.L[i_dim]
-
-        self.sep_sq_old = self.sep_sq[self.i].copy()
-
-        sep_sq = cdist_sq_periodic(self.r[np.newaxis, self.i], self.r, self.L)
-
-        self.sep_sq[self.i, :] = sep_sq
-        self.sep_sq[:, self.i] = sep_sq
-        self.sep_sq[self.i, self.i] = np.inf
 
     def revert_r(self):
         self.r[self.i] = self.r_old.copy()
 
-        self.sep_sq[self.i, :] = self.sep_sq_old.copy()
-        self.sep_sq[:, self.i] = self.sep_sq_old.copy()
-
     def displace_L(self):
         self.dL = 1.0 + self.rng.uniform(-self.dL_max, self.dL_max)
-
         self.L *= self.dL
         self.r *= self.dL
-        self.sep_sq *= self.dL ** 2
 
     def revert_L(self):
         self.L /= self.dL
         self.r /= self.dL
-        self.sep_sq /= self.dL ** 2
 
     def iterate(self, beta):
         U_0 = self.U()
@@ -109,6 +94,53 @@ class MetroRCP(object):
     @property
     def pf(self):
         return self.V_full / self.V
+
+
+class MetroRCPPeriodic(MetroRCP):
+
+    def __init__(self, r_0, L_0, R, dr_max, dL_max, rng=None):
+        super(MetroRCPPeriodic, self).__init__(r_0, L_0, R, dr_max, dL_max,
+                                               rng)
+        self.sep_sq = pdist_sq_periodic(r_0, self.L)
+
+    def U(self):
+        if np.any(self.sep_sq < (2.0 * self.R) ** 2):
+            return np.inf
+        return 1.0 / self.pf
+
+    def displace_r(self):
+        super(MetroRCPPeriodic, self).displace_r()
+
+        for i_dim in range(self.dim):
+            r = self.r[:, i_dim]
+            r[r > self.L[i_dim] / 2.0] -= self.L[i_dim]
+            r[r < -self.L[i_dim] / 2.0] += self.L[i_dim]
+
+        self.sep_sq_old = self.sep_sq[self.i].copy()
+        sep_sq = cdist_sq_periodic(self.r[np.newaxis, self.i], self.r, self.L)
+        self.sep_sq[self.i, :] = sep_sq
+        self.sep_sq[:, self.i] = sep_sq
+        self.sep_sq[self.i, self.i] = np.inf
+
+    def revert_r(self):
+        super(MetroRCPPeriodic, self).revert_r()
+        self.sep_sq[self.i, :] = self.sep_sq_old.copy()
+        self.sep_sq[:, self.i] = self.sep_sq_old.copy()
+
+    def displace_L(self):
+        super(MetroRCPPeriodic, self).displace_L()
+        self.sep_sq *= self.dL ** 2
+
+    def revert_L(self):
+        super(MetroRCPPeriodic, self).revert_L()
+        self.sep_sq /= self.dL ** 2
+
+
+def metro_rcp_factory(periodic, *args, **kwargs):
+    if periodic:
+        return MetroRCPPeriodic(*args, **kwargs)
+    else:
+        return MetroRCP(*args, **kwargs)
 
 
 def unwrap_one_layer(r, L, n):
@@ -247,8 +279,30 @@ def pf_to_n(L, pf, R):
     return n, pf_actual
 
 
-def pack_simple(R, L, pf=None, n=None, rng=None):
-    """Pack a number of non-intersecting spheres into a periodic system.
+def _pack_simple_periodic(R, L, n, rng):
+    dim = L.shape[0]
+    r = np.empty([n, dim])
+    while True:
+        for i_dim in range(dim):
+            r[:, i_dim] = rng.uniform(-L[i_dim] / 2.0, L[i_dim] / 2.0,
+                                      size=(n,))
+        if not np.any(pdist_sq_periodic(r, L) < (2.0 * R) ** 2):
+            return r, R
+
+
+def _pack_simple(R, L, n, rng):
+    dim = L.shape[0]
+    r = np.empty([n, dim])
+    while True:
+        for i_dim in range(dim):
+            r[:, i_dim] = rng.uniform(-L[i_dim] / 2.0 + R, L[i_dim] / 2.0 - R,
+                                      size=(n,))
+        if not np.any(pdist(r, metric='sqeuclidean') < (2.0 * R) ** 2):
+            return r, R
+
+
+def pack_simple(R, L, pf=None, n=None, rng=None, periodic=False):
+    """Pack a number of non-intersecting spheres into a system.
 
     Can specify packing by number of spheres or packing fraction.
 
@@ -269,6 +323,8 @@ def pack_simple(R, L, pf=None, n=None, rng=None):
         Number of spheres.
     rng: RandomState or None
         Random number generator. If None, use inbuilt numpy state.
+    periodic: bool
+        Whether or not the system is periodic.
 
     Returns
     -------
@@ -291,18 +347,13 @@ def pack_simple(R, L, pf=None, n=None, rng=None):
     elif n is not None:
         if n == 0:
             return np.array([]), R
-
-    dim = L.shape[0]
-    r = np.empty([n, dim])
-    while True:
-        for i_dim in range(L.shape[0]):
-            r[:, i_dim] = rng.uniform(-L[i_dim] / 2.0, L[i_dim] / 2.0,
-                                      size=(n,))
-        if not np.any(pdist_sq_periodic(r, L) < (2.0 * R) ** 2):
-            return r, R
+    if periodic:
+        return _pack_simple_periodic(R, L, n, rng)
+    else:
+        return _pack_simple(R, L, n, rng)
 
 
-def pack(R, L, pf=None, n=None, rng=None,
+def pack(R, L, pf=None, n=None, rng=None, periodic=False,
          beta_max=1e4, dL_max=0.02, dr_max=0.02):
     """Pack a number of non-intersecting spheres into a periodic system.
 
@@ -323,6 +374,9 @@ def pack(R, L, pf=None, n=None, rng=None,
         Number of spheres.
     rng: RandomState or None
         Random number generator. If None, use inbuilt numpy state.
+    periodic: bool
+        Whether or not the system is periodic.
+
 
     Metropolis-Hastings parameters
     ------------------------------
@@ -363,9 +417,9 @@ def pack(R, L, pf=None, n=None, rng=None,
     L_0 = L * increase_initial_ratio
 
     # Pack naively into this system
-    r_0, R = pack_simple(R, L_0, n=n, rng=rng)
+    r_0, R = pack_simple(R, L_0, n=n, rng=rng, periodic=periodic)
 
-    mg = MetroRCP(r_0, L_0, R, dr_max, dL_max, rng=rng)
+    mg = metro_rcp_factory(periodic, r_0, L_0, R, dr_max, dL_max, rng=rng)
 
     print('Initial packing done, Initial packing: {:g}'.format(mg.pf))
 
