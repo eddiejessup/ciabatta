@@ -102,8 +102,8 @@ class WalledScalar(Scalar):
 
     def __init__(self, L, dim, dx, walls, a_0=0.0):
         Scalar.__init__(self, L, dim, dx, a_0=a_0)
-        # Make field zero-valued where obstructed
         self.walls = walls
+        # Make field zero-valued where obstructed
         self.a *= np.logical_not(self.walls)
 
     def grad(self):
