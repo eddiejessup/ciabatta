@@ -1,16 +1,20 @@
 from __future__ import print_function, division
 import numpy as np
-from ciabatta import lattice, field_numerics, walled_field_numerics, fileio
+from ciabatta import lattice, field_numerics, walled_field_numerics
+from ciabatta.meta import make_repr_str
 
 
 class Space(object):
-    repr_fields = ['dim', 'L']
 
     def __init__(self, L, dim):
         self.L = L
-        self.L_half = L / 2.0
         self.dim = dim
 
+    @property
+    def L_half(self):
+        return self.L / 2.0
+
+    @property
     def A(self):
         return self.L ** self.dim
 
@@ -18,29 +22,40 @@ class Space(object):
         pass
 
     def __repr__(self):
-        return '{}_{}'.format(self.__class__.__name__,
-                              fileio.reprify(self, self.repr_fields))
+        fs = [('L', self.L), ('dim', self.dim)]
+        return make_repr_str(self, fs)
 
 
 class Field(Space):
-    repr_fields = Space.repr_fields + ['dx']
 
     def __init__(self, L, dim, dx):
         Space.__init__(self, L, dim)
         self.M = int(round(self.L / dx))
-        self.dx = self.L / self.M
 
+    @property
+    def dx(self):
+        return self.L / self.M
+
+    @property
     def A_i(self):
         return self.M ** self.dim
 
+    @property
     def dA(self):
         return self.dx ** self.dim
+
+    def density_field(self, r):
+        return density(r, self.L, self.dx)
 
     def r_to_i(self, r):
         return lattice.r_to_i(r, self.L, self.dx)
 
     def i_to_r(self, i):
         return lattice.i_to_r(i, self.L, self.dx)
+
+    def __repr__(self):
+        fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx)]
+        return make_repr_str(self, fs)
 
 
 class Scalar(Field):
@@ -58,9 +73,13 @@ class Scalar(Field):
     def laplacian(self):
         return laplace(self.a, self.dx)
 
+    def __repr__(self):
+        fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx),
+              ('a_0', self.a_0)]
+        return make_repr_str(self, fs)
+
 
 class Diffusing(Scalar):
-    repr_fields = Scalar.repr_fields + ['D', 'dt']
 
     def __init__(self, L, dim, dx, D, dt, a_0=0.0):
         Scalar.__init__(self, L, dim, dx, a_0=a_0)
@@ -72,6 +91,11 @@ class Diffusing(Scalar):
 
     def iterate(self):
         self.a += self.D * self.laplacian() * self.dt
+
+    def __repr__(self):
+        fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx),
+              ('D', self.D), ('dt', self.dt), ('a_0', self.a_0)]
+        return make_repr_str(self, fs)
 
 
 class WalledScalar(Scalar):
@@ -92,6 +116,11 @@ class WalledScalar(Scalar):
     def laplacian(self):
         return walled_laplace(self.a, self.dx, self.walls)
 
+    def __repr__(self):
+        fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx),
+              ('walls', self.walls), ('a_0', self.a_0)]
+        return make_repr_str(self, fs)
+
 
 # Note, inheritance order matters to get walled grad & laplacian call
 # (see diamond problem on wikipedia and how python handles it)
@@ -100,6 +129,12 @@ class WalledDiffusing(WalledScalar, Diffusing):
     def __init__(self, L, dim, dx, walls, D, dt, a_0=0.0):
         Diffusing.__init__(self, L, dim, dx, D, dt, a_0=a_0)
         WalledScalar.__init__(self, L, dim, dx, walls, a_0=a_0)
+
+    def __repr__(self):
+        fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx),
+              ('walls', self.walls), ('D', self.D), ('dt', self.dt),
+              ('a_0', self.a_0)]
+        return make_repr_str(self, fs)
 
 
 def density(r, L, dx):
