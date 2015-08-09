@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.cluster import hierarchy as hc
-from scipy.spatial.distance import cdist
 from _periodic_cluster import get_cluster_list
 
 
