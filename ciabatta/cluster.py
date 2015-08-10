@@ -60,7 +60,7 @@ def cluster_periodic(r, r_max, L):
     return _get_labels(linked_list)
 
 
-def nclusters(labels):
+def n_clusters(labels):
     """Get the number of clusters from a set of labels."""
     return len(set(labels))
 
