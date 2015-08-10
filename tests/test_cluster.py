@@ -5,7 +5,7 @@ from scipy.spatial.distance import cdist
 from ciabatta import cluster
 
 
-class Test(unittest.TestCase):
+class ClusterTest(unittest.TestCase):
 
     def setUp(self):
         seed = 1
