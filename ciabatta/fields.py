@@ -3,7 +3,7 @@ A class hierarchy relating to fields of all kinds.
 """
 from __future__ import print_function, division
 import numpy as np
-from ciabatta import lattice, field_numerics, walled_field_numerics
+from ciabatta import lattice, _field_numerics, _walled_field_numerics
 from ciabatta.meta import make_repr_str
 
 
@@ -147,11 +147,11 @@ def density(r, L, dx):
     inds = lattice.r_to_i(r, L, dx)
     f = np.zeros(r.shape[1] * (M,), dtype=np.int)
     if f.ndim == 1:
-        field_numerics.density_1d(inds, f)
+        _field_numerics.density_1d(inds, f)
     elif f.ndim == 2:
-        field_numerics.density_2d(inds, f)
+        _field_numerics.density_2d(inds, f)
     elif f.ndim == 3:
-        field_numerics.density_3d(inds, f)
+        _field_numerics.density_3d(inds, f)
     else:
         raise Exception('Density calc not implemented in this dimension')
     return f / dx ** r.shape[1]
@@ -161,11 +161,11 @@ def _laplace(field, dx):
     assert dx > 0.0
     laplace = np.empty_like(field)
     if field.ndim == 1:
-        field_numerics.laplace_1d(field, laplace, dx)
+        _field_numerics.laplace_1d(field, laplace, dx)
     elif field.ndim == 2:
-        field_numerics.laplace_2d(field, laplace, dx)
+        _field_numerics.laplace_2d(field, laplace, dx)
     elif field.ndim == 3:
-        field_numerics.laplace_3d(field, laplace, dx)
+        _field_numerics.laplace_3d(field, laplace, dx)
     else:
         raise Exception('Laplacian not implemented in this dimension')
     return laplace
@@ -177,11 +177,11 @@ def _grad_i(field, inds, dx):
     assert field.ndim == inds.shape[1]
     grad_i = np.empty(inds.shape, dtype=field.dtype)
     if field.ndim == 1:
-        field_numerics.grad_i_1d(field, inds, grad_i, dx)
+        _field_numerics.grad_i_1d(field, inds, grad_i, dx)
     elif field.ndim == 2:
-        field_numerics.grad_i_2d(field, inds, grad_i, dx)
+        _field_numerics.grad_i_2d(field, inds, grad_i, dx)
     elif field.ndim == 3:
-        field_numerics.grad_i_3d(field, grad_i, dx)
+        _field_numerics.grad_i_3d(field, grad_i, dx)
     else:
         raise Exception("Grad_i not implemented in this dimension")
     return grad_i
@@ -191,11 +191,11 @@ def _grad(field, dx):
     assert dx > 0.0
     grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
     if field.ndim == 1:
-        field_numerics.grad_1d(field, grad, dx)
+        _field_numerics.grad_1d(field, grad, dx)
     elif field.ndim == 2:
-        field_numerics.grad_2d(field, grad, dx)
+        _field_numerics.grad_2d(field, grad, dx)
     elif field.ndim == 3:
-        field_numerics.grad_3d(field, grad, dx)
+        _field_numerics.grad_3d(field, grad, dx)
     else:
         raise Exception('Grad not implemented in this dimension')
     return grad
@@ -205,11 +205,11 @@ def _div(field, dx):
     assert dx > 0.0
     div = np.empty(field.shape[:-1], dtype=field.dtype)
     if field.ndim == 2:
-        field_numerics.div_1d(field, div, dx)
+        _field_numerics.div_1d(field, div, dx)
     elif field.ndim == 3:
-        field_numerics.div_2d(field, div, dx)
+        _field_numerics.div_2d(field, div, dx)
     elif field.ndim == 4:
-        field_numerics.div_3d(field, div, dx)
+        _field_numerics.div_3d(field, div, dx)
     else:
         raise Exception('Divergence not implemented in this dimension')
     return div
@@ -220,11 +220,11 @@ def _walled_grad(field, dx, walls):
     assert dx > 0.0
     grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
     if field.ndim == 1:
-        walled_field_numerics.grad_1d(field, grad, dx, walls)
+        _walled_field_numerics.grad_1d(field, grad, dx, walls)
     elif field.ndim == 2:
-        walled_field_numerics.grad_2d(field, grad, dx, walls)
+        _walled_field_numerics.grad_2d(field, grad, dx, walls)
     elif field.ndim == 3:
-        walled_field_numerics.grad_3d(field, grad, dx, walls)
+        _walled_field_numerics.grad_3d(field, grad, dx, walls)
     else:
         raise Exception("Walled grad not implemented in this dimension")
     return grad
@@ -237,11 +237,11 @@ def _walled_grad_i(field, inds, dx, walls):
     assert field.ndim == inds.shape[1]
     grad_i = np.empty(inds.shape, dtype=field.dtype)
     if field.ndim == 1:
-        walled_field_numerics.grad_i_1d(field, inds, grad_i, dx, walls)
+        _walled_field_numerics.grad_i_1d(field, inds, grad_i, dx, walls)
     elif field.ndim == 2:
-        walled_field_numerics.grad_i_2d(field, inds, grad_i, dx, walls)
+        _walled_field_numerics.grad_i_2d(field, inds, grad_i, dx, walls)
     elif field.ndim == 3:
-        walled_field_numerics.grad_i_3d(field, inds, grad_i, dx, walls)
+        _walled_field_numerics.grad_i_3d(field, inds, grad_i, dx, walls)
     else:
         raise Exception("Walled Grad_i not implemented in this dimension")
     return grad_i
@@ -252,11 +252,11 @@ def _walled_laplace(field, dx, walls):
     assert dx > 0.0
     laplace = np.empty_like(field)
     if field.ndim == 1:
-        walled_field_numerics.laplace_1d(field, laplace, dx, walls)
+        _walled_field_numerics.laplace_1d(field, laplace, dx, walls)
     elif field.ndim == 2:
-        walled_field_numerics.laplace_2d(field, laplace, dx, walls)
+        _walled_field_numerics.laplace_2d(field, laplace, dx, walls)
     elif field.ndim == 3:
-        walled_field_numerics.laplace_3d(field, laplace, dx, walls)
+        _walled_field_numerics.laplace_3d(field, laplace, dx, walls)
     else:
         raise Exception('Laplacian not implemented in this dimension')
     return laplace

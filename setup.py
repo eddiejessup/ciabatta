@@ -7,7 +7,15 @@ from Cython.Build import cythonize
 import numpy
 
 cython_extensions = cythonize([
-    Extension("*", ["ciabatta/*.pyx"],
+    Extension("_distance_numerics", ["ciabatta/distance_numerics.pyx"],
+              include_dirs=[numpy.get_include()]),
+    Extension("_field_numerics", ["ciabatta/field_numerics.pyx"],
+              include_dirs=[numpy.get_include()]),
+    Extension("_geom_numerics", ["ciabatta/geom_numerics.pyx"],
+              include_dirs=[numpy.get_include()]),
+    Extension("_lattice_numerics", ["ciabatta/lattice_numerics.pyx"],
+              include_dirs=[numpy.get_include()]),
+    Extension("_walled_field_numerics", ["ciabatta/walled_field_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
 ])
 
