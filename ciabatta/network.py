@@ -5,7 +5,7 @@ import socket
 
 def email_with_gmail(username, password,
                      to, subject, body):
-    """Sends an email from an gmail account.
+    """Send an email from an gmail account.
 
     Parameters
     ----------
@@ -35,7 +35,7 @@ def email_with_gmail(username, password,
 
 
 def get_local_ip():
-    """Returns the local IP address.
+    """Return the local IP address.
 
     Parameters
     ----------

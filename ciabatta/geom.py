@@ -9,7 +9,7 @@ SMALL = 1e-10
 
 
 def sphere_volume(R, n):
-    """Returns the volume of a sphere in an arbitrary number of dimensions.
+    """Return the volume of a sphere in an arbitrary number of dimensions.
 
     Parameters
     ----------
@@ -27,7 +27,7 @@ def sphere_volume(R, n):
 
 
 def sphere_radius(V, n):
-    """Returns the radius of a sphere in an arbitrary number of dimensions.
+    """Return the radius of a sphere in an arbitrary number of dimensions.
 
     Parameters
     ----------
@@ -46,7 +46,7 @@ def sphere_radius(V, n):
 
 
 def sphere_area(R, n):
-    """Returns the surface area of a sphere in an arbitrary number of dimensions.
+    """Return the surface area of a sphere in an arbitrary number of dimensions.
 
     Note that in 2d this will return what is usually called a circle's
     circumference, not what is usually called its area
@@ -68,7 +68,7 @@ def sphere_area(R, n):
 
 
 def ellipsoid_volume(a, b, c):
-    """Returns the volume of an ellipsoid.
+    """Return the volume of an ellipsoid.
 
     Parameters
     ----------
@@ -85,7 +85,7 @@ def ellipsoid_volume(a, b, c):
 
 
 def cylinder_volume(R, l):
-    """Returns the volume of a cylinder.
+    """Return the volume of a cylinder.
 
     Parameters
     ----------
@@ -104,7 +104,7 @@ def cylinder_volume(R, l):
 
 
 def cylinder_area(R, l):
-    """Returns the area of a cylinder.
+    """Return the area of a cylinder.
 
     Parameters
     ----------
@@ -122,7 +122,7 @@ def cylinder_area(R, l):
 
 
 def spherocylinder_volume(R, l):
-    """Returns the volume of a
+    """Return the volume of a
     [spherocylinder](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters
@@ -141,7 +141,7 @@ def spherocylinder_volume(R, l):
 
 
 def spherocylinder_area(R, l):
-    """Returns the surface area of a
+    """Return the surface area of a
     [spherocylinder](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters
@@ -160,7 +160,7 @@ def spherocylinder_area(R, l):
 
 
 def spherocylinder_radius(V, l):
-    """Returns the radius of a
+    """Return the radius of a
     [spherocylinder](http://en.wikipedia.org/wiki/Capsule_(geometry)).
 
     Parameters
@@ -179,7 +179,7 @@ def spherocylinder_radius(V, l):
 
 
 def spherocylinder_aspect_ratio(l, R):
-    """Returns the aspect ratio of a spherocylinder,
+    """Return the aspect ratio of a spherocylinder,
 
     Parameters
     ----------
@@ -199,7 +199,7 @@ def spherocylinder_aspect_ratio(l, R):
 
 
 def spherocylinder_radius_for_aspect(V, ar):
-    """Returns the radius of a spherocylinder with a given volume and
+    """Return the radius of a spherocylinder with a given volume and
     aspect ratio.
 
     Parameters
@@ -220,7 +220,7 @@ def spherocylinder_radius_for_aspect(V, ar):
 
 
 def spheres_sep(ar, aR, br, bR):
-    """Returns the separation distance between two spheres.
+    """Return the separation distance between two spheres.
 
     Parameters
     ----------
@@ -239,7 +239,7 @@ def spheres_sep(ar, aR, br, bR):
 
 
 def spheres_intersect(ar, aR, br, bR):
-    """Returns whether or not two spheres intersect each other.
+    """Return whether or not two spheres intersect each other.
 
     Parameters
     ----------
@@ -257,7 +257,7 @@ def spheres_intersect(ar, aR, br, bR):
 
 
 def point_seg_sep(ar, br1, br2):
-    """Returns the minimum separation vector between a point and a line segment,
+    """Return the minimum separation vector between a point and a line segment,
     in 3 dimensions.
 
     Parameters
@@ -289,7 +289,7 @@ def point_seg_sep(ar, br1, br2):
 
 
 def point_seg_sep_sq(ar, br1, br2):
-    """Returns the squared minimum separation distance between a point and a
+    """Return the squared minimum separation distance between a point and a
     line segment, in 3 dimensions.
 
     Parameters

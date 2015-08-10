@@ -4,7 +4,7 @@ import subprocess
 
 
 def get_git_hash():
-    """Returns the shortened git SHA of the current commit."""
+    """Return the shortened git SHA of the current commit."""
     cmd = ["git", "rev-parse", "--short", "HEAD"]
     return subprocess.check_output(cmd).strip()
 

@@ -8,7 +8,7 @@ from ciabatta import _cell_list
 
 def get_inters(r, L, R_cut):
     '''
-    Returns points within a given cut-off of each other,
+    Return points within a given cut-off of each other,
     in a periodic system.
 
     Uses a cell-list.
@@ -48,7 +48,7 @@ def get_inters(r, L, R_cut):
 
 def get_inters_direct(r, L, R_cut):
     '''
-    Returns points within a given cut-off of each other,
+    Return points within a given cut-off of each other,
     in a periodic system.
 
     Uses a direct algorithm, which may be very slow for large numbers of

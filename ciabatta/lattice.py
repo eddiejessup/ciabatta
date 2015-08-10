@@ -4,7 +4,7 @@ from ciabatta import lattice_numerics
 
 
 def extend_array(a, n):
-    """Increases the resolution of an array by duplicating its values to fill
+    """Increase the resolution of an array by duplicating its values to fill
     a larger array.
 
     Parameters
@@ -24,7 +24,7 @@ def extend_array(a, n):
 
 
 def field_subset(f, inds, rank=0):
-    """Returns the value of a field at a subset of points.
+    """Return the value of a field at a subset of points.
 
     Parameters
     ----------
@@ -55,7 +55,7 @@ def field_subset(f, inds, rank=0):
 
 
 def pad_to_3d(a):
-    """Returns 1- or 2-dimensional cartesian vectors, converted into a
+    """Return 1- or 2-dimensional cartesian vectors, converted into a
     3-dimensional representation, with additional dimensional coordinates
     assumed to be zero.
 
@@ -73,7 +73,7 @@ def pad_to_3d(a):
 
 
 def pad_length(x, d):
-    """Returns a vector appropriate to a dimensional space, using an input vector
+    """Return a vector appropriate to a dimensional space, using an input vector
     as a prompt depending on its type:
 
         - If the input is a vector, return that vector.
@@ -111,7 +111,7 @@ def wrap_dec(M, i):
 
 
 def r_to_i(r, L, dx):
-    """Returns closest indices on a square lattice of vectors in continuous space.
+    """Return closest indices on a square lattice of vectors in continuous space.
 
     Parameters
     ----------
@@ -133,7 +133,7 @@ def r_to_i(r, L, dx):
 
 
 def i_to_r(i, L, dx):
-    """Returns coordinates of lattice indices in continuous space.
+    """Return coordinates of lattice indices in continuous space.
 
     Parameters
     ----------

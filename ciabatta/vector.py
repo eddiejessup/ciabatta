@@ -3,7 +3,7 @@ import numpy as np
 
 
 def vector_mag_sq(v):
-    """Returns the squared magnitude of vectors.
+    """Return the squared magnitude of vectors.
 
     Parameters
     ----------
@@ -19,7 +19,7 @@ def vector_mag_sq(v):
 
 
 def vector_mag(v):
-    """Returns the magnitude of vectors.
+    """Return the magnitude of vectors.
 
     Parameters
     ----------
@@ -35,7 +35,8 @@ def vector_mag(v):
 
 
 def vector_unit_nonull(v):
-    """Returns unit vectors of input vectors. Any null vectors raise an Exception.
+    """Return unit vectors.
+    Any null vectors raise an Exception.
 
     Parameters
     ----------
@@ -52,7 +53,8 @@ def vector_unit_nonull(v):
 
 
 def vector_unit_nullnull(v):
-    """Returns unit vectors of input vectors. Any null vectors remain null vectors.
+    """Return unit vectors.
+    Any null vectors remain null vectors.
 
     Parameters
     ----------
@@ -72,7 +74,7 @@ def vector_unit_nullnull(v):
 
 
 def vector_unit_nullrand(v, rng=None):
-    """Returns unit vectors of input vectors.
+    """Return unit vectors.
     Any null vectors are mapped to a uniformly picked unit vector.
 
     Parameters
@@ -94,7 +96,7 @@ def vector_unit_nullrand(v, rng=None):
 
 
 def vector_perp(v):
-    """Returns vectors perpendicular to 2-dimensional vectors.
+    """Return vectors perpendicular to 2-dimensional vectors.
     If an input vector has components (x, y), the output vector has
     components (x, -y).
 
@@ -178,8 +180,8 @@ def cart_to_polar(arr_c):
 
 
 def sphere_pick_polar(d, n=1, rng=None):
-    """Returns polar vectors uniformly picked on the unit sphere in a space
-    with an arbitrary number of dimensions.
+    """Return vectors uniformly picked on the unit sphere.
+    Vectors are in a polar representation.
 
     Parameters
     ----------
@@ -212,8 +214,8 @@ def sphere_pick_polar(d, n=1, rng=None):
 
 
 def sphere_pick(d, n=1, rng=None):
-    """Returns cartesian vectors uniformly picked on the unit sphere in a space
-    with an arbitrary number of dimensions.
+    """Return vectors uniformly picked on the unit sphere.
+    Vectors are in a cartesian representation.
 
     Parameters
     ----------
@@ -231,7 +233,7 @@ def sphere_pick(d, n=1, rng=None):
 
 
 def rejection_pick(L, n, d, valid, rng=None):
-    """Returns cartesian vectors uniformly picked in a space with an arbitrary
+    """Return cartesian vectors uniformly picked in a space with an arbitrary
     number of dimensions, which is fully enclosed by a cube of finite length,
     using a supplied function which should evaluate whether a picked point lies
     within this space.
@@ -263,8 +265,8 @@ def rejection_pick(L, n, d, valid, rng=None):
 
 
 def ball_pick(n, d, rng=None):
-    """Returns cartesian vectors uniformly picked on the unit ball in an arbitrary
-    number of dimensions.
+    """Return cartesian vectors uniformly picked on the unit ball in an
+    arbitrary number of dimensions.
 
     The unit ball is the space enclosed by the unit sphere.
 
@@ -290,8 +292,9 @@ def ball_pick(n, d, rng=None):
 
 
 def disk_pick_polar(n=1, rng=None):
-    """Returns polar vectors uniformly picked on the unit disk.
+    """Return vectors uniformly picked on the unit disk.
     The unit disk is the space enclosed by the unit circle.
+    Vectors are in a polar representation.
 
     Parameters
     ----------
@@ -312,8 +315,9 @@ def disk_pick_polar(n=1, rng=None):
 
 
 def disk_pick(n=1, rng=None):
-    """Returns cartesian vectors uniformly picked on the unit disk.
+    """Return vectors uniformly picked on the unit disk.
     The unit disk is the space enclosed by the unit circle.
+    Vectors are in a cartesian representation.
 
     Parameters
     ----------

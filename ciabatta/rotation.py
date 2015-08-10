@@ -3,7 +3,7 @@ import numpy as np
 
 
 def R_rot_2d(th):
-    """Returns a 2-dimensional rotation matrix.
+    """Return a 2-dimensional rotation matrix.
 
     Parameters
     ----------
@@ -28,7 +28,7 @@ def R_rot_2d(th):
 
 
 def R_rot_3d(th):
-    """Returns a 3-dimensional rotation matrix.
+    """Return a 3-dimensional rotation matrix.
 
     Parameters
     ----------
@@ -58,7 +58,7 @@ def R_rot_3d(th):
 
 
 def R_rot(th):
-    """Returns a rotation matrix.
+    """Return a rotation matrix.
 
     Parameters
     ----------
@@ -89,7 +89,7 @@ def R_rot(th):
 
 
 def rotate(a, th):
-    """Returns cartesian vectors, after rotation by specified angles about
+    """Return cartesian vectors, after rotation by specified angles about
     each degree of freedom.
 
     Parameters

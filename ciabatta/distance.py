@@ -9,7 +9,7 @@ from ciabatta.distance_numerics import pdist_angle
 
 
 def csep(ra, rb):
-    """Returns separation vectors between each pair of the two sets of points.
+    """Return separation vectors between each pair of the two sets of points.
 
     Parameters
     ----------
@@ -26,7 +26,7 @@ def csep(ra, rb):
 
 
 def csep_close(ra, rb):
-    """Returns the closest separation vector between each point in one set,
+    """Return the closest separation vector between each point in one set,
     and every point in a second set.
 
     Parameters
@@ -54,7 +54,7 @@ def csep_close(ra, rb):
 
 
 def csep_periodic(ra, rb, L):
-    """Returns separation vectors between each pair of the two sets of points.
+    """Return separation vectors between each pair of the two sets of points.
 
     Parameters
     ----------
@@ -78,7 +78,7 @@ def csep_periodic(ra, rb, L):
 
 
 def csep_periodic_close(ra, rb, L):
-    """Returns the closest separation vector between each point in one set,
+    """Return the closest separation vector between each point in one set,
     and every point in a second set, in periodic space.
 
     Parameters
@@ -108,7 +108,7 @@ def csep_periodic_close(ra, rb, L):
 
 
 def cdist_sq_periodic(ra, rb, L):
-    """Returns the squared distance between each point in on set,
+    """Return the squared distance between each point in on set,
     and every point in a second set, in periodic space.
 
     Parameters
@@ -127,7 +127,7 @@ def cdist_sq_periodic(ra, rb, L):
 
 
 def pdist_sq_periodic(r, L):
-    """Returns the squared distance between all combinations of
+    """Return the squared distance between all combinations of
     a set of points, in periodic space.
 
     Parameters
@@ -149,7 +149,7 @@ def pdist_sq_periodic(r, L):
 
 
 def angular_distance(n1, n2):
-    """Returns the angular separation between two 3 dimensional vectors.
+    """Return the angular separation between two 3 dimensional vectors.
 
     Parameters
     ----------
