@@ -3,7 +3,7 @@ For a set of points in a periodic system,
 find those within a cut-off distance of one another.
 '''
 
-from ciabatta.cell_list import _intro
+from ciabatta import _cell_list
 
 
 def get_inters(r, L, R_cut):
@@ -36,9 +36,9 @@ def get_inters(r, L, R_cut):
         elements in `inters[i]` beyond `intersi[i]` have no well-defined value.
     '''
     if r.shape[1] == 2:
-        _intro.cell_list_2d.make_inters(r.T, L, R_cut)
+        _cell_list.cell_list_2d.make_inters(r.T, L, R_cut)
     elif r.shape[1] == 3:
-        _intro.cell_list_3d.make_inters(r.T, L, R_cut)
+        _cell_list.cell_list_3d.make_inters(r.T, L, R_cut)
     else:
         print('Warning: cell list not implemented in this dimension, falling'
               'back to direct computation')
@@ -76,10 +76,10 @@ def get_inters_direct(r, L, R_cut):
         This array should be used to index `inters`, as for point `i`,
         elements in `inters[i]` beyond `intersi[i]` have no well-defined value.
     '''
-    _intro.cell_list_direct.make_inters(r.T, L, R_cut)
+    _cell_list.cell_list_direct.make_inters(r.T, L, R_cut)
     return parse_inters()
 
 
 def parse_inters():
-    return (_intro.cell_list_shared.inters.T - 1,
-            _intro.cell_list_shared.intersi.T)
+    return (_cell_list.cell_list_shared.inters.T - 1,
+            _cell_list.cell_list_shared.intersi.T)

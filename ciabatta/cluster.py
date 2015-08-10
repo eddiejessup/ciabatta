@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.cluster import hierarchy as hc
-from _periodic_cluster import get_cluster_list
+from ciabatta._periodic_cluster import get_cluster_list
 
 
 def cluster(r, r_max):
@@ -13,7 +13,7 @@ def cluster_periodic(r, r_max, L):
     linked_list = get_cluster_list(r, r_max, L)
     # Convert from Fortran 1-based to Python 0-based indexing.
     linked_list -= 1
-    return get_labels(linked_list)
+    return _get_labels(linked_list)
 
 
 def nclusters(labels):
@@ -27,13 +27,6 @@ def cluster_sizes(labels):
         return np.bincount(labels - 1)
     else:
         raise Exception
-
-
-def norm_to_colour(x):
-    c = x - float(x.min())
-    c /= float(x.max())
-    c *= 255.0
-    return c
 
 
 def biggest_cluster_fraction(clust_sizes):
@@ -62,7 +55,7 @@ def biggest_cluster_fraction(clust_sizes):
     return clust_sizes.max() / float(clust_sizes.sum())
 
 
-def get_clumpiness(clust_sizes):
+def clumpiness(clust_sizes):
     """Calculate how 'clumpy' a set of clustered points are.
 
     The measure indicates the degree to which points belong to a few clusters.
@@ -97,7 +90,7 @@ def get_clumpiness(clust_sizes):
     return np.sum(clust_fracs * clumpinesses)
 
 
-def get_labels(linked_list):
+def _get_labels(linked_list):
     """Convert clusters represented as a linked list into a labels array.
 
     For example, `[1, 0, 2, 3]` represents a system where the first two samples

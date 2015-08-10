@@ -134,3 +134,10 @@ def shifted_cmap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     plt.register_cmap(cmap=newcmap)
 
     return newcmap
+
+
+def norm_to_colour(x):
+    c = x - float(x.min())
+    c /= float(x.max())
+    c *= 255.0
+    return c
