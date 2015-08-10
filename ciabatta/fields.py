@@ -68,13 +68,13 @@ class Scalar(Field):
         self.a = np.ones(self.dim * (self.M,), dtype=np.float) * a_0
 
     def grad(self):
-        return grad(self.a, self.dx)
+        return _grad(self.a, self.dx)
 
     def grad_i(self, r):
-        return grad_i(self.a, self.r_to_i(r), self.dx)
+        return _grad_i(self.a, self.r_to_i(r), self.dx)
 
     def laplacian(self):
-        return laplace(self.a, self.dx)
+        return _laplace(self.a, self.dx)
 
     def __repr__(self):
         fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx),
@@ -110,14 +110,14 @@ class WalledScalar(Scalar):
         self.a *= np.logical_not(self.walls)
 
     def grad(self):
-        return walled_grad(self.a, self.dx, self.walls)
+        return _walled_grad(self.a, self.dx, self.walls)
 
     def grad_i(self, r):
-        return walled_grad_i(self.a, self.r_to_i(r), self.dx,
-                             self.walls)
+        return _walled_grad_i(self.a, self.r_to_i(r), self.dx,
+                              self.walls)
 
     def laplacian(self):
-        return walled_laplace(self.a, self.dx, self.walls)
+        return _walled_laplace(self.a, self.dx, self.walls)
 
     def __repr__(self):
         fs = [('L', self.L), ('dim', self.dim), ('dx', self.dx),
@@ -157,7 +157,7 @@ def density(r, L, dx):
     return f / dx ** r.shape[1]
 
 
-def laplace(field, dx):
+def _laplace(field, dx):
     assert dx > 0.0
     laplace = np.empty_like(field)
     if field.ndim == 1:
@@ -171,7 +171,7 @@ def laplace(field, dx):
     return laplace
 
 
-def grad_i(field, inds, dx):
+def _grad_i(field, inds, dx):
     assert dx > 0.0
     assert inds.ndim == 2
     assert field.ndim == inds.shape[1]
@@ -187,7 +187,7 @@ def grad_i(field, inds, dx):
     return grad_i
 
 
-def grad(field, dx):
+def _grad(field, dx):
     assert dx > 0.0
     grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
     if field.ndim == 1:
@@ -201,7 +201,7 @@ def grad(field, dx):
     return grad
 
 
-def div(field, dx):
+def _div(field, dx):
     assert dx > 0.0
     div = np.empty(field.shape[:-1], dtype=field.dtype)
     if field.ndim == 2:
@@ -215,7 +215,7 @@ def div(field, dx):
     return div
 
 
-def walled_grad(field, dx, walls):
+def _walled_grad(field, dx, walls):
     assert field.shape == walls.shape
     assert dx > 0.0
     grad = np.empty(field.shape + (field.ndim,), dtype=field.dtype)
@@ -230,7 +230,7 @@ def walled_grad(field, dx, walls):
     return grad
 
 
-def walled_grad_i(field, inds, dx, walls):
+def _walled_grad_i(field, inds, dx, walls):
     assert field.shape == walls.shape
     assert dx > 0.0
     assert inds.ndim == 2
@@ -247,7 +247,7 @@ def walled_grad_i(field, inds, dx, walls):
     return grad_i
 
 
-def walled_laplace(field, dx, walls):
+def _walled_laplace(field, dx, walls):
     assert field.shape == walls.shape
     assert dx > 0.0
     laplace = np.empty_like(field)

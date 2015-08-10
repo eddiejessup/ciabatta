@@ -7,12 +7,12 @@ import scipy.constants
 from ciabatta import geom, rotation
 
 
-def spheroid_xi(p):
+def _spheroid_xi(p):
     return np.sqrt(np.abs(p ** 2.0 - 1.0)) / p
 
 
 def perrin_factor(p):
-    xi = spheroid_xi(p)
+    xi = _spheroid_xi(p)
     if p > 1.0:
         return 2.0 * np.arctanh(xi) / xi
     else:
@@ -40,7 +40,7 @@ def drag_coeff_spheroid(a, b, eta):
 def drag_coeff_rot_spheroid(a, b, eta):
     p = a / b
     S = perrin_factor(p)
-    xi = spheroid_xi(p)
+    xi = _spheroid_xi(p)
     F_axial = (4.0 / 3.0) * xi ** 2 / (2.0 - (S / p ** 2))
     F_equat = ((4.0 / 3.0) *
                ((1.0 / p) ** 2 - p ** 2) / (2.0 - S * (2.0 - (1.0 / p) ** 2)))
