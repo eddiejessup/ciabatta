@@ -1,5 +1,5 @@
 """
-Pack spheres into periodic systems.
+Pack n-dimensional spheres into finite spaces.
 """
 
 from __future__ import print_function, division

@@ -18,10 +18,6 @@ def email_with_gmail(username, password,
         Email address of the recipient.
     subject, body: string
         Email subject and content.
-
-    Returns
-    -------
-    None
     """
     headers = '\r\n'.join([
         'from: {}'.format(username),
@@ -40,13 +36,9 @@ def email_with_gmail(username, password,
 def get_local_ip():
     """Return the local IP address.
 
-    Parameters
-    ----------
-    None
-
     Returns
     -------
-    IP: string
+    ip: string
         IP address
     """
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

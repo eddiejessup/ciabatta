@@ -71,16 +71,15 @@ def stokes_einstein(drag, T):
 
     Parameters
     ----------
-    drag:
+    drag: float
         The drag coefficient for the object
-    T:
+    T: float
         Temperature
 
     Returns
     -------
-    D:
+    D: float
         Diffusion constant.
-
     """
     return scipy.constants.k * T / drag
 

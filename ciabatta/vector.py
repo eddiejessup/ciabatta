@@ -122,7 +122,7 @@ def vector_perp(v):
 # Coordinate system transformations
 
 def polar_to_cart(arr_p):
-    """Convert and return polar vectors in their cartesian representation.
+    """Return polar vectors in their cartesian representation.
 
     Parameters
     ----------
@@ -154,7 +154,7 @@ def polar_to_cart(arr_p):
 
 
 def cart_to_polar(arr_c):
-    """Convert and return cartesian vectors in their polar representation.
+    """Return cartesian vectors in their polar representation.
 
     Parameters
     ----------
@@ -336,10 +336,12 @@ def disk_pick(n=1, rng=None):
 
 
 def normalise_angle(th):
+    """Normalise an angle to be in the range [-pi, pi]."""
     return th - (2.0 * np.pi) * np.floor((th + np.pi) / (2.0 * np.pi))
 
 
 def smallest_signed_angle(source, target):
+    """Find the smallest angle going from angle `source` to angle `target`."""
     dth = target - source
     dth = (dth + np.pi) % (2.0 * np.pi) - np.pi
     return dth
