@@ -1,5 +1,5 @@
 import numpy as np
-from ciabatta.cell_list import intro as cl_intro
+from ciabatta import cell_list
 cimport numpy as np
 cimport cython
 
@@ -136,7 +136,7 @@ def spherocylinder_intersection(np.ndarray[np.float_t, ndim=2] r,
         np.ndarray[np.float_t, ndim=1] s1 = np.empty(dim), s2 = np.empty(dim), wd = np.empty(dim), r1d = np.empty(dim)
         double sep_sq_max = (2.0 * R) ** 2, l_half = l / 2.0
 
-    inters, intersi = cl_intro.get_inters(r, L, 2.0 * R + l)
+    inters, intersi = cell_list.get_inters(r, L, 2.0 * R + l)
 
     for i in range(n):
         if intersi[i] > 0:
