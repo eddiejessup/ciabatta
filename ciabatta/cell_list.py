@@ -43,7 +43,7 @@ def get_inters(r, L, R_cut):
         print('Warning: cell list not implemented in this dimension, falling'
               'back to direct computation')
         return get_inters_direct(r, L, R_cut)
-    return parse_inters()
+    return _parse_inters()
 
 
 def get_inters_direct(r, L, R_cut):
@@ -77,9 +77,9 @@ def get_inters_direct(r, L, R_cut):
         elements in `inters[i]` beyond `intersi[i]` have no well-defined value.
     '''
     _cell_list.cell_list_direct.make_inters(r.T, L, R_cut)
-    return parse_inters()
+    return _parse_inters()
 
 
-def parse_inters():
+def _parse_inters():
     return (_cell_list.cell_list_shared.inters.T - 1,
             _cell_list.cell_list_shared.intersi.T)
