@@ -1,3 +1,6 @@
+"""
+Functions related to interacting with the file-system.
+"""
 from __future__ import absolute_import, division, print_function
 import os
 import subprocess

@@ -1,3 +1,6 @@
+"""
+Functions to help with task-based parallel execution.
+"""
 import multiprocessing as mp
 
 

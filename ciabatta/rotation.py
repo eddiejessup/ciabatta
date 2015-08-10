@@ -1,3 +1,6 @@
+"""
+Functions to help with rotating vectors in two and three dimensions.
+"""
 from __future__ import print_function, division
 import numpy as np
 

@@ -1,3 +1,6 @@
+"""
+Helper functions for using arrays as spatial lattices.
+"""
 from __future__ import print_function, division
 import numpy as np
 from ciabatta import lattice_numerics

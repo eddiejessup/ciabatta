@@ -1,3 +1,6 @@
+"""
+A class hierarchy relating to fields of all kinds.
+"""
 from __future__ import print_function, division
 import numpy as np
 from ciabatta import lattice, field_numerics, walled_field_numerics
