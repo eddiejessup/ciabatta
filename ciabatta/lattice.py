@@ -105,14 +105,6 @@ def pad_length(x, d):
     return np.array(x)
 
 
-def wrap_inc(M, i):
-    return i + 1 if i < M - 1 else 0
-
-
-def wrap_dec(M, i):
-    return i - 1 if i > 0 else M - 1
-
-
 def r_to_i(r, L, dx):
     """Return closest indices on a square lattice of vectors in continuous space.
 
