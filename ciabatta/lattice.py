@@ -3,7 +3,7 @@ Helper functions for using arrays as spatial lattices.
 """
 from __future__ import print_function, division
 import numpy as np
-from ciabatta import _lattice_numerics
+from ciabatta import lattice_numerics
 
 
 def extend_array(a, n):
@@ -124,7 +124,7 @@ def r_to_i(r, L, dx):
     -------
     inds: integer array, shape of r
     """
-    return _lattice_numerics.r_to_i(r, L, dx)
+    return lattice_numerics.r_to_i(r, L, dx)
 
 
 def i_to_r(i, L, dx):

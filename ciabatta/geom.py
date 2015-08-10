@@ -5,8 +5,8 @@ from __future__ import print_function, division
 import numpy as np
 import scipy.special
 from ciabatta import vector
-from ciabatta._geom_numerics import (sphere_intersection,
-                                     spherocylinder_intersection)
+from ciabatta.geom_numerics import (sphere_intersection,
+                                    spherocylinder_intersection)
 
 
 def sphere_volume(R, n):
