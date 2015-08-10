@@ -7,15 +7,20 @@ from Cython.Build import cythonize
 import numpy
 
 cython_extensions = cythonize([
-    Extension("_distance_numerics", ["ciabatta/distance_numerics.pyx"],
+    Extension("ciabatta._distance_numerics",
+              ["ciabatta/distance_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
-    Extension("_field_numerics", ["ciabatta/field_numerics.pyx"],
+    Extension("ciabatta._field_numerics",
+              ["ciabatta/field_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
-    Extension("_geom_numerics", ["ciabatta/geom_numerics.pyx"],
+    Extension("ciabatta._geom_numerics",
+              ["ciabatta/geom_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
-    Extension("_lattice_numerics", ["ciabatta/lattice_numerics.pyx"],
+    Extension("ciabatta._lattice_numerics",
+              ["ciabatta/lattice_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
-    Extension("_walled_field_numerics", ["ciabatta/walled_field_numerics.pyx"],
+    Extension("ciabatta._walled_field_numerics",
+              ["ciabatta/walled_field_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
 ])
 
@@ -56,7 +61,7 @@ test_requirements = [
 
 setup(
     name='ciabatta',
-    version='0.1.0',
+    version='0.2.0',
     description="Miscellaneous shared utilities",
     long_description=readme + '\n\n' + history,
     author="Elliot Marsden",
