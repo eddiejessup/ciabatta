@@ -9,7 +9,7 @@ ciabatta
         :target: https://pypi.python.org/pypi/ciabatta
 
 
-Shared things
+Scripts and libraries that aren't tied to a specific project.
 
 * Free software: BSD license
 * Documentation: https://ciabatta.readthedocs.org.
