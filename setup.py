@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
-from numpy.distutils.core import setup, Extension
+from setuptools import Extension
+from numpy.distutils.core import setup
+from numpy.distutils.core import Extension as NExtension
 from Cython.Build import cythonize
 import numpy
-
-extensions = cython_extensions + fortran_extensions
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -53,11 +53,13 @@ cell_list_sources = ["ciabatta/cell_list_numerics/utils.f90",
                      ]
 
 fortran_extensions = [
-    Extension("ciabatta._periodic_cluster",
-              sources=["ciabatta/periodic_cluster.f90"]),
-    Extension("ciabatta._cell_list",
-              sources=cell_list_sources),
+    NExtension("ciabatta._periodic_cluster",
+               sources=["ciabatta/periodic_cluster.f90"]),
+    NExtension("ciabatta._cell_list",
+               sources=cell_list_sources),
 ]
+
+extensions = cython_extensions + fortran_extensions
 
 setup(
     name='ciabatta',
