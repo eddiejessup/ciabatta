@@ -4,6 +4,7 @@ ciabatta/field_numerics.c
 ciabatta/geom_numerics.c
 ciabatta/lattice_numerics.c
 ciabatta/walled_field_numerics.c
+*.so.dSYM
 
 # OS X
 .DS_Store
