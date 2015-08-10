@@ -9,9 +9,6 @@ from ciabatta._geom_numerics import (sphere_intersection,
                                      spherocylinder_intersection)
 
 
-SMALL = 1e-10
-
-
 def sphere_volume(R, n):
     """Return the volume of a sphere in an arbitrary number of dimensions.
 
