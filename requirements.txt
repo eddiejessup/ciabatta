@@ -1,5 +1,5 @@
-brewer2mpl>=1.4.1
-Cython>=0.23
-matplotlib>=1.4.3
-numpy>=1.9.2
-scipy>=0.16.0
+brewer2mpl
+Cython
+matplotlib
+numpy
+scipy
