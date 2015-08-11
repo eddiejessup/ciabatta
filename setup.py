@@ -3,8 +3,6 @@
 
 import setuptools
 from setuptools import setup, Extension
-from Cython.Build import cythonize
-import numpy
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -13,7 +11,6 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
-    'Cython',
     'numpy',
     'scipy',
     'matplotlib',
@@ -21,19 +18,9 @@ requirements = [
 ]
 
 test_requirements = [
-    'Cython',
     'numpy',
     'scipy',
 ]
-
-extensions = cythonize([
-    Extension("ciabatta.distance_numerics",
-              ["ciabatta/distance_numerics.pyx"],
-              include_dirs=[numpy.get_include()]),
-    Extension("ciabatta.geom_numerics",
-              ["ciabatta/geom_numerics.pyx"],
-              include_dirs=[numpy.get_include()]),
-])
 
 setup(
     name='ciabatta',
@@ -63,5 +50,4 @@ setup(
     ],
     test_suite='tests',
     tests_require=test_requirements,
-    ext_modules=extensions,
 )

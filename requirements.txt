@@ -1,5 +1,4 @@
 wheel
-Cython
 numpy
 scipy
 matplotlib

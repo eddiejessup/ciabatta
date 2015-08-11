@@ -1,7 +1,3 @@
-# My Cython extensions
-ciabatta/distance_numerics.c
-ciabatta/geom_numerics.c
-
 # OS X
 .DS_Store
 
@@ -14,7 +10,6 @@ ciabatta/geom_numerics.c
 
 # C extensions
 *.so
-*.so.dSYM
 
 # Packages
 *.egg
