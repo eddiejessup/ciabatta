@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.cluster import hierarchy as hc
-from ciabatta.periodic_cluster import get_cluster_list
+from ciabatta._periodic_cluster import get_cluster_list
 
 
 def cluster(r, r_max):
