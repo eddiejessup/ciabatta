@@ -46,18 +46,9 @@ cython_extensions = cythonize([
               include_dirs=[numpy.get_include()]),
 ])
 
-cell_list_sources = ["ciabatta/cell_list_numerics/utils.f90",
-                     "ciabatta/cell_list_numerics/cell_list_shared.f90",
-                     "ciabatta/cell_list_numerics/cell_list_direct.f90",
-                     "ciabatta/cell_list_numerics/cell_list_2d.f90",
-                     "ciabatta/cell_list_numerics/cell_list_3d.f90"
-                     ]
-
 fortran_extensions = [
     NExtension("ciabatta._periodic_cluster",
                sources=["ciabatta/periodic_cluster.f90"]),
-    NExtension("ciabatta._cell_list",
-               sources=cell_list_sources),
 ]
 
 extensions = cython_extensions + fortran_extensions
