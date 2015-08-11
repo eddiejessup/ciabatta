@@ -77,7 +77,8 @@ def prettify_axes(*axs):
 
 
 def get_figsize(width=512, factor=0.6, ratio=golden_ratio):
-    """Get width using \showthe\textwidth in latex file, then see the tex compile log.
+    """Get width using \showthe\textwidth in latex file, then see the tex
+    compile log.
     """
     fig_width_pt = width * factor
     inches_per_pt = 1.0 / 72.27
