@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
-from setuptools import Extension
-from numpy.distutils.core import setup
-from numpy.distutils.core import Extension as NExtension
+from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy
 
@@ -28,7 +26,7 @@ test_requirements = [
     'scipy',
 ]
 
-cython_extensions = cythonize([
+extensions = cythonize([
     Extension("ciabatta.distance_numerics",
               ["ciabatta/distance_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
@@ -45,13 +43,6 @@ cython_extensions = cythonize([
               ["ciabatta/walled_field_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
 ])
-
-fortran_extensions = [
-    NExtension("ciabatta._periodic_cluster",
-               sources=["ciabatta/periodic_cluster.f90"]),
-]
-
-extensions = cython_extensions + fortran_extensions
 
 setup(
     name='ciabatta',
