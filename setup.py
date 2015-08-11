@@ -15,11 +15,11 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read().replace('.. :changelog:', '')
 
 requirements = [
-    'brewer2mpl',
     'Cython',
-    'matplotlib',
     'numpy',
     'scipy',
+    'matplotlib',
+    'brewer2mpl',
 ]
 
 test_requirements = [
