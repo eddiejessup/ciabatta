@@ -1,5 +1,4 @@
 wheel
 numpy
-scipy
 matplotlib
 brewer2mpl

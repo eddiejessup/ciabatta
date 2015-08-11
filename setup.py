@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import setuptools
-from setuptools import setup, Extension
+from setuptools import setup
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -12,14 +12,12 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'numpy',
-    'scipy',
     'matplotlib',
     'brewer2mpl',
 ]
 
 test_requirements = [
     'numpy',
-    'scipy',
 ]
 
 setup(
