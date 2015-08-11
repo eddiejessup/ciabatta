@@ -1,9 +1,6 @@
 # My Cython extensions
 ciabatta/distance_numerics.c
-ciabatta/field_numerics.c
 ciabatta/geom_numerics.c
-ciabatta/lattice_numerics.c
-ciabatta/walled_field_numerics.c
 
 # OS X
 .DS_Store

@@ -30,17 +30,8 @@ extensions = cythonize([
     Extension("ciabatta.distance_numerics",
               ["ciabatta/distance_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
-    Extension("ciabatta.field_numerics",
-              ["ciabatta/field_numerics.pyx"],
-              include_dirs=[numpy.get_include()]),
     Extension("ciabatta.geom_numerics",
               ["ciabatta/geom_numerics.pyx"],
-              include_dirs=[numpy.get_include()]),
-    Extension("ciabatta.lattice_numerics",
-              ["ciabatta/lattice_numerics.pyx"],
-              include_dirs=[numpy.get_include()]),
-    Extension("ciabatta.walled_field_numerics",
-              ["ciabatta/walled_field_numerics.pyx"],
               include_dirs=[numpy.get_include()]),
 ])
 
