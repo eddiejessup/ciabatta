@@ -12,6 +12,8 @@ before_install:
   - sudo apt-get install liblapack-dev
   - sudo apt-get install gfortran
 
-install: pip install -r requirements.txt
+install:
+  - travis_wait pip install scipy
+  - pip install -r requirements.txt
 
 script: python setup.py test
