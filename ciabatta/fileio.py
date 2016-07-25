@@ -1,7 +1,10 @@
 """
 Functions related to interacting with the file-system.
 """
-from __future__ import absolute_import, division, print_function
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
+from builtins import input
+
 import os
 import subprocess
 
@@ -15,7 +18,7 @@ def get_git_hash():
 def makedirs_safe(dirname):
     """Make a directory, prompting the user if it already exists."""
     if os.path.isdir(dirname):
-        s = raw_input('%s exists, overwrite? (y/n) ' % dirname)
+        s = input('%s exists, overwrite? (y/n) ' % dirname)
         if s != 'y':
             raise Exception
     else:

@@ -1,7 +1,9 @@
 """
 Functions relating to networking, as in the internet.
 """
-from __future__ import print_function, division
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
+
 import smtplib
 import socket
 

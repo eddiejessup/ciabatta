@@ -1,7 +1,9 @@
 """
 Miscellaneous random number-related functions.
 """
-from __future__ import print_function, division
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
+
 import numpy as np
 
 

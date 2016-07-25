@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
+
 import setuptools
 from setuptools import setup
 
@@ -22,7 +25,7 @@ test_requirements = [
 
 setup(
     name='ciabatta',
-    version='0.4.0',
+    version='0.5.0',
     description='Miscellaneous shared utilities',
     long_description=readme + '\n\n' + history,
     author='Elliot Marsden',

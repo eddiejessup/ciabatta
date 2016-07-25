@@ -1,7 +1,8 @@
 """
 Helper functions for constructing Python objects.
 """
-from __future__ import print_function, division
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
 
 
 def make_repr_str(obj, fields):
@@ -15,7 +16,8 @@ def make_repr_str(obj, fields):
     Returns a constructor-like string like "Class(`arg1`=arg1, ...)"
 
     Note that no object lookup is performed, other than to get the class name.
-    It is up to the calling function to provide the fields, in the `fields` object.
+    It is up to the calling function to provide the fields, in the `fields`
+    object.
 
     Parameters
     ----------

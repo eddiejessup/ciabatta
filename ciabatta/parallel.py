@@ -1,7 +1,9 @@
 """
 Functions to help with task-based parallel execution.
 """
-from __future__ import print_function, division
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
+
 import multiprocessing as mp
 
 

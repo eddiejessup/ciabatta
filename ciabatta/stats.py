@@ -1,5 +1,6 @@
 """Functions related to statistics and uncertainties"""
-from __future__ import print_function, division
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
 
 
 def sample_var_var(std, n):

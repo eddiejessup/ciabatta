@@ -1,7 +1,8 @@
 """
 Constants and functions for making matplotlib prettier.
 """
-from __future__ import print_function, division
+from __future__ import (division, unicode_literals, absolute_import,
+                        print_function)
 
 import numpy as np
 import matplotlib as mpl
