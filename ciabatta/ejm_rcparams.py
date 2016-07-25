@@ -2,12 +2,15 @@
 Constants and functions for making matplotlib prettier.
 """
 from __future__ import print_function, division
+
 import numpy as np
 import matplotlib as mpl
+import matplotlib.dates as mdates
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
 from matplotlib.backend_bases import register_backend
+
 import brewer2mpl
 
 golden_ratio = (np.sqrt(5) - 1.0) / 2.0
@@ -15,6 +18,7 @@ almost_black = '#262626'
 almost_white = '#FEFEFA'
 
 set2_map = brewer2mpl.get_map('Set2', 'qualitative', 8)
+set3_map = brewer2mpl.get_map('Set3', 'qualitative', 12)
 brown_teal_map = brewer2mpl.get_map('BrBg', 'diverging', 9)
 reds_map = brewer2mpl.get_map('Reds', 'sequential', 3)
 red_blue_map = brewer2mpl.get_map('RdBu', 'diverging', 11)
@@ -25,12 +29,13 @@ reds = reds_map.mpl_colors
 red_blue = red_blue_map.mpl_colors
 
 set2_cmap = set2_map.mpl_colormap
+set3 = set3_map.mpl_colors
 brown_teal_cmap = brown_teal_map.mpl_colormap
 reds_cmap = reds_map.mpl_colormap
 red_blue_cmap = red_blue_map.mpl_colormap
 
 
-def set_pretty_plots(use_latex=False, use_pgf=False):
+def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
     if use_pgf:
         register_backend('pdf', FigureCanvasPgf, 'pgf')
         rcParams['pgf.texsystem'] = 'pdflatex'
@@ -39,9 +44,12 @@ def set_pretty_plots(use_latex=False, use_pgf=False):
     rcParams['font.serif'] = ['STIXGeneral']
     preamble = [r'\usepackage{siunitx}',
                 r'\usepackage{lmodern}',
-                r'\usepackage{subdepth}'
-                r'\usepackage[protrusion = true, expansion = true]{microtype}',
+                r'\usepackage{subdepth}',
                 ]
+    if use_microtype:
+        preamble.append(
+            r'\usepackage[protrusion = true, expansion = true]{microtype}'
+        )
     rcParams['text.latex.preamble'] = preamble
     rcParams['pgf.preamble'] = preamble
     if use_latex:
@@ -54,11 +62,21 @@ def set_pretty_plots(use_latex=False, use_pgf=False):
     rcParams['text.color'] = almost_black
     rcParams['grid.color'] = almost_black
     rcParams['legend.scatterpoints'] = 1
+    rcParams['legend.fancybox'] = True
     rcParams['legend.frameon'] = False
+    rcParams['legend.framealpha'] = 0.0
     rcParams['lines.linewidth'] = 2.0
     # rcParams['image.aspect'] = 'equal'
     # rcParams['image.origin'] = 'lower'
     rcParams['image.interpolation'] = 'nearest'
+
+
+def increase_font_sizes():
+    rcParams['axes.titlesize'] = 24
+    rcParams['axes.labelsize'] = 24
+    rcParams['xtick.labelsize'] = 18
+    rcParams['ytick.labelsize'] = 18
+    rcParams['legend.fontsize'] = 18
 
 
 def prettify_axes(*axs):
@@ -145,3 +163,28 @@ def norm_to_colour(x):
     c /= float(x.max())
     c *= 255.0
     return c
+
+
+def make_x_axis_datey(ax, interval=1, is_daily=False):
+    date_formatter = mdates.DateFormatter('%Y-%m-%d')
+    Locator = mdates.DayLocator if is_daily else mdates.MonthLocator
+    locator = Locator(interval=interval)
+    ax.tick_params(axis='x', which='major', pad=15)
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_minor_locator(locator)
+    ax.format_xdata = date_formatter
+    ax.xaxis.set_major_formatter(date_formatter)
+
+
+def get_new_pretty_axis_set(figsize):
+    fig = plt.figure(figsize=figsize)
+    ax = fig.gca()
+    prettify_axes(ax)
+    return fig, ax
+
+
+def show_or_save(fig, file_name=None, debug=True):
+    if debug:
+        plt.show()
+    else:
+        fig.savefig(file_name, bbox_inches='tight', transparent=True)
