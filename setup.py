@@ -25,7 +25,7 @@ test_requirements = [
 
 setup(
     name='ciabatta',
-    version='0.5.0',
+    version='0.5.1',
     description='Miscellaneous shared utilities',
     long_description=readme + '\n\n' + history,
     author='Elliot Marsden',

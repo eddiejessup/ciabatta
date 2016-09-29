@@ -1,7 +1,7 @@
 """
 Constants and functions for making matplotlib prettier.
 """
-from __future__ import (division, unicode_literals, absolute_import,
+from __future__ import (division, absolute_import,
                         print_function)
 
 import numpy as np
@@ -37,25 +37,24 @@ red_blue_cmap = red_blue_map.mpl_colormap
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
-    if use_pgf:
-        register_backend('pdf', FigureCanvasPgf, 'pgf')
-        rcParams['pgf.texsystem'] = 'pdflatex'
-
+    if use_latex:
+        if use_pgf:
+            register_backend('pdf', FigureCanvasPgf, 'pgf')
+            rcParams['pgf.texsystem'] = 'pdflatex'
+        preamble = [r'\usepackage{siunitx}',
+                    r'\usepackage{lmodern}',
+                    r'\usepackage{subdepth}',
+                    ]
+        if use_microtype:
+            preamble.append(
+                r'\usepackage[protrusion = true, expansion = true]{microtype}'
+            )
+        rcParams['text.usetex'] = True
+        rcParams['text.latex.preamble'] = preamble
+        rcParams['pgf.preamble'] = preamble
+        rcParams['text.latex.unicode'] = True
     rcParams['font.family'] = 'serif'
     rcParams['font.serif'] = ['STIXGeneral']
-    preamble = [r'\usepackage{siunitx}',
-                r'\usepackage{lmodern}',
-                r'\usepackage{subdepth}',
-                ]
-    if use_microtype:
-        preamble.append(
-            r'\usepackage[protrusion = true, expansion = true]{microtype}'
-        )
-    rcParams['text.latex.preamble'] = preamble
-    rcParams['pgf.preamble'] = preamble
-    if use_latex:
-        rcParams['text.usetex'] = True
-    rcParams['text.latex.unicode'] = True
 
     rcParams['axes.color_cycle'] = set2
     rcParams['axes.edgecolor'] = almost_black
@@ -188,4 +187,5 @@ def show_or_save(fig, file_name=None, debug=True):
     if debug:
         plt.show()
     else:
-        fig.savefig(file_name, bbox_inches='tight', transparent=True)
+        # fig.savefig(file_name, bbox_inches='tight', transparent=True)
+        fig.savefig(file_name, bbox_inches='tight')
