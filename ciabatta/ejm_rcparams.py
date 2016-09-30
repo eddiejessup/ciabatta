@@ -36,6 +36,13 @@ reds_cmap = reds_map.mpl_colormap
 red_blue_cmap = red_blue_map.mpl_colormap
 
 
+def get_qualitative_colors():
+    a = set3[:]
+    # Remove yellow.
+    a.pop(2)
+    return iter(a)
+
+
 def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
     if use_latex:
         if use_pgf:
