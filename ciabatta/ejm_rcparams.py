@@ -37,10 +37,9 @@ red_blue_cmap = red_blue_map.mpl_colormap
 
 
 def get_qualitative_colors():
-    a = set3[:]
-    # Remove yellow.
-    a.pop(2)
-    return iter(a)
+    my_inds = (0, 3, 4, 5, 6, 9, 10, 11)
+    my_set = [set3[i] for i in my_inds]
+    return iter(my_set)
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
@@ -78,19 +77,28 @@ def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
     rcParams['image.interpolation'] = 'nearest'
 
 
-def increase_font_sizes():
-    rcParams['axes.titlesize'] = 24
-    rcParams['axes.labelsize'] = 24
-    rcParams['xtick.labelsize'] = 18
-    rcParams['ytick.labelsize'] = 18
-    rcParams['legend.fontsize'] = 18
+def increase_font_sizes(scale=1.0):
+    base_big = 24
+    big = base_big * scale
+    small = 0.75 * big
+
+    def get_nearest_int(n):
+        return int(round(n))
+
+    big = get_nearest_int(big)
+    small = get_nearest_int(small)
+    rcParams['figure.titlesize'] = big
+    rcParams['axes.titlesize'] = big
+    rcParams['axes.labelsize'] = big
+    rcParams['xtick.labelsize'] = small
+    rcParams['ytick.labelsize'] = small
+    rcParams['legend.fontsize'] = big
 
 
-def prettify_axes(*axs):
-    for ax in axs:
-        for spine in ax.spines:
-            ax.spines[spine].set_linewidth(0.5)
-            ax.spines[spine].set_color(almost_black)
+def prettify_axis(ax):
+    for spine in ax.spines:
+        ax.spines[spine].set_linewidth(0.5)
+        ax.spines[spine].set_color(almost_black)
         ax.xaxis.label.set_color(almost_black)
         ax.yaxis.label.set_color(almost_black)
         ax.title.set_color(almost_black)
@@ -99,6 +107,11 @@ def prettify_axes(*axs):
 
         ax.xaxis.set_ticks_position('bottom')
         ax.yaxis.set_ticks_position('left')
+
+
+def prettify_axes(*axs):
+    for ax in axs:
+        prettify_axis(ax)
 
 
 def get_figsize(width=512, factor=0.6, ratio=golden_ratio):
@@ -183,8 +196,8 @@ def make_x_axis_datey(ax, interval=1, is_daily=False):
     ax.xaxis.set_major_formatter(date_formatter)
 
 
-def get_new_pretty_axis_set(figsize):
-    fig = plt.figure(figsize=figsize)
+def get_new_pretty_axis_set(**fig_options):
+    fig = plt.figure(**fig_options)
     ax = fig.gca()
     prettify_axes(ax)
     return fig, ax
