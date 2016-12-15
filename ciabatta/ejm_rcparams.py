@@ -12,34 +12,19 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
 from matplotlib.backend_bases import register_backend
 
-import brewer2mpl
+import palettable
 
 golden_ratio = (np.sqrt(5) - 1.0) / 2.0
 almost_black = '#262626'
 almost_white = '#FEFEFA'
 
-set2_map = brewer2mpl.get_map('Set2', 'qualitative', 8)
-set3_map = brewer2mpl.get_map('Set3', 'qualitative', 12)
-brown_teal_map = brewer2mpl.get_map('BrBg', 'diverging', 9)
-reds_map = brewer2mpl.get_map('Reds', 'sequential', 3)
-red_blue_map = brewer2mpl.get_map('RdBu', 'diverging', 11)
-
-set2 = set2_map.mpl_colors
-brown_teal = brown_teal_map.mpl_colors
-reds = reds_map.mpl_colors
-red_blue = red_blue_map.mpl_colors
-
-set2_cmap = set2_map.mpl_colormap
+set3_map = palettable.colorbrewer.qualitative.Set3_12
 set3 = set3_map.mpl_colors
-brown_teal_cmap = brown_teal_map.mpl_colormap
-reds_cmap = reds_map.mpl_colormap
-red_blue_cmap = red_blue_map.mpl_colormap
 
 
 def get_qualitative_colors():
     my_inds = (0, 3, 4, 5, 6, 9, 10, 11)
-    my_set = [set3[i] for i in my_inds]
-    return iter(my_set)
+    return iter(set3[i] for i in my_inds)
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
@@ -62,7 +47,7 @@ def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
     rcParams['font.family'] = 'serif'
     rcParams['font.serif'] = ['STIXGeneral']
 
-    rcParams['axes.color_cycle'] = set2
+    rcParams['axes.color_cycle'] = set3
     rcParams['axes.edgecolor'] = almost_black
     rcParams['axes.labelcolor'] = almost_black
     rcParams['text.color'] = almost_black
