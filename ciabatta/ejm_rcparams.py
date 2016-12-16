@@ -18,12 +18,12 @@ golden_ratio = (np.sqrt(5) - 1.0) / 2.0
 almost_black = '#262626'
 almost_white = '#FEFEFA'
 
-set3_map = palettable.colorbrewer.qualitative.Set3_12
+set3_map = palettable.colorbrewer.qualitative.Dark2_8
 set3 = set3_map.mpl_colors
 
 
 def get_qualitative_colors(nr=12):
-    c_map = palettable.colorbrewer.get_map('Set3', 'qualitative', nr)
+    c_map = palettable.colorbrewer.get_map('Dark2', 'qualitative', nr)
     colors = c_map.mpl_colors
     # my_inds = (0, 3, 4, 5, 6, 9, 10, 11)
     # colors = [set3[i] for i in my_inds]
