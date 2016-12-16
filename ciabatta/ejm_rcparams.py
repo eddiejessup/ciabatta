@@ -22,9 +22,12 @@ set3_map = palettable.colorbrewer.qualitative.Set3_12
 set3 = set3_map.mpl_colors
 
 
-def get_qualitative_colors():
-    my_inds = (0, 3, 4, 5, 6, 9, 10, 11)
-    return iter(set3[i] for i in my_inds)
+def get_qualitative_colors(nr=12):
+    c_map = palettable.colorbrewer.get_map('Set3', 'qualitative', nr)
+    colors = c_map.mpl_colors
+    # my_inds = (0, 3, 4, 5, 6, 9, 10, 11)
+    # colors = [set3[i] for i in my_inds]
+    return iter(colors)
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
