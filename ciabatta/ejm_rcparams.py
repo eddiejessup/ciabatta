@@ -197,3 +197,9 @@ def show_or_save(fig, file_name=None, debug=True):
     else:
         # fig.savefig(file_name, bbox_inches='tight', transparent=True)
         fig.savefig(file_name, bbox_inches='tight')
+
+
+def add_below_legend(ax, bbox_to_anchor=(0.5, -0.1), ncol=10,
+                     *args, **kwargs):
+    ax.legend(loc='upper center', bbox_to_anchor=bbox_to_anchor, ncol=ncol,
+              *args, **kwargs)
