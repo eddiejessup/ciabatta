@@ -6,28 +6,19 @@ from __future__ import (division, absolute_import,
 
 import numpy as np
 import matplotlib as mpl
+from matplotlib import cm as mpl_cm
 import matplotlib.dates as mdates
 from matplotlib import rcParams
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pgf import FigureCanvasPgf
 from matplotlib.backend_bases import register_backend
 
-import palettable
-
 golden_ratio = (np.sqrt(5) - 1.0) / 2.0
 almost_black = '#262626'
 almost_white = '#FEFEFA'
 
-set3_map = palettable.colorbrewer.qualitative.Dark2_8
-set3 = set3_map.mpl_colors
-
-
-def get_qualitative_colors(nr=12):
-    c_map = palettable.colorbrewer.get_map('Dark2', 'qualitative', nr)
-    colors = c_map.mpl_colors
-    # my_inds = (0, 3, 4, 5, 6, 9, 10, 11)
-    # colors = [set3[i] for i in my_inds]
-    return iter(colors)
+set3_map = mpl_cm.Set3
+set3 = set3_map.colors
 
 
 def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
@@ -50,7 +41,7 @@ def set_pretty_plots(use_latex=False, use_pgf=False, use_microtype=True):
     rcParams['font.family'] = 'serif'
     rcParams['font.serif'] = ['STIXGeneral']
 
-    rcParams['axes.color_cycle'] = set3
+    rcParams['axes.prop_cycle'] = mpl.cycler(color=set3)
     rcParams['axes.edgecolor'] = almost_black
     rcParams['axes.labelcolor'] = almost_black
     rcParams['text.color'] = almost_black
