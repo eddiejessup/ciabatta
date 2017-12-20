@@ -10,24 +10,16 @@ from setuptools import setup
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
-    history = history_file.read().replace('.. :changelog:', '')
-
 requirements = [
     'numpy',
     'matplotlib',
-    'brewer2mpl',
-]
-
-test_requirements = [
-    'numpy',
 ]
 
 setup(
     name='ciabatta',
-    version='0.5.1',
+    version='0.6.0',
     description='Miscellaneous shared utilities',
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
     author='Elliot Marsden',
     author_email='elliot.marsden@gmail.com',
     url='https://github.com/eddiejessup/ciabatta',
@@ -35,7 +27,6 @@ setup(
     include_package_data=True,
     install_requires=requirements,
     license='BSD',
-    zip_safe=False,
     keywords='ciabatta',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -49,7 +40,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.6',
     ],
-    test_suite='tests',
-    tests_require=test_requirements,
 )
