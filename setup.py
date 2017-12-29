@@ -17,7 +17,7 @@ requirements = [
 
 setup(
     name='ciabatta',
-    version='0.6.0',
+    version='0.7.0',
     description='Miscellaneous shared utilities',
     long_description=readme,
     author='Elliot Marsden',
